@@ -28,11 +28,13 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.NavigationDrawer
 import androidx.tv.material3.NavigationDrawerItem
 import androidx.tv.material3.Text
-import com.edwin.sekai.ui.feature.browse.BrowseScreen
-import com.edwin.sekai.ui.feature.details.DetailsScreen
+import com.edwin.sekai.ui.feature.browse.BrowseRoute
+import com.edwin.sekai.ui.feature.details.navigation.detailsScreen
+import com.edwin.sekai.ui.feature.details.navigation.navigateToDetails
 import com.edwin.sekai.ui.feature.extensions.ExtensionsScreen
 import com.edwin.sekai.ui.feature.search.SearchScreen
-import com.edwin.sekai.ui.feature.watch.WatchScreen
+import com.edwin.sekai.ui.feature.stream.StreamRoute
+import com.edwin.sekai.ui.feature.stream.navigation.navigateToStream
 import com.edwin.sekai.ui.theme.ScreenArgumentKeys.DETAILS_ID_ARG
 import com.edwin.sekai.ui.theme.ScreenArgumentKeys.EPISODE_NUMBER_ARG
 
@@ -50,7 +52,7 @@ fun SekaiApp() {
             ) { screen ->
                 when (screen) {
                     NavOption.Home -> {
-                        BrowseScreen()
+                        BrowseRoute(navController::navigateToDetails)
                     }
 
                     NavOption.Search -> {
@@ -64,14 +66,7 @@ fun SekaiApp() {
             }
         }
 
-        composable(
-            route = Screen.Details().route,
-            arguments = listOf(navArgument("id") {
-                type = NavType.LongType
-            })
-        ) {
-            DetailsScreen()
-        }
+        detailsScreen(onWatchEpisodeClick = navController::navigateToStream)
 
         composable(
             route = Screen.WatchEpisode().route,
@@ -80,7 +75,7 @@ fun SekaiApp() {
                 navArgument(EPISODE_NUMBER_ARG) { type = NavType.StringType }
             )
         ) {
-            WatchScreen()
+            StreamRoute()
         }
     }
 }
