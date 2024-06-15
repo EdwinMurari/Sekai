@@ -14,6 +14,7 @@ fun BrowseRoute(
     Text("Browse screen TODO")
 }
 
+@Composable
 fun BrowseScreen(
-    uiState:
+    uiState: BrowseViewModel.UiState
 ) {}

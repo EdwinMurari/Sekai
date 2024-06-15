@@ -1,0 +1,193 @@
+query GetTrendingAndPopular {
+    # Trending Anime This Season
+    trendingAnimeThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: TRENDING_DESC) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Trending Movies This Season
+    trendingMoviesThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: TRENDING_DESC) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Popular Anime This Season
+    popularAnimeThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: POPULARITY_DESC) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Top Anime This Season
+    topAnimeThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: SCORE_DESC, season: FALL) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Trending Anime All Time
+    trendingAnimeAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: TRENDING) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Popular Anime All Time
+    popularAnimeAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: POPULARITY) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Top Anime All Time
+    topAnimeAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: SCORE_DESC) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Popular Movies This Season
+    popularMoviesThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: POPULARITY_DESC) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Top Movies This Season
+    topMoviesThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: SCORE_DESC, season: FALL) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Trending Movies All Time
+    trendingMoviesAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: TRENDING) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Popular Movies All Time
+    popularMoviesAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: POPULARITY) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+
+    # Top Movies All Time
+    topMoviesAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: SCORE_DESC) {
+            id
+            title {
+                english
+                romaji
+            }
+            coverImage {
+                large
+            }
+            averageScore
+            popularity
+        }
+    }
+}
