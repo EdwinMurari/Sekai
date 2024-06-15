@@ -59,6 +59,11 @@ dependencies {
 
 apollo {
     service("service") {
-        packageName.set("com.edwin.sekai")
+        packageName.set("com.edwin.network")
     }
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }

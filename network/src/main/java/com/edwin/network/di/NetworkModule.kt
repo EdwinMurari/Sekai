@@ -2,21 +2,21 @@ package com.edwin.network.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.edwin.network.BuildConfig
-import com.edwin.network.MediaNetworkDataSource
-import com.edwin.network.apollo.AniListMediaNetwork
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object NetworkModule {
+abstract class NetworkModule {
 
     @Provides
     @Singleton
-    fun apolloClient(): ApolloClient {
+    internal fun apolloClient(): ApolloClient {
         return ApolloClient.Builder()
             .serverUrl(BuildConfig.ANILIST_GRAPHQL_URL)
             .build()
@@ -24,7 +24,7 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideMediaNetworkDataSource(apolloClient: ApolloClient): MediaNetworkDataSource {
-        return AniListMediaNetwork(apolloClient)
+    internal fun ioDispatcher(): CoroutineDispatcher {
+        return Dispatchers.IO
     }
 }
