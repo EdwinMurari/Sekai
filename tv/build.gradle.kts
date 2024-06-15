@@ -4,7 +4,6 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.compose.compiler)
-    id("com.apollographql.apollo3").version("3.8.4")
 }
 
 android {
@@ -68,17 +67,9 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.navigation.compose)
-
-    implementation(libs.apollo.runtime)
 }
 
 // Allow references to generated code
 kapt {
     correctErrorTypes = true
-}
-
-apollo {
-    service("service") {
-        packageName.set("com.edwin.sekai")
-    }
 }
