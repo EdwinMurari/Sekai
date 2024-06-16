@@ -1,4 +1,4 @@
-package com.edwin.sekai.ui.theme
+package com.edwin.sekai.ui.designsystem.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable

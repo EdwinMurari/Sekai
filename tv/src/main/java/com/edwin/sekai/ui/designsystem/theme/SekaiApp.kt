@@ -1,4 +1,4 @@
-package com.edwin.sekai.ui.theme
+package com.edwin.sekai.ui.designsystem.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,8 +35,8 @@ import com.edwin.sekai.ui.feature.extensions.ExtensionsScreen
 import com.edwin.sekai.ui.feature.search.SearchScreen
 import com.edwin.sekai.ui.feature.stream.StreamRoute
 import com.edwin.sekai.ui.feature.stream.navigation.navigateToStream
-import com.edwin.sekai.ui.theme.ScreenArgumentKeys.DETAILS_ID_ARG
-import com.edwin.sekai.ui.theme.ScreenArgumentKeys.EPISODE_NUMBER_ARG
+import com.edwin.sekai.ui.designsystem.theme.ScreenArgumentKeys.DETAILS_ID_ARG
+import com.edwin.sekai.ui.designsystem.theme.ScreenArgumentKeys.EPISODE_NUMBER_ARG
 
 @Composable
 fun SekaiApp() {
