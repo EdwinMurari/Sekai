@@ -1,6 +1,6 @@
 package com.edwin.sekai.domain
 
-import com.edwin.data.model.AllMediaList
+import com.edwin.data.model.MediaCollections
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
 import com.edwin.data.repository.MediaRepository
@@ -11,7 +11,7 @@ import javax.inject.Inject
 class GetTrendingAnimeForCurrentSeasonUseCase @Inject constructor(
     private val repository: MediaRepository
 ) {
-    operator fun invoke(): Flow<NetworkResponse<AllMediaList>> {
+    operator fun invoke(): Flow<NetworkResponse<MediaCollections>> {
         val (season, seasonYear) = getCurrentSeasonAndYear()
         return repository.getTrendingAndPopularMedia(season, seasonYear)
     }

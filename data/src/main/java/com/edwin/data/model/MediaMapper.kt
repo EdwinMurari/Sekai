@@ -4,7 +4,7 @@ import com.edwin.network.GetTrendingAndPopularQuery
 import com.edwin.network.fragment.AnimeFragment
 import com.edwin.network.fragment.MovieFragment
 
-fun GetTrendingAndPopularQuery.Data.toAllMediaList() = AllMediaList(
+fun GetTrendingAndPopularQuery.Data.asExternalModel() = MediaCollections(
     trendingTvSeries = trendingAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
     trendingMovies = trendingMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
     popularTvSeries = popularAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
@@ -19,7 +19,7 @@ fun GetTrendingAndPopularQuery.Data.toAllMediaList() = AllMediaList(
     topMoviesAllTime = topMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.toMovie() }
 )
 
-fun AnimeFragment.toTvSeries() = TvSeries(
+fun AnimeFragment.toTvSeries() = Media.TvSeries(
     id = mediaFragment.id,
     title = (mediaFragment.title?.english ?: mediaFragment.title?.romaji).orEmpty(),
     coverImage = mediaFragment.coverImage?.large.orEmpty(),
@@ -31,13 +31,13 @@ fun AnimeFragment.toTvSeries() = TvSeries(
 )
 
 private fun AnimeFragment.NextAiringEpisode?.toAnimeNextAiringEpisode() = this?.let {
-    TvSeries.NextAiringEpisode(
+    Media.TvSeries.NextAiringEpisode(
         episode = it.episode,
         timeUntilAiring = it.timeUntilAiring
     )
 }
 
-fun MovieFragment.toMovie() = Movie(
+fun MovieFragment.toMovie() = Media.Movie(
     id = mediaFragment.id,
     title = (mediaFragment.title?.english ?: mediaFragment.title?.romaji).orEmpty(),
     coverImage = mediaFragment.coverImage?.large.orEmpty(),
