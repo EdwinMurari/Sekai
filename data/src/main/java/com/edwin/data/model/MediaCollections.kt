@@ -19,7 +19,7 @@ sealed class Media(
     open val id: Int,
     open val title: String,
     open val coverImage: String,
-    open val averageScore: Int,
+    open val averageScore: Int?,
     open val popularity: Int,
     open val startDate: Int, // Year
     open val averageColorHex: String
@@ -29,7 +29,7 @@ sealed class Media(
         override val id: Int,
         override val title: String,
         override val coverImage: String,
-        override val averageScore: Int,
+        override val averageScore: Int?,
         override val popularity: Int,
         override val startDate: Int, // Year
         override val averageColorHex: String,
@@ -47,7 +47,7 @@ sealed class Media(
         override val id: Int,
         override val title: String,
         override val coverImage: String,
-        override val averageScore: Int,
+        override val averageScore: Int?,
         override val popularity: Int,
         override val startDate: Int, // Year
         override val averageColorHex: String,
