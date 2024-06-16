@@ -318,17 +318,5 @@
       "surface": "#1C1B1F",
       "onSurface": "#FFFFFF"
     }
-  },
-  {
-    "Light": {
-      "onPrimary": "#000000",
-      "onSurface": "#000000"
-    }
-  },
-  {
-    "Dark": {
-      "onPrimary": "#FFFFFF",
-      "onSurface": "#FFFFFF"
-    }
   }
 ]
