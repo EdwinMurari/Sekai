@@ -56,7 +56,7 @@ fun MediaCard(
     media: Media,
     palettes: Map<String, Material3Palette>,
     modifier: Modifier = Modifier,
-    onClick: (Media) -> Unit = {}
+    onClick: (Int) -> Unit = {}
 ) {
     val averageColor = remember { Color(android.graphics.Color.parseColor(media.averageColorHex)) }
     val closestPalette =
@@ -73,7 +73,7 @@ fun MediaCard(
     }
 
     Card(
-        onClick = { onClick(media) },
+        onClick = { onClick(media.id) },
         modifier = modifier
             .heightIn(max = CARD_MAX_HEIGHT.dp)
             .aspectRatio(CARD_ASPECT_RATIO)
