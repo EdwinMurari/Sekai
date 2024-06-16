@@ -53,17 +53,20 @@ fun colorDistance(color1: Color, color2: Color): Double {
     return sqrt((redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff).toDouble())
 }
 
-fun findClosestPalette(targetColor: Color, palettes: Map<String, Material3Palette>): String? {
-    var closestPalette: String? = null
+fun findClosestPalette(
+    targetColor: Color,
+    palettes: Map<String, Material3Palette>
+): Material3Palette? {
+    var closestPalette: Material3Palette? = null
     var minDistance = Double.MAX_VALUE
 
-    for ((name, palette) in palettes) {
+    for ((_, palette) in palettes) {
         palette.primary?.let { primaryColor ->
             val distance =
                 colorDistance(targetColor, Color(android.graphics.Color.parseColor(primaryColor)))
             if (distance < minDistance) {
                 minDistance = distance
-                closestPalette = name // Store the name of the palette
+                closestPalette = palette
             }
         }
     }

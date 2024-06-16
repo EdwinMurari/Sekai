@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTvMaterial3Api::class)
+
 package com.edwin.sekai.ui.designsystem.component
 
 import androidx.compose.foundation.background
@@ -31,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
+import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
@@ -41,7 +44,7 @@ import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProv
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 
 // Constants
-private const val CARD_MAX_HEIGHT = 280
+private const val CARD_MAX_HEIGHT = 234
 private const val CARD_ASPECT_RATIO = 2f / 3f
 private const val GRADIENT_START = 0.7f
 private const val GRADIENT_ALPHA = 0.8f
@@ -59,7 +62,7 @@ fun MediaCard(
     val closestPalette =
         remember(averageColor, palettes) { findClosestPalette(averageColor, palettes) }
     val textColor = remember(closestPalette) {
-        closestPalette?.let { Color(android.graphics.Color.parseColor(it)) }
+        closestPalette?.let { Color(android.graphics.Color.parseColor(it.onPrimary)) }
             ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White
     }
     val gradientColors = remember(averageColor) {
