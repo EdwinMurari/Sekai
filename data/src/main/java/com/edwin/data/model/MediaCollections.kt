@@ -15,13 +15,14 @@ data class MediaCollections(
     val topMoviesAllTime: List<Media.Movie>?
 )
 
-open class Media(
+sealed class Media(
     open val id: Int,
     open val title: String,
     open val coverImage: String,
     open val averageScore: Int,
     open val popularity: Int,
-    open val startDate: Int // Year
+    open val startDate: Int, // Year
+    open val averageColorHex: String
 ) {
 
     data class TvSeries(
@@ -31,9 +32,10 @@ open class Media(
         override val averageScore: Int,
         override val popularity: Int,
         override val startDate: Int, // Year
+        override val averageColorHex: String,
         val episodes: Int,
         val nextAiringEpisode: NextAiringEpisode? = null
-    ) : Media(id, title, coverImage, averageScore, popularity, startDate) {
+    ) : Media(id, title, coverImage, averageScore, popularity, startDate, averageColorHex) {
 
         data class NextAiringEpisode(
             val episode: Int,
@@ -48,6 +50,7 @@ open class Media(
         override val averageScore: Int,
         override val popularity: Int,
         override val startDate: Int, // Year
+        override val averageColorHex: String,
         val duration: Int // Minutes
-    ) : Media(id, title, coverImage, averageScore, popularity, startDate)
+    ) : Media(id, title, coverImage, averageScore, popularity, startDate, averageColorHex)
 }

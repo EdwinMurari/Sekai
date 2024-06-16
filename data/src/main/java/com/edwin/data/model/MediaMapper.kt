@@ -26,6 +26,7 @@ fun AnimeFragment.toTvSeries() = Media.TvSeries(
     averageScore = mediaFragment.averageScore ?: 0,
     popularity = mediaFragment.popularity ?: 0,
     startDate = mediaFragment.startDate?.year ?: 0,
+    averageColorHex = mediaFragment.coverImage?.color.orEmpty(),
     episodes = episodes ?: 0,
     nextAiringEpisode = nextAiringEpisode?.toAnimeNextAiringEpisode()
 )
@@ -44,6 +45,7 @@ fun MovieFragment.toMovie() = Media.Movie(
     averageScore = mediaFragment.averageScore ?: 0,
     popularity = mediaFragment.popularity ?: 0,
     startDate = mediaFragment.startDate?.year ?: 0,
+    averageColorHex = mediaFragment.coverImage?.color.orEmpty(),
     duration = duration ?: 0
 )
 
