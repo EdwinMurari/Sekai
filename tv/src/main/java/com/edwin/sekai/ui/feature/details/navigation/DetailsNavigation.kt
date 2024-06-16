@@ -13,7 +13,7 @@ const val MEDIA_ROUTE_BASE = "media_route"
 const val MEDIA_ROUTE = "$MEDIA_ROUTE_BASE?$MEDIA_ID_ARG={$MEDIA_ID_ARG}"
 
 fun NavHostController.navigateToDetails(
-    mediaId: String,
+    mediaId: Int,
     navOptions: NavOptions? = null
 ) {
     val route = "${MEDIA_ROUTE_BASE}?${MEDIA_ID_ARG}=$mediaId"

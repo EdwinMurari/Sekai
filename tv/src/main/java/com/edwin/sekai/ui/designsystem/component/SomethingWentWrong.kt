@@ -13,10 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Button
+import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun SomethingWentWrong(
     modifier: Modifier = Modifier,

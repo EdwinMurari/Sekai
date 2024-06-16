@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.NavigationDrawer
 import androidx.tv.material3.NavigationDrawerItem
@@ -80,6 +81,7 @@ fun SekaiApp() {
     }
 }
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun ModalNavDrawer(
     currentNavOption: NavOption,
