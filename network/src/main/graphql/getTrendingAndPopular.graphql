@@ -66,20 +66,20 @@ fragment MediaFragment on Media {
     title {
         english
         romaji
+        native
     }
     coverImage {
         large
         color
     }
+    bannerImage
+    genres
     averageScore
     popularity
     startDate {
         year
     }
     description
-    thumbnail: coverImage {
-        extraLarge
-    }
 }
 
 fragment AnimeFragment on Media {

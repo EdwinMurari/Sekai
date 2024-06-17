@@ -2,7 +2,6 @@
 
 package com.edwin.sekai.ui.designsystem.component
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +42,9 @@ import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
+import com.edwin.sekai.ui.utils.MediaTitle
+import com.edwin.sekai.ui.utils.formatMovieDuration
+import com.edwin.sekai.ui.utils.getEpisodeInfo
 
 // Constants
 private const val CARD_MAX_HEIGHT = 234
@@ -52,6 +54,7 @@ private const val GRADIENT_ALPHA = 0.8f
 private const val STAR_ICON_SIZE = 16
 private const val ICON_SPACING = 4
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaCard(
     media: Media,
@@ -59,15 +62,16 @@ fun MediaCard(
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit = {}
 ) {
-    Log.e("Color", "Media average color: $media")
-    val averageColor = remember { media.averageColorHex?.let{Color(android.graphics.Color.parseColor(it))} ?: Color.Black }
-    Log.e("Color", "$averageColor")
-    val closestPalette =
-        remember(averageColor, palettes) { findClosestPalette(averageColor, palettes) }
-    Log.e("Color", "${closestPalette?.name}")
+    val averageColor = remember {
+        media.averageColorHex?.let { Color(android.graphics.Color.parseColor(it)) } ?: Color.Black
+    }
+    val closestPalette = remember(averageColor, palettes) {
+        findClosestPalette(averageColor, palettes)
+    }
     val textColor = remember(closestPalette) {
-        closestPalette?.let { Color(android.graphics.Color.parseColor(it.onPrimary)) }
-            ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White
+        closestPalette?.let {
+            Color(android.graphics.Color.parseColor(it.onPrimary))
+        } ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White
     }
     val gradientColors = remember(averageColor) {
         listOf(
@@ -131,17 +135,14 @@ private fun MediaInfo(
                 is Media.TvSeries -> getEpisodeInfo(media)
                 is Media.Movie -> formatMovieDuration(media.duration)
             },
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelSmall,
             color = textColor
         )
 
         // Title
-        Text(
-            text = media.title,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.titleMedium,
-            color = textColor
+        MediaTitle(
+            title = media.title,
+            textColor = textColor
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -156,7 +157,7 @@ private fun MediaInfo(
 }
 
 @Composable
-private fun ShowStarRating(averageScore: Int, startDate: Int, textColor: Color) {
+private fun ShowStarRating(averageScore: Int?, startDate: Int?, textColor: Color) {
     Icon(
         imageVector = Icons.Filled.Star,
         contentDescription = stringResource(R.string.star_rating_content_description),
@@ -167,7 +168,10 @@ private fun ShowStarRating(averageScore: Int, startDate: Int, textColor: Color) 
     Spacer(modifier = Modifier.width(ICON_SPACING.dp))
 
     Text(
-        text = stringResource(id = R.string.score_year, averageScore.toFloat() / 10, startDate),
+        text = listOfNotNull(
+            averageScore?.toFloat()?.div(10),
+            startDate
+        ).joinToString(stringResource(R.string.dot_separator)),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         style = MaterialTheme.typography.labelMedium,
@@ -176,7 +180,7 @@ private fun ShowStarRating(averageScore: Int, startDate: Int, textColor: Color) 
 }
 
 @Composable
-private fun ShowPopularity(popularity: Int, startDate: Int, textColor: Color) {
+private fun ShowPopularity(popularity: Int?, startDate: Int?, textColor: Color) {
     Icon(
         imageVector = Icons.Filled.ThumbUp,
         contentDescription = stringResource(R.string.popularity_content_description),
@@ -187,37 +191,15 @@ private fun ShowPopularity(popularity: Int, startDate: Int, textColor: Color) {
     Spacer(modifier = Modifier.width(ICON_SPACING.dp))
 
     Text(
-        text = stringResource(id = R.string.popularity_year, popularity, startDate),
+        text = listOfNotNull(
+            popularity,
+            startDate
+        ).joinToString(stringResource(R.string.dot_separator)),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         style = MaterialTheme.typography.labelMedium,
         color = textColor
     )
-}
-
-@Composable
-private fun getEpisodeInfo(media: Media.TvSeries): String {
-    return if (media.episodes > 0) {
-        media.nextAiringEpisode?.episode?.let { nextAiringEpisode ->
-            stringResource(id = R.string.episodes_format, nextAiringEpisode, media.episodes)
-        } ?: stringResource(id = R.string.episodes, media.episodes)
-    } else {
-        media.nextAiringEpisode?.episode?.let { nextAiringEpisode ->
-            stringResource(id = R.string.episodes_ongoing, nextAiringEpisode)
-        } ?: stringResource(id = R.string.ongoing)
-    }
-}
-
-@Composable
-private fun formatMovieDuration(durationMinutes: Int): String {
-    val hours = durationMinutes / 60
-    val minutes = durationMinutes % 60
-
-    return if (hours > 0) {
-        stringResource(id = R.string.hours_minutes, hours, minutes)
-    } else {
-        stringResource(id = R.string.minutes, minutes)
-    }
 }
 
 @TvPreview

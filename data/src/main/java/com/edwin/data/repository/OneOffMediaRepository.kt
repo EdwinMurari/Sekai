@@ -4,7 +4,7 @@ import com.edwin.data.model.MediaCollections
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
 import com.edwin.data.model.asExternalModel
-import com.edwin.data.model.mapToNetworkMediaSeason
+import com.edwin.data.model.asNetworkModel
 import com.edwin.network.MediaNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -20,7 +20,7 @@ internal class OneOffMediaRepository @Inject constructor(
         seasonYear: Int
     ): Flow<NetworkResponse<MediaCollections>> = flow {
         val response = networkDataSource.getTrendingAndPopularMedia(
-            season = mapToNetworkMediaSeason(season),
+            season = season.asNetworkModel(),
             seasonYear = seasonYear
         )
 

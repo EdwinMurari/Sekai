@@ -1,16 +1,20 @@
 <resources>
     <string name="app_name">Sekai</string>
 
+    <!-- Common -->
+    <string name="dot_separator">&#32;•&#32;</string>
+    <string name="slash_separator">&#32;/&#32;</string>
+
     <!-- Media card -->
     <string name="minutes">%1$d min</string>
     <string name="hours_minutes">%1$d hr %2$d min</string>
-    <string name="score_year">%.1f/10 • %d</string>
-    <string name="popularity_year">%d • %d</string>
-    <string name="media_cover_image_description">%1$s cover image</string>
     <string name="star_rating_content_description">Star Rating</string>
     <string name="popularity_content_description">Popularity</string>
     <string name="episodes">%d Episodes</string>
-    <string name="episodes_format">%1$d / %2$d Episodes</string>
+    <string name="episodes_format">%1$d/%2$d Episodes</string>
     <string name="episodes_ongoing">%1$d Episodes (Ongoing)</string>
     <string name="ongoing">ONGOING</string>
+    <string name="title_missing">Title missing</string>
+
+    <!-- Immersive list -->
 </resources>

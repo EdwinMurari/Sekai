@@ -2,62 +2,86 @@ package com.edwin.data.model
 
 import com.edwin.network.GetTrendingAndPopularQuery
 import com.edwin.network.fragment.AnimeFragment
+import com.edwin.network.fragment.MediaFragment
 import com.edwin.network.fragment.MovieFragment
+import com.edwin.network.type.MediaSeason as NetworkMediaSeason
 
 fun GetTrendingAndPopularQuery.Data.asExternalModel() = MediaCollections(
-    trendingTvSeries = trendingAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
-    trendingMovies = trendingMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
-    popularTvSeries = popularAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
-    topTvSeries = topAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
-    trendingTvSeriesAllTime = trendingAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
-    popularTvSeriesAllTime = popularAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
-    topTvSeriesAllTime = topAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
-    popularMovies = popularMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
-    topMovies = topMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
-    trendingMoviesAllTime = trendingMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.toMovie() },
-    popularMoviesAllTime = popularMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.toMovie() },
-    topMoviesAllTime = topMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.toMovie() }
+    trendingTvSeries = trendingAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    trendingMovies = trendingMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    popularTvSeries = popularAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    topTvSeries = topAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    trendingTvSeriesAllTime = trendingAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    popularTvSeriesAllTime = popularAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    topTvSeriesAllTime = topAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    popularMovies = popularMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    topMovies = topMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    trendingMoviesAllTime = trendingMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    popularMoviesAllTime = popularMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() },
+    topMoviesAllTime = topMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+        ?.takeIf { it.isNotEmpty() }
 )
 
-fun AnimeFragment.toTvSeries() = Media.TvSeries(
+fun AnimeFragment.asExternalModel() = Media.TvSeries(
     id = mediaFragment.id,
-    title = (mediaFragment.title?.english ?: mediaFragment.title?.romaji).orEmpty(),
-    description = mediaFragment.description.orEmpty(),
-    coverImage = mediaFragment.coverImage?.large.takeUnless { it.isNullOrBlank() },
-    bannerImage = mediaFragment.thumbnail?.extraLarge.takeUnless { it.isNullOrBlank() },
+    title = mediaFragment.getTitle(),
+    description = mediaFragment.description,
+    coverImage = mediaFragment.getCoverImage(),
+    bannerImage = mediaFragment.getBannerImage(),
+    genres = mediaFragment.getGenres(),
     averageScore = mediaFragment.averageScore,
-    popularity = mediaFragment.popularity ?: 0,
-    startDate = mediaFragment.startDate?.year ?: 0,
-    averageColorHex = mediaFragment.coverImage?.color.takeUnless { it.isNullOrBlank() },
-    episodes = episodes ?: 0,
-    nextAiringEpisode = nextAiringEpisode?.toAnimeNextAiringEpisode()
+    popularity = mediaFragment.popularity,
+    startDate = mediaFragment.startDate?.year,
+    averageColorHex = mediaFragment.getCoverAverageHex(),
+    episodesCount = episodes,
+    nextAiringEpisode = nextAiringEpisode?.asExternalModel()
 )
 
-private fun AnimeFragment.NextAiringEpisode?.toAnimeNextAiringEpisode() = this?.let {
+private fun AnimeFragment.NextAiringEpisode?.asExternalModel() = this?.let {
     Media.TvSeries.NextAiringEpisode(
         episode = it.episode,
         timeUntilAiring = it.timeUntilAiring
     )
 }
 
-fun MovieFragment.toMovie() = Media.Movie(
+fun MovieFragment.asExternalModel() = Media.Movie(
     id = mediaFragment.id,
-    title = (mediaFragment.title?.english ?: mediaFragment.title?.romaji).orEmpty(),
-    description = mediaFragment.description.orEmpty(),
-    coverImage = mediaFragment.coverImage?.large.orEmpty(),
-    bannerImage = mediaFragment.thumbnail?.extraLarge.orEmpty(),
+    title = mediaFragment.getTitle(),
+    description = mediaFragment.description,
+    coverImage = mediaFragment.getCoverImage(),
+    bannerImage = mediaFragment.getBannerImage(),
+    genres = mediaFragment.getGenres(),
     averageScore = mediaFragment.averageScore,
-    popularity = mediaFragment.popularity ?: 0,
-    startDate = mediaFragment.startDate?.year ?: 0,
-    averageColorHex = mediaFragment.coverImage?.color,
-    duration = duration ?: 0
+    popularity = mediaFragment.popularity,
+    startDate = mediaFragment.startDate?.year,
+    averageColorHex = mediaFragment.getCoverAverageHex(),
+    duration = duration
 )
 
-fun mapToNetworkMediaSeason(season: MediaSeason): com.edwin.network.type.MediaSeason {
-    return when (season) {
-        MediaSeason.WINTER -> com.edwin.network.type.MediaSeason.WINTER
-        MediaSeason.SPRING -> com.edwin.network.type.MediaSeason.SPRING
-        MediaSeason.SUMMER -> com.edwin.network.type.MediaSeason.SUMMER
-        MediaSeason.FALL -> com.edwin.network.type.MediaSeason.FALL
+private fun MediaFragment.getTitle() = title?.english ?: title?.romaji ?: title?.native
+private fun MediaFragment.getCoverImage() = coverImage?.large?.takeIf { it.isNotBlank() }
+private fun MediaFragment.getBannerImage() = bannerImage?.takeIf { it.isNotBlank() }
+private fun MediaFragment.getGenres() = genres?.filterNotNull()?.takeIf { it.isNotEmpty() }
+private fun MediaFragment.getCoverAverageHex(): String? {
+    return coverImage?.color?.takeIf { it.isNotBlank() && it.firstOrNull() == '#' }
+}
+
+fun MediaSeason.asNetworkModel(): NetworkMediaSeason {
+    return when (this) {
+        MediaSeason.WINTER -> NetworkMediaSeason.WINTER
+        MediaSeason.SPRING -> NetworkMediaSeason.SPRING
+        MediaSeason.SUMMER -> NetworkMediaSeason.SUMMER
+        MediaSeason.FALL -> NetworkMediaSeason.FALL
     }
 }
