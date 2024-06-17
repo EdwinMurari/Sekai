@@ -185,7 +185,7 @@ private fun TvLazyListScope.carouselSection(
         }
         item(contentType = CAROUSEL_CONTENT_TYPE, key = "List${sectionHeader}") {
             CarouselMediaList(
-                list = mediaList,
+                mediaList = mediaList,
                 palettes = palettes,
                 onMediaClick = onMediaClick
             )
