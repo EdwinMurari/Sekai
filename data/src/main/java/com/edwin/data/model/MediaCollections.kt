@@ -19,8 +19,8 @@ sealed class Media(
     open val id: Int,
     open val title: String,
     open val description: String,
-    open val coverImage: String,
-    open val bannerImage: String,
+    open val coverImage: String?,
+    open val bannerImage: String?,
     open val averageScore: Int?,
     open val popularity: Int,
     open val startDate: Int, // Year
@@ -31,8 +31,8 @@ sealed class Media(
         override val id: Int,
         override val title: String,
         override val description: String,
-        override val coverImage: String,
-        override val bannerImage: String,
+        override val coverImage: String?,
+        override val bannerImage: String?,
         override val averageScore: Int?,
         override val popularity: Int,
         override val startDate: Int, // Year
@@ -61,8 +61,8 @@ sealed class Media(
         override val id: Int,
         override val title: String,
         override val description: String,
-        override val coverImage: String,
-        override val bannerImage: String,
+        override val coverImage: String?,
+        override val bannerImage: String?,
         override val averageScore: Int?,
         override val popularity: Int,
         override val startDate: Int, // Year

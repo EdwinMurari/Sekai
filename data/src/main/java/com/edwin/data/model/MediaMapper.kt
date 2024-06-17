@@ -23,12 +23,12 @@ fun AnimeFragment.toTvSeries() = Media.TvSeries(
     id = mediaFragment.id,
     title = (mediaFragment.title?.english ?: mediaFragment.title?.romaji).orEmpty(),
     description = mediaFragment.description.orEmpty(),
-    coverImage = mediaFragment.coverImage?.large.orEmpty(),
-    bannerImage = mediaFragment.thumbnail?.extraLarge.orEmpty(),
+    coverImage = mediaFragment.coverImage?.large.takeUnless { it.isNullOrBlank() },
+    bannerImage = mediaFragment.thumbnail?.extraLarge.takeUnless { it.isNullOrBlank() },
     averageScore = mediaFragment.averageScore,
     popularity = mediaFragment.popularity ?: 0,
     startDate = mediaFragment.startDate?.year ?: 0,
-    averageColorHex = mediaFragment.coverImage?.color.orEmpty(),
+    averageColorHex = mediaFragment.coverImage?.color.takeUnless { it.isNullOrBlank() },
     episodes = episodes ?: 0,
     nextAiringEpisode = nextAiringEpisode?.toAnimeNextAiringEpisode()
 )
