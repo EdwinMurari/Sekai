@@ -1,0 +1,322 @@
+[
+  {
+    "Purple-Pink": {
+      "primary": "#6750A4",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#625B71",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#7D5260",
+      "onTertiary": "#FFFFFF",
+      "error": "#B3261E",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Teal-Green": {
+      "primary": "#006874",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#004D40",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#3949AB",
+      "onTertiary": "#FFFFFF",
+      "error": "#B3261E",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Deep Orange-Brown": {
+      "primary": "#BF360C",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#78350F",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#64DD17",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Indigo-Blue": {
+      "primary": "#3F51B5",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#3949AB",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#F44336",
+      "onTertiary": "#FFFFFF",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Lime-Green": {
+      "primary": "#8BC34A",
+      "onPrimary": "#000000",
+      "secondary": "#689F38",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#03DAC5",
+      "onTertiary": "#000000",
+      "error": "#B00020",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Blue-Grey": {
+      "primary": "#607D8B",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#455A64",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#FF5722",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Red-Pink": {
+      "primary": "#F44336",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#E91E63",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#9C27B0",
+      "onTertiary": "#FFFFFF",
+      "error": "#B00020",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Green-Brown": {
+      "primary": "#4CAF50",
+      "onPrimary": "#000000",
+      "secondary": "#795548",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#03DAC5",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Purple-Grey": {
+      "primary": "#9C27B0",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#673AB7",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#FF9800",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Yellow-Brown": {
+      "primary": "#FFEB3B",
+      "onPrimary": "#000000",
+      "secondary": "#795548",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#673AB7",
+      "onTertiary": "#FFFFFF",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Orange-Blue": {
+      "primary": "#FF9800",
+      "onPrimary": "#000000",
+      "secondary": "#2196F3",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#4CAF50",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Pink-Brown": {
+      "primary": "#E91E63",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#795548",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#3F51B5",
+      "onTertiary": "#FFFFFF",
+      "error": "#B00020",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Blue-Green": {
+      "primary": "#2196F3",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#4CAF50",
+      "onSecondary": "#000000",
+      "tertiary": "#FF9800",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Cyan-Orange": {
+      "primary": "#00BCD4",
+      "onPrimary": "#000000",
+      "secondary": "#FF9800",
+      "onSecondary": "#000000",
+      "tertiary": "#673AB7",
+      "onTertiary": "#FFFFFF",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Brown-Yellow": {
+      "primary": "#795548",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#FFEB3B",
+      "onSecondary": "#000000",
+      "tertiary": "#607D8B",
+      "onTertiary": "#FFFFFF",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Purple-Blue": {
+      "primary": "#9C27B0",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#2196F3",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#FFC107",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Red-Orange": {
+      "primary": "#F44336",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#FF9800",
+      "onSecondary": "#000000",
+      "tertiary": "#4CAF50",
+      "onTertiary": "#000000",
+      "error": "#B00020",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Green-Cyan": {
+      "primary": "#4CAF50",
+      "onPrimary": "#000000",
+      "secondary": "#00BCD4",
+      "onSecondary": "#000000",
+      "tertiary": "#FFEB3B",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Pink-Green": {
+      "primary": "#E91E63",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#4CAF50",
+      "onSecondary": "#000000",
+      "tertiary": "#FFC107",
+      "onTertiary": "#000000",
+      "error": "#B00020",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  },
+  {
+    "Yellow-Purple": {
+      "primary": "#FFEB3B",
+      "onPrimary": "#000000",
+      "secondary": "#9C27B0",
+      "onSecondary": "#FFFFFF",
+      "tertiary": "#00BCD4",
+      "onTertiary": "#000000",
+      "error": "#F44336",
+      "onError": "#FFFFFF",
+      "background": "#1C1B1F",
+      "onBackground": "#FFFFFF",
+      "surface": "#1C1B1F",
+      "onSurface": "#FFFFFF"
+    }
+  }
+]

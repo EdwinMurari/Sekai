@@ -1,0 +1,97 @@
+query GetTrendingAndPopular($season: MediaSeason!, $seasonYear: Int!) {
+    trendingAnimeThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: TRENDING_DESC, season: $season, seasonYear: $seasonYear) {
+            ...AnimeFragment
+        }
+    }
+    trendingMoviesThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: TRENDING_DESC, season: $season, seasonYear: $seasonYear) {
+            ...MovieFragment
+        }
+    }
+    popularAnimeThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: POPULARITY_DESC, season: $season, seasonYear: $seasonYear) {
+            ...AnimeFragment
+        }
+    }
+    topAnimeThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: SCORE_DESC, season: $season, seasonYear: $seasonYear) {
+            ...AnimeFragment
+        }
+    }
+    trendingAnimeAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: TRENDING) {
+            ...AnimeFragment
+        }
+    }
+    popularAnimeAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: POPULARITY) {
+            ...AnimeFragment
+        }
+    }
+    topAnimeAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: TV, sort: SCORE_DESC) {
+            ...AnimeFragment
+        }
+    }
+    popularMoviesThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: POPULARITY_DESC, season: $season, seasonYear: $seasonYear) {
+            ...MovieFragment
+        }
+    }
+    topMoviesThisSeason: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: SCORE_DESC, season: $season, seasonYear: $seasonYear) {
+            ...MovieFragment
+        }
+    }
+    trendingMoviesAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: TRENDING) {
+            ...MovieFragment
+        }
+    }
+    popularMoviesAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: POPULARITY_DESC) {
+            ...MovieFragment
+        }
+    }
+    topMoviesAllTime: Page(page: 1, perPage: 10) {
+        media(type: ANIME, format: MOVIE, sort: SCORE_DESC) {
+            ...MovieFragment
+        }
+    }
+}
+
+fragment MediaFragment on Media {
+    id
+    title {
+        english
+        romaji
+    }
+    coverImage {
+        large
+        color
+    }
+    averageScore
+    popularity
+    startDate {
+        year
+    }
+    description
+    thumbnail: coverImage {
+        extraLarge
+    }
+}
+
+fragment AnimeFragment on Media {
+    ...MediaFragment
+    episodes
+    nextAiringEpisode {
+        episode
+        timeUntilAiring
+    }
+}
+
+fragment MovieFragment on Media {
+    ...MediaFragment
+    duration
+}
