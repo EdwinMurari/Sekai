@@ -20,7 +20,7 @@ query GetTrendingAndPopular($season: MediaSeason!, $seasonYear: Int!) {
         }
     }
     trendingAnimeAllTime: Page(page: 1, perPage: 10) {
-        media(type: ANIME, format: TV, sort: TRENDING) {
+        media(type: ANIME, format: TV, sort: TRENDING_DESC) {
             ...AnimeFragment
         }
     }
@@ -45,7 +45,7 @@ query GetTrendingAndPopular($season: MediaSeason!, $seasonYear: Int!) {
         }
     }
     trendingMoviesAllTime: Page(page: 1, perPage: 10) {
-        media(type: ANIME, format: MOVIE, sort: TRENDING) {
+        media(type: ANIME, format: MOVIE, sort: TRENDING_DESC) {
             ...MovieFragment
         }
     }
