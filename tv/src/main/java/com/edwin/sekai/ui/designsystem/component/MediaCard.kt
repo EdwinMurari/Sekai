@@ -2,6 +2,7 @@
 
 package com.edwin.sekai.ui.designsystem.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,9 +59,12 @@ fun MediaCard(
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit = {}
 ) {
-    val averageColor = remember { Color(android.graphics.Color.parseColor(media.averageColorHex)) }
+    Log.e("Color", "Media average color: $media")
+    val averageColor = remember { media.averageColorHex?.let{Color(android.graphics.Color.parseColor(it))} ?: Color.Black }
+    Log.e("Color", "$averageColor")
     val closestPalette =
         remember(averageColor, palettes) { findClosestPalette(averageColor, palettes) }
+    Log.e("Color", "${closestPalette?.name}")
     val textColor = remember(closestPalette) {
         closestPalette?.let { Color(android.graphics.Color.parseColor(it.onPrimary)) }
             ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White

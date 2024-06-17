@@ -11,7 +11,7 @@ const val BROWSE_ROUTE = "browse_route"
 fun NavController.navigateToBrowse(navOptions: NavOptions) = navigate(BROWSE_ROUTE, navOptions)
 
 fun NavGraphBuilder.browseScreen(
-    onMediaClick: (String) -> Unit
+    onMediaClick: (Int) -> Unit
 ) {
     composable(route = BROWSE_ROUTE) {
         BrowseRoute(onMediaClick)

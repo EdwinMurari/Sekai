@@ -8,12 +8,12 @@ fun GetTrendingAndPopularQuery.Data.asExternalModel() = MediaCollections(
     trendingTvSeries = trendingAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
     trendingMovies = trendingMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
     popularTvSeries = popularAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
-    topTvSeriesThisSeason = topAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
+    topTvSeries = topAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
     trendingTvSeriesAllTime = trendingAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
     popularTvSeriesAllTime = popularAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
     topTvSeriesAllTime = topAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.toTvSeries() },
-    popularMoviesThisSeason = popularMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
-    topMoviesThisSeason = topMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
+    popularMovies = popularMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
+    topMovies = topMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.toMovie() },
     trendingMoviesAllTime = trendingMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.toMovie() },
     popularMoviesAllTime = popularMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.toMovie() },
     topMoviesAllTime = topMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.toMovie() }
@@ -49,7 +49,7 @@ fun MovieFragment.toMovie() = Media.Movie(
     averageScore = mediaFragment.averageScore,
     popularity = mediaFragment.popularity ?: 0,
     startDate = mediaFragment.startDate?.year ?: 0,
-    averageColorHex = mediaFragment.coverImage?.color.orEmpty(),
+    averageColorHex = mediaFragment.coverImage?.color,
     duration = duration ?: 0
 )
 

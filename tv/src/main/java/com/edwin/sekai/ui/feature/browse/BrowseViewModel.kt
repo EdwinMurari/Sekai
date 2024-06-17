@@ -2,39 +2,38 @@ package com.edwin.sekai.ui.feature.browse
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.edwin.data.model.MediaCollections
+import com.edwin.data.model.NetworkResponse
+import com.edwin.sekai.domain.GetTrendingAnimeForCurrentSeasonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class BrowseViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    getTrendingAnimeForCurrentSeasonUseCase: GetTrendingAnimeForCurrentSeasonUseCase
 ) : ViewModel() {
 
-    enum class EnumAnimeCategory(val title: String) {
-        TV_TRENDING_THIS_SEASON("Trending Anime This Season"),
-        MOVIE_TRENDING_THIS_SEASON("Trending Movies This Season"),
-        TV_POPULAR_THIS_SEASON("Popular Anime This Season"),
-        TV_TOP_THIS_SEASON("Top Anime This Season"),
-        TV_TRENDING("Trending Anime"),
-        TV_POPULAR("Popular Anime"),
-        TV_TOP("Top Anime"),
-        MOVIE_POPULAR_THIS_SEASON("Popular Movies This Season"),
-        MOVIE_TOP_THIS_SEASON("Top Movies This Season"),
-        MOVIE_TRENDING("Trending Movies"),
-        MOVIE_POPULAR("Popular Movies"),
-        MOVIE_TOP("Top Movies")
-    }
+    val uiState: StateFlow<BrowseScreenUiState> =
+        getTrendingAnimeForCurrentSeasonUseCase().map { networkResponse ->
+            when (networkResponse) {
+                is NetworkResponse.Failure -> BrowseScreenUiState.Error
+                is NetworkResponse.Success -> BrowseScreenUiState.Success(networkResponse.data)
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            initialValue = BrowseScreenUiState.Loading,
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
 
-    data class Media(
-        val id: String,
-        val name: String
-    )
-
-    data class CategoryList(val category: EnumAnimeCategory, var list: List<Media>)
-
-    sealed class UiState {
-        data object Loading : UiState()
-        data class Success(val categories: List<CategoryList>) : UiState()
-        data class Error(val exception: Throwable) : UiState()
+    sealed class BrowseScreenUiState {
+        data object Loading : BrowseScreenUiState()
+        data class Success(val collection: MediaCollections) : BrowseScreenUiState()
+        data object Error : BrowseScreenUiState()
     }
 }
