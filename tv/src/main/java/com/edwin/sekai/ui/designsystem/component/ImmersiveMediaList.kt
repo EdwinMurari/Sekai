@@ -2,6 +2,7 @@
 
 package com.edwin.sekai.ui.designsystem.component
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,7 +53,6 @@ import com.edwin.sekai.ui.utils.MediaTitle
 import com.edwin.sekai.ui.utils.formatMovieDuration
 import com.edwin.sekai.ui.utils.getEpisodeInfo
 
-// TODO :: Cleanup required
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun ImmersiveMediaList(
@@ -64,72 +64,72 @@ fun ImmersiveMediaList(
     val immersiveListWidth = 758.dp
     val cardHeight = 234.dp
 
-    if (mediaList.isNotEmpty()) {
-        ImmersiveList(
-            modifier = Modifier
-                .height(immersiveListHeight + cardHeight / 4)
-                .fillMaxWidth(),
-            background = { index, _ ->
-                val media = mediaList[index]
-                AnimatedContent(targetState = index) {
+    val backgroundColor = MaterialTheme.colorScheme.surface
+    val gradient = object : ShaderBrush() {
+        override fun createShader(size: Size): Shader {
+            val biggerDimension = maxOf(size.height, size.width)
+            return RadialGradientShader(
+                colors = listOf(Color.Transparent, backgroundColor),
+                center = Offset(size.width * 0.75f, 0f),
+                radius = biggerDimension,
+                colorStops = listOf(0f, 0.5f)
+            )
+        }
+    }
+
+    ImmersiveList(
+        modifier = Modifier
+            .height(immersiveListHeight + cardHeight / 4)
+            .fillMaxWidth(),
+        background = { index, _ ->
+            AnimatedContent(
+                targetState = mediaList[index],
+                label = "bannerBackdrop"
+            ) { media ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    SubcomposeAsyncImage(
+                        model = media.bannerImage,
+                        contentDescription = "${media.title} banner image",
+                        contentScale = ContentScale.Crop,
+                        loading = { Loading() },
+                        modifier = Modifier
+                            .height(immersiveListHeight)
+                            .width(immersiveListWidth)
+                            .align(Alignment.TopEnd)
+                    )
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                    ) {
-                        val backgroundColor = MaterialTheme.colorScheme.surface
-                        val gradient = object : ShaderBrush() {
-                            override fun createShader(size: Size): Shader {
-                                val biggerDimension = maxOf(size.height, size.width)
-                                return RadialGradientShader(
-                                    colors = listOf(Color.Transparent, backgroundColor),
-                                    center = Offset(size.width * 0.75f, 0f),
-                                    radius = biggerDimension,
-                                    colorStops = listOf(0f, 0.5f)
-                                )
-                            }
-                        }
-
-                        SubcomposeAsyncImage(
-                            model = media.bannerImage,
-                            contentDescription = "${media.title} banner",
-                            contentScale = ContentScale.Crop,
-                            loading = { Loading() },
-                            modifier = Modifier
-                                .height(immersiveListHeight)
-                                .width(immersiveListWidth)
-                                .align(Alignment.TopEnd)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(gradient)
-                        )
-                        ContentBlock(
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .padding(bottom = cardHeight + 40.dp, start = 58.dp),
-                            media = media
-                        )
-                    }
-                }
-            },
-        ) {
-            TvLazyRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.wrapContentHeight(),
-                contentPadding = PaddingValues(horizontal = 58.dp)
-            ) {
-                itemsIndexed(mediaList) { index, anime ->
-                    var isFocused by remember { mutableStateOf(false) }
-                    MediaCard(
-                        media = anime,
+                            .background(gradient)
+                    )
+                    ContentBlock(
                         modifier = Modifier
-                            .onFocusChanged { isFocused = it.isFocused }
-                            .immersiveListItem(index),
-                        palettes = palettes,
-                        onClick = onMediaClick
+                            .align(Alignment.BottomStart)
+                            .padding(bottom = cardHeight + 40.dp, start = 58.dp),
+                        media = media
                     )
                 }
+            }
+        },
+    ) {
+        TvLazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.wrapContentHeight(),
+            contentPadding = PaddingValues(horizontal = 58.dp)
+        ) {
+            itemsIndexed(mediaList) { index, anime ->
+                var isFocused by remember { mutableStateOf(false) }
+                MediaCard(
+                    media = anime,
+                    modifier = Modifier
+                        .onFocusChanged { isFocused = it.isFocused }
+                        .immersiveListItem(index),
+                    palettes = palettes,
+                    onClick = onMediaClick
+                )
             }
         }
     }
