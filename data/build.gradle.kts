@@ -44,12 +44,16 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
 
     api(libs.apollo.runtime)
+
+    // Mockk framework
+    testImplementation(libs.mockk)
 }
 
 // Allow references to generated code
