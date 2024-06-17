@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.designsystem.component
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,6 +16,8 @@ fun CategoryHeader(text: String) {
         text = text,
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(horizontal = 58.dp)
+        modifier = Modifier
+            .padding(horizontal = 58.dp)
+            .focusable(false)
     )
 }

@@ -4,6 +4,7 @@ package com.edwin.sekai.ui.designsystem.component
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,7 +81,8 @@ fun ImmersiveMediaList(
     ImmersiveList(
         modifier = Modifier
             .height(immersiveListHeight + cardHeight / 4)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .focusable(false),
         background = { index, _ ->
             AnimatedContent(
                 targetState = mediaList[index],
@@ -89,6 +91,7 @@ fun ImmersiveMediaList(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        .focusable(false)
                 ) {
                     SubcomposeAsyncImage(
                         model = media.bannerImage,
@@ -99,6 +102,7 @@ fun ImmersiveMediaList(
                             .height(immersiveListHeight)
                             .width(immersiveListWidth)
                             .align(Alignment.TopEnd)
+                            .focusable(false)
                     )
                     Box(
                         modifier = Modifier
@@ -108,7 +112,8 @@ fun ImmersiveMediaList(
                     ContentBlock(
                         modifier = Modifier
                             .align(Alignment.BottomStart)
-                            .padding(bottom = cardHeight + 40.dp, start = 58.dp),
+                            .padding(bottom = cardHeight + 40.dp, start = 58.dp)
+                            .focusable(false),
                         media = media
                     )
                 }
@@ -117,7 +122,8 @@ fun ImmersiveMediaList(
     ) {
         TvLazyRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.wrapContentHeight(),
+            modifier = Modifier
+                .wrapContentHeight(),
             contentPadding = PaddingValues(horizontal = 58.dp)
         ) {
             itemsIndexed(mediaList) { index, anime ->

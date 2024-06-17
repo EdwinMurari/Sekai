@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,6 +22,7 @@ import com.edwin.sekai.ui.designsystem.component.Loading
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.SomethingWentWrong
 import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
+import com.edwin.sekai.ui.designsystem.previewprovider.MediaCollectionPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 
 // Constants
@@ -185,7 +187,7 @@ private fun TvLazyListScope.carouselSection(
         }
         item(contentType = CAROUSEL_CONTENT_TYPE, key = "List${sectionHeader}") {
             CarouselMediaList(
-                list = mediaList,
+                mediaList = mediaList,
                 palettes = palettes,
                 onMediaClick = onMediaClick
             )
@@ -195,8 +197,11 @@ private fun TvLazyListScope.carouselSection(
 
 @TvPreview
 @Composable
-fun PreviewBrowse() {
+fun PreviewBrowse(@PreviewParameter(MediaCollectionPreviewParameterProvider::class) mediaCollections: MediaCollections) {
     SekaiTheme {
-        BrowseScreen(uiState = BrowseViewModel.BrowseScreenUiState.Loading, onMediaClick = {})
+        BrowseScreen(
+            uiState = BrowseViewModel.BrowseScreenUiState.Success(mediaCollections),
+            onMediaClick = {}
+        )
     }
 }
