@@ -17,7 +17,7 @@ class MediaPreviewParameterProvider : PreviewParameterProvider<Media> {
             popularity = 16793,
             startDate = 2002,
             averageColorHex = "#e4935d",
-            episodes = 26,
+            episodesCount = 26,
             nextAiringEpisode = null,
             description = "Robin Sena is a powerful craft user drafted into the STNJ - a group of specialized hunters that fight deadly beings known as Witches. Though her fire power is great, she’s got a lot to learn about her powers and working with her cool and aloof partner, Amon. But the truth about the Witches and herself will leave Robin on an entirely new path that she never expected!\n\n(Source: Funimation)",
             bannerImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx7-6uh1fPvbgS9t.png"
@@ -32,7 +32,7 @@ class MediaPreviewParameterProvider : PreviewParameterProvider<Media> {
             popularity = 55762,
             startDate = 2024,
             averageColorHex = "#e44343",
-            episodes = 0,
+            episodesCount = 0,
             nextAiringEpisode = Media.TvSeries.NextAiringEpisode(
                 episode = 1,
                 timeUntilAiring = 1505145
@@ -50,7 +50,7 @@ class MediaPreviewParameterProvider : PreviewParameterProvider<Media> {
             popularity = 40761,
             startDate = 2024,
             averageColorHex = "#6b281a",
-            episodes = 0,
+            episodesCount = 0,
             nextAiringEpisode = null,
             description = "The second season of <i>Kami no Tou: Tower of God</i>.",
             bannerImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx153406-P4etA7704JEs.png"
@@ -65,7 +65,7 @@ class MediaPreviewParameterProvider : PreviewParameterProvider<Media> {
             popularity = 190063,
             startDate = 2023,
             averageColorHex = "#aee493",
-            episodes = 28,
+            episodesCount = 28,
             nextAiringEpisode = null,
             description = "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. But Frieren will long outlive the rest of her former party. How will she come to understand what life means to the people around her? Decades after their victory, the funeral of one her friends confronts Frieren with her own near immortality. Frieren sets out to fulfill the last wishes of her comrades and finds herself beginning a new adventure…\n\n(Source: Crunchyroll)",
             bannerImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-gHSraOSa0nBG.jpg"
@@ -80,7 +80,7 @@ class MediaPreviewParameterProvider : PreviewParameterProvider<Media> {
             popularity = 16631,
             startDate = 2024,
             averageColorHex = "#e47843",
-            episodes = 12,
+            episodesCount = 12,
             nextAiringEpisode = Media.TvSeries.NextAiringEpisode(
                 episode = 3,
                 timeUntilAiring = 2118945
