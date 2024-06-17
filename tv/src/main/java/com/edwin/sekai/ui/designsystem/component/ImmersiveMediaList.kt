@@ -29,13 +29,10 @@ import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.tv.foundation.lazy.list.TvLazyRow
@@ -46,9 +43,12 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.SubcomposeAsyncImage
 import com.edwin.data.model.Media
-import com.edwin.sekai.R
-import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
+import com.edwin.sekai.ui.TvPreview
+import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
+import com.edwin.sekai.ui.utils.MediaTitle
+import com.edwin.sekai.ui.utils.formatMovieDuration
+import com.edwin.sekai.ui.utils.getEpisodeInfo
 
 // TODO :: Cleanup required
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -147,48 +147,25 @@ fun ContentBlock(modifier: Modifier = Modifier, media: Media) {
                 media.startDate.toString()
             )
         )
-        Text(
-            text = media.title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(top = 4.dp)
+
+        MediaTitle(
+            modifier = Modifier.padding(top = 4.dp),
+            title = media.title,
+            textColor = MaterialTheme.colorScheme.onSurface
         )
 
-        Text(
-            text = getAnnotatedString(htmlString = media.description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .padding(top = 12.dp)
-        )
-    }
-}
-
-@Composable
-private fun getEpisodeInfo(media: Media.TvSeries): String {
-    return if (media.episodes > 0) {
-        media.nextAiringEpisode?.episode?.let { nextAiringEpisode ->
-            stringResource(id = R.string.episodes_format, nextAiringEpisode, media.episodes)
-        } ?: stringResource(id = R.string.episodes, media.episodes)
-    } else {
-        media.nextAiringEpisode?.episode?.let { nextAiringEpisode ->
-            stringResource(id = R.string.episodes_ongoing, nextAiringEpisode)
-        } ?: stringResource(id = R.string.ongoing)
-    }
-}
-
-@Composable
-private fun formatMovieDuration(durationMinutes: Int): String {
-    val hours = durationMinutes / 60
-    val minutes = durationMinutes % 60
-
-    return if (hours > 0) {
-        stringResource(id = R.string.hours_minutes, hours, minutes)
-    } else {
-        stringResource(id = R.string.minutes, minutes)
+        media.description?.let { description ->
+            Text(
+                text = getAnnotatedString(htmlString = description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .padding(top = 12.dp)
+            )
+        }
     }
 }
 
@@ -209,16 +186,7 @@ fun getAnnotatedString(htmlString: String): AnnotatedString {
     }
 }
 
-// Reuse your existing Media objects from MediaPreviewParameterProvider
-val sampleMediaList = MediaPreviewParameterProvider().values.toList()
-
-// New PreviewParameterProvider for List<Media>
-class MediaListPreviewParameterProvider : PreviewParameterProvider<List<Media>> {
-    override val values = sequenceOf(sampleMediaList) // Provide your media list
-}
-
-// Your ImmersiveMedia ListPreview
-@Preview(device = "id:tv_1080p")
+@TvPreview
 @Composable
 fun ImmersiveMediaListPreview(
     @PreviewParameter(MediaListPreviewParameterProvider::class) mediaList: List<Media>
