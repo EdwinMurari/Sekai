@@ -56,6 +56,6 @@ class AniListMediaNetworkTest {
 
     private fun <T> List<T>?.shouldNotBeEmpty() {
         assertNotNull("List should not be null", this)
-        assertTrue("List should not be empty", this!!.isNotEmpty())
+        assertTrue("List should not be empty", this?.isNotEmpty() == true)
     }
 }
