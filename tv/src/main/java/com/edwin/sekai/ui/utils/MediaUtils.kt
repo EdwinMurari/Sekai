@@ -19,6 +19,7 @@ fun MediaTitle(
     textColor: Color
 ) {
     Text(
+        modifier = modifier,
         text = title ?: stringResource(R.string.title_missing),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,

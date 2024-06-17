@@ -25,17 +25,16 @@ fun AnimeFragment.asExternalModel() = Media.TvSeries(
     id = mediaFragment.id,
     title = mediaFragment.getTitle(),
     description = mediaFragment.description,
-    coverImage = mediaFragment.coverImage?.large.takeUnless { it.isNullOrBlank() },
-    bannerImage = mediaFragment.bannerImage.takeUnless { it.isNullOrBlank() },
+    coverImage = mediaFragment.getCoverImage(),
+    bannerImage = mediaFragment.getBannerImage(),
+    genres = mediaFragment.getGenres(),
     averageScore = mediaFragment.averageScore,
     popularity = mediaFragment.popularity,
     startDate = mediaFragment.startDate?.year,
-    averageColorHex = mediaFragment.coverImage?.color.takeUnless { it.isNullOrBlank() },
+    averageColorHex = mediaFragment.getCoverAverageHex(),
     episodesCount = episodes,
     nextAiringEpisode = nextAiringEpisode?.asExternalModel()
 )
-
-private fun MediaFragment.getTitle() = title?.english ?: title?.romaji ?: title?.native
 
 private fun AnimeFragment.NextAiringEpisode?.asExternalModel() = this?.let {
     Media.TvSeries.NextAiringEpisode(
@@ -48,14 +47,23 @@ fun MovieFragment.asExternalModel() = Media.Movie(
     id = mediaFragment.id,
     title = mediaFragment.getTitle(),
     description = mediaFragment.description,
-    coverImage = mediaFragment.coverImage?.large.takeUnless { it.isNullOrBlank() },
-    bannerImage = mediaFragment.bannerImage.takeUnless { it.isNullOrBlank() },
+    coverImage = mediaFragment.getCoverImage(),
+    bannerImage = mediaFragment.getBannerImage(),
+    genres = mediaFragment.getGenres(),
     averageScore = mediaFragment.averageScore,
     popularity = mediaFragment.popularity,
     startDate = mediaFragment.startDate?.year,
-    averageColorHex = mediaFragment.coverImage?.color.takeUnless { it.isNullOrBlank() },
+    averageColorHex = mediaFragment.getCoverAverageHex(),
     duration = duration
 )
+
+private fun MediaFragment.getTitle() = title?.english ?: title?.romaji ?: title?.native
+private fun MediaFragment.getCoverImage() = coverImage?.large?.takeIf { it.isNotBlank() }
+private fun MediaFragment.getBannerImage() = bannerImage?.takeIf { it.isNotBlank() }
+private fun MediaFragment.getGenres() = genres?.filterNotNull()?.takeIf { it.isNotEmpty() }
+private fun MediaFragment.getCoverAverageHex(): String? {
+    return coverImage?.color?.takeIf { it.isNotBlank() && it.firstOrNull() == '#' }
+}
 
 fun MediaSeason.asNetworkModel(): NetworkMediaSeason {
     return when (this) {

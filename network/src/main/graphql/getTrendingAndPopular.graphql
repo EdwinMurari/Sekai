@@ -73,6 +73,7 @@ fragment MediaFragment on Media {
         color
     }
     bannerImage
+    genres
     averageScore
     popularity
     startDate {

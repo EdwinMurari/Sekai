@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,6 +44,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.SubcomposeAsyncImage
 import com.edwin.data.model.Media
+import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
@@ -139,7 +141,7 @@ fun ContentBlock(modifier: Modifier = Modifier, media: Media) {
     Column(modifier = modifier) {
         LabelText(
             labels = listOfNotNull(
-//                media.genres.joinToString(separator = "/"),
+                media.genres?.joinToString(stringResource(R.string.slash_separator)),
                 when (media) {
                     is Media.TvSeries -> getEpisodeInfo(media)
                     is Media.Movie -> formatMovieDuration(media.duration)
@@ -172,13 +174,11 @@ fun ContentBlock(modifier: Modifier = Modifier, media: Media) {
 @Composable
 fun LabelText(labels: List<String>) {
     Text(
-        text = labels.joinToString(getDotSeparator()),
+        text = labels.joinToString(stringResource(R.string.dot_separator)),
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
-
-fun getDotSeparator() = " • "
 
 fun getAnnotatedString(htmlString: String): AnnotatedString {
     return buildAnnotatedString {

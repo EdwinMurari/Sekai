@@ -3,6 +3,7 @@
 
     <!-- Common -->
     <string name="dot_separator">&#32;•&#32;</string>
+    <string name="slash_separator">&#32;/&#32;</string>
 
     <!-- Media card -->
     <string name="minutes">%1$d min</string>
