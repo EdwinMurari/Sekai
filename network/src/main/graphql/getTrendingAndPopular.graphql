@@ -71,15 +71,13 @@ fragment MediaFragment on Media {
         large
         color
     }
+    bannerImage
     averageScore
     popularity
     startDate {
         year
     }
     description
-    thumbnail: coverImage {
-        extraLarge
-    }
 }
 
 fragment AnimeFragment on Media {
