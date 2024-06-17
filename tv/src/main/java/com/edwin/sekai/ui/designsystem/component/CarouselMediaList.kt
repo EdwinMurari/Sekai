@@ -6,15 +6,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyRow
 import androidx.tv.foundation.lazy.list.items
 import com.edwin.data.model.Media
+import com.edwin.sekai.ui.TvPreview
+import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
+import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 
 @Composable
 fun CarouselMediaList(
     modifier: Modifier = Modifier,
-    list: List<Media>,
+    mediaList: List<Media>,
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit = {}
 ) {
@@ -25,8 +30,23 @@ fun CarouselMediaList(
             .padding(top = 16.dp),
         contentPadding = PaddingValues(horizontal = 58.dp)
     ) {
-        items(list, key = { it.id }) { anime ->
+        items(mediaList, key = { it.id }) { anime ->
             MediaCard(media = anime, palettes = palettes, onClick = onMediaClick)
         }
+    }
+}
+
+@TvPreview
+@Composable
+fun PreviewCarousel(
+    @PreviewParameter(MediaListPreviewParameterProvider::class) mediaList: List<Media>
+) {
+    val context = LocalContext.current
+    val palettes = loadMaterial3Palettes(context)
+    SekaiTheme {
+        CarouselMediaList(
+            mediaList = mediaList,
+            palettes = palettes
+        )
     }
 }
