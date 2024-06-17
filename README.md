@@ -5,8 +5,8 @@ Sekai is a modern Android app designed to provide a seamless experience for disc
 ## Features ✨
 
 - **Discover Trending and Popular Anime:** Explore curated lists of the latest and greatest anime.
-- **Search for Anime:** Quickly find your favorites or explore new titles.
-- **Get Detailed Information:**  View trailers, read synopses, track episodes, and more.
+- **(Coming Soon) Search for Anime:** Quickly find your favorites or explore new titles.
+- **(Coming Soon) Get Detailed Information:**  Read synopses, track episodes, and more.
 - **(Coming Soon) Stream Anime:**  Watch your favorite anime directly within the app.
 - **(Coming Soon) Manage Your List:**  Keep track of what you're watching or reading.
 
