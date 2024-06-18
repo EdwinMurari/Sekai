@@ -1,115 +1,150 @@
 package com.edwin.sekai.ui.feature.details
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.tv.material3.Button
+import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Text
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import androidx.tv.material3.MaterialTheme
 import com.edwin.data.model.Media
-import com.edwin.sekai.R
+import com.edwin.sekai.ui.designsystem.component.GradientBackdrop
+import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.previewprovider.PreviewParameterData
-import com.edwin.sekai.ui.utils.formatMovieDuration
-import com.edwin.sekai.ui.utils.getEpisodeInfo
+import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
+import com.edwin.sekai.ui.feature.details.components.MediaDetailsSection
 
 @Composable
-fun DetailsRoute(onWatchEpisodeClick: (String, Int) -> Unit) {
-    DetailsScreen(PreviewParameterData.tvSeriesList.first())
+fun DetailsRoute(onClickWatch: (Int, Int) -> Unit) {
+    DetailsScreen(
+        media = PreviewParameterData.tvSeriesList.first(), // TODO :: Get the real data
+        onClickWatch = onClickWatch
+    )
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun DetailsScreen(media: Media) {
-    val director = "Alexandre Dimitrov"
-    val writer = "Georgi Horvath"
-    val screenplay = "Ben Jackson"
-
-    // 2. Main Content
-    Row(modifier = Modifier.padding(16.dp)) {
-        // 3. Image (using Coil)
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(media.bannerImage)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxHeight(0.8f)
-                .aspectRatio(2 / 3f), // Adjust aspect ratio as needed
-            contentScale = ContentScale.Crop
+fun DetailsScreen(
+    media: Media,
+    onClickWatch: (Int, Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.background(color = MaterialTheme.colorScheme.surface)
+    ) {
+        GradientBackdrop(
+            imageUrl = media.bannerImage
         )
 
-        // 4. Details Column
-        Column(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()) // Make details scrollable
-        ) {
-            Text(
-                text = media.title ?: stringResource(R.string.title_missing),
-                style = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            media.description?.let { Text(text = it, style = TextStyle(fontSize = 16.sp)) }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 5. Metadata Row
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    "${media.popularity} • ${media.startDate} (US) • ",
-                    style = TextStyle(fontSize = 14.sp)
-                )
-                media.genres?.forEach { genre ->
-                    Text("$genre • ", style = TextStyle(fontSize = 14.sp))
-                }
-                Text(
-                    text = when (media) {
-                        is Media.TvSeries -> getEpisodeInfo(media)
-                        is Media.Movie -> formatMovieDuration(media.duration)
-                    },
-                    style = TextStyle(fontSize = 14.sp)
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 6. Crew Information
-            Text("Director", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-            Text(text = director, style = TextStyle(fontSize = 14.sp))
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text("Writer", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-            Text(text = writer, style = TextStyle(fontSize = 14.sp))
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text("Screenplay", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-            Text(text = screenplay, style = TextStyle(fontSize = 14.sp))
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 7. Watch Now Button
-            Button(onClick = { /* Handle play action */ }) {
-                Text("▶ Watch now")
-            }
-        }
+        Content(
+            media = media,
+            onClickWatch = onClickWatch
+        )
     }
-    // ... You can add the "Cast & Crew" section below
+}
+
+@Composable
+fun Content(
+    media: Media,
+    onClickWatch: (Int, Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TvLazyColumn(
+        contentPadding = PaddingValues(
+            top = 100.dp,
+            bottom = 58.dp,
+            start = 48.dp,
+            end = 48.dp
+        ),
+        modifier = modifier,
+    ) {
+        item {
+            MediaDetailsSection(
+                media = media,
+                onClickWatch = onClickWatch
+            )
+        }
+
+        /*item {
+            CastAndCrewList(
+                castAndCrew = movieDetails.castAndCrew
+            )
+        }
+
+        item {
+            MoviesRow(
+                title = StringConstants
+                    .Composable
+                    .movieDetailsScreenSimilarTo(movieDetails.name),
+                titleStyle = MaterialTheme.typography.titleMedium,
+                movies = movieDetails.similarMovies,
+                onMovieClick = refreshScreenWithNewMovie
+            )
+        }
+
+        item {
+            MovieReviews(
+                modifier = Modifier.padding(top = childPadding.top),
+                reviewsAndRatings = movieDetails.reviewsAndRatings
+            )
+        }
+
+        item {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = childPadding.start)
+                    .padding(BottomDividerPadding)
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .alpha(0.15f)
+                    .background(MaterialTheme.colorScheme.onSurface)
+            )
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = childPadding.start),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                val itemModifier = Modifier.width(192.dp)
+
+                TitleValueText(
+                    modifier = itemModifier,
+                    title = stringResource(R.string.status),
+                    value = movieDetails.status
+                )
+                TitleValueText(
+                    modifier = itemModifier,
+                    title = stringResource(R.string.original_language),
+                    value = movieDetails.originalLanguage
+                )
+                TitleValueText(
+                    modifier = itemModifier,
+                    title = stringResource(R.string.budget),
+                    value = movieDetails.budget
+                )
+                TitleValueText(
+                    modifier = itemModifier,
+                    title = stringResource(R.string.revenue),
+                    value = movieDetails.revenue
+                )
+            }
+        }*/
+    }
+}
+
+@Preview
+@Composable
+fun PreviewDetailsScreen(
+    @PreviewParameter(MediaPreviewParameterProvider::class) media: Media
+) {
+    SekaiTheme {
+        DetailsScreen(media, onClickWatch = { _, _ -> })
+    }
 }

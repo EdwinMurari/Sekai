@@ -22,7 +22,7 @@ fun SekaiApp() {
     NavHost(navController = navController, startDestination = HOME_ROUTE) {
         homeRoute(onMediaClick = navController::navigateToDetails)
 
-        detailsScreen(onWatchEpisodeClick = navController::navigateToStream)
+        detailsScreen(onClickWatch = navController::navigateToStream)
 
         composable(
             route = Screen.WatchEpisode().route,

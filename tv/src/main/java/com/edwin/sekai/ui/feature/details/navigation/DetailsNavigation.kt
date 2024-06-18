@@ -21,7 +21,7 @@ fun NavHostController.navigateToDetails(
 }
 
 fun NavGraphBuilder.detailsScreen(
-    onWatchEpisodeClick: (String, Int) -> Unit,
+    onClickWatch: (Int, Int) -> Unit,
 ) {
     composable(
         route = MEDIA_ROUTE,
@@ -33,6 +33,6 @@ fun NavGraphBuilder.detailsScreen(
             },
         ),
     ) {
-        DetailsRoute(onWatchEpisodeClick = onWatchEpisodeClick)
+        DetailsRoute(onClickWatch = onClickWatch)
     }
 }
