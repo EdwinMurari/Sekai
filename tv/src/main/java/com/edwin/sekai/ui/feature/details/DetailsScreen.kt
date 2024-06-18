@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyListScope
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -23,7 +24,11 @@ import com.edwin.sekai.ui.feature.details.components.EpisodesSection
 import com.edwin.sekai.ui.feature.details.components.MediaDetailsSection
 
 @Composable
-fun DetailsRoute(onClickWatch: (Int, Int) -> Unit) {
+fun DetailsRoute(
+    onClickWatch: (Int, Int) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: DetailsViewModel = hiltViewModel()
+) {
     DetailsScreen(
         media = PreviewParameterData.tvSeriesList.first(), // TODO :: Get the real data
         onClickWatch = onClickWatch
