@@ -3,19 +3,23 @@ package com.edwin.sekai.ui.feature.details
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
+import androidx.tv.foundation.lazy.list.TvLazyListScope
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Text
 import com.edwin.data.model.Media
 import com.edwin.sekai.ui.designsystem.component.GradientBackdrop
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.previewprovider.PreviewParameterData
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
+import com.edwin.sekai.ui.feature.details.components.EpisodesSection
 import com.edwin.sekai.ui.feature.details.components.MediaDetailsSection
 
 @Composable
@@ -69,13 +73,12 @@ fun Content(
             )
         }
 
-        /*item {
-            CastAndCrewList(
-                castAndCrew = movieDetails.castAndCrew
-            )
+        sectionHeader("Episodes")
+        item {
+            EpisodesSection(onEpisodeSelected = { onClickWatch(media.id, it) })
         }
 
-        item {
+        /*item {
             MoviesRow(
                 title = StringConstants
                     .Composable
@@ -136,6 +139,20 @@ fun Content(
                 )
             }
         }*/
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun TvLazyListScope.sectionHeader(text: String) {
+    item(contentType = "SectionHeader", key = "${text}SectionHeader") {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .padding(top = 24.dp)
+                .padding(horizontal = 58.dp)
+        )
     }
 }
 
