@@ -38,10 +38,13 @@ fun MediaDetailsFragment.StreamingEpisode.asExternalModel() = MediaDetails.Episo
     thumbnail = thumbnail
 )
 
-fun MediaDetailsFragment.Edge.asExternalModel() = MediaDetails.MediaRelation(
-    relationType = relationType?.name,
-    media = node?.mediaFragment?.asExternalModel()
-)
+fun MediaDetailsFragment.Edge.asExternalModel() =
+    node?.mediaFragment?.asExternalModel()?.let { mediaFragment ->
+        MediaDetails.MediaRelation(
+            relationType = relationType?.name,
+            media = mediaFragment
+        )
+    }
 
 private fun MediaDetailsFragment.Edge1.asExternalModel() =
     node?.media?.mediaFragment?.asExternalModel()

@@ -16,6 +16,7 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import com.edwin.data.model.MediaDetails
+import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.GradientBackdrop
 import com.edwin.sekai.ui.designsystem.component.Loading
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
@@ -132,7 +133,7 @@ fun Content(
     }
 }
 
-@Preview
+@TvPreview
 @Composable
 fun PreviewDetailsScreen(
     @PreviewParameter(MediaDetailsPreviewParameterProvider::class) mediaDetails: MediaDetails

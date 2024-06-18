@@ -25,7 +25,7 @@ query GetTrendingAndPopular($season: MediaSeason!, $seasonYear: Int!) {
         }
     }
     popularAnimeAllTime: Page(page: 1, perPage: 10) {
-        media(type: ANIME, format: TV, sort: POPULARITY) {
+        media(type: ANIME, format: TV, sort: POPULARITY_DESC) {
             ...MediaFragment
         }
     }

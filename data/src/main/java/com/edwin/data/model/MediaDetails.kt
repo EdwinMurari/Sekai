@@ -37,6 +37,6 @@ sealed class MediaDetails {
 
     data class MediaRelation(
         val relationType: String?,
-        val media: Media?
+        val media: Media
     )
 }

@@ -2,7 +2,7 @@ package com.edwin.sekai.ui.feature.details.components
 
 import androidx.tv.foundation.lazy.list.TvLazyListScope
 import com.edwin.data.model.MediaDetails
-import com.edwin.sekai.ui.designsystem.component.CarouselMediaList
+import com.edwin.sekai.ui.designsystem.component.CarouselMediaRelationsList
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 
 fun TvLazyListScope.relationsSection(
@@ -13,8 +13,8 @@ fun TvLazyListScope.relationsSection(
     if (!mediaDetails.relations.isNullOrEmpty()) {
         sectionHeader("Related Content")
         item {
-            CarouselMediaList(
-                mediaList = mediaDetails.relations,
+            CarouselMediaRelationsList(
+                relations = mediaDetails.relations!!,
                 palettes = palettes,
                 onMediaClick = onMediaClick
             )

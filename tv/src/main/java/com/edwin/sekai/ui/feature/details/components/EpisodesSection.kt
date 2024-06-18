@@ -98,7 +98,7 @@ fun EpisodeListGrid(episodesList: List<MediaDetails.Episode>, onEpisodeSelected:
         contentPadding = PaddingValues(horizontal = 58.dp, vertical = 12.dp),
         modifier = Modifier.height((83 * 2 + 8).dp)
     ) {
-        items(episodesList, key = { it.number }) { episode ->
+        items(episodesList) { episode -> // TODO :: Add key
             EpisodeCard(
                 episode = episode,
                 onEpisodeSelected = onEpisodeSelected
