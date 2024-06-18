@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -50,7 +51,6 @@ import com.edwin.sekai.ui.utils.getEpisodeInfo
 private const val CARD_MAX_HEIGHT = 234
 private const val CARD_ASPECT_RATIO = 2f / 3f
 private const val GRADIENT_START = 0.7f
-private const val GRADIENT_ALPHA = 0.8f
 private const val STAR_ICON_SIZE = 16
 private const val ICON_SPACING = 4
 
@@ -59,6 +59,7 @@ private const val ICON_SPACING = 4
 fun MediaCard(
     media: Media,
     palettes: Map<String, Material3Palette>,
+    relationType: String? = null,
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit = {}
 ) {
@@ -76,7 +77,8 @@ fun MediaCard(
     val gradientColors = remember(averageColor) {
         listOf(
             Color.Transparent,
-            averageColor.copy(alpha = GRADIENT_ALPHA)
+            closestPalette?.primary?.let { Color(android.graphics.Color.parseColor(it)) }
+                ?: averageColor
         )
     }
 
@@ -117,6 +119,15 @@ fun MediaCard(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(16.dp)
+            )
+
+            RelationTypeTag(
+                relationType = relationType,
+                backgroundColor = gradientColors[1],
+                textColor = textColor,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(4.dp)
             )
         }
     }
@@ -202,6 +213,26 @@ private fun ShowPopularity(popularity: Int?, startDate: Int?, textColor: Color) 
     )
 }
 
+@Composable
+fun RelationTypeTag(
+    relationType: String?,
+    backgroundColor: Color,
+    textColor: Color,
+    modifier: Modifier
+) {
+    if (relationType == null) return
+
+    Text(
+        text = relationType,
+        color = textColor,
+        style = MaterialTheme.typography.labelSmall,
+        modifier = modifier
+            .clip(RoundedCornerShape(CornerSize(4.dp)))
+            .background(backgroundColor)
+            .padding(2.dp)
+    )
+}
+
 @TvPreview
 @Composable
 fun MediaCardPreview(
@@ -211,6 +242,9 @@ fun MediaCardPreview(
     val palettes = loadMaterial3Palettes(context)
 
     SekaiTheme {
-        MediaCard(media = media, palettes = palettes)
+        MediaCard(
+            media = media,
+            palettes = palettes
+        )
     }
 }

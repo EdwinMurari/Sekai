@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -18,6 +19,8 @@ import androidx.tv.material3.Tab
 import androidx.tv.material3.TabRow
 import androidx.tv.material3.Text
 import com.edwin.sekai.ui.TvPreview
+import com.edwin.sekai.ui.designsystem.component.Material3Palette
+import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.browse.BrowseRoute
 import com.edwin.sekai.ui.feature.categories.CategoriesScreen
@@ -28,10 +31,12 @@ import com.edwin.sekai.ui.feature.search.SearchScreen
 fun HomeRoute(
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    palettes: Map<String, Material3Palette>
 ) {
     HomeScreen(
         selectedTab = viewModel.selectedTab,
+        palettes = palettes,
         onTabSelectionChange = viewModel::setTab,
         onMediaClick = onMediaClick,
         modifier = modifier
@@ -45,6 +50,7 @@ fun HomeRoute(
 @Composable
 fun HomeScreen(
     selectedTab: TabNavOption,
+    palettes: Map<String, Material3Palette>,
     onTabSelectionChange: (TabNavOption) -> Unit,
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -81,7 +87,8 @@ fun HomeScreen(
             TabNavOption.Home -> {
                 BrowseRoute(
                     modifier = contentModifier,
-                    onMediaClick = onMediaClick
+                    palettes = palettes,
+                    onMediaClick = onMediaClick,
                 )
             }
 
@@ -111,11 +118,15 @@ enum class TabNavOption(val label: String) {
 @Composable
 fun PreviewHome() {
     val (selectedTab, setSelectedTab) = remember { mutableStateOf(TabNavOption.Home) }
+    val context = LocalContext.current
+    val palettes = loadMaterial3Palettes(context)
+
     SekaiTheme {
         HomeScreen(
             selectedTab = selectedTab,
             onTabSelectionChange = setSelectedTab,
-            onMediaClick = {}
+            onMediaClick = {},
+            palettes = palettes
         )
     }
 }

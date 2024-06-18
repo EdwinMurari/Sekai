@@ -4,7 +4,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 
 fun NavHostController.navigateToStream(
-    mediaId: String,
+    mediaId: Int,
     episodeNumber: Int,
     navOptions: NavOptions? = null
 ) {

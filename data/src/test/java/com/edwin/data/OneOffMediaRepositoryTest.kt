@@ -2,13 +2,12 @@ package com.edwin.data
 
 import com.apollographql.apollo3.api.ApolloResponse
 import com.benasher44.uuid.Uuid
+import com.edwin.data.mapper.asNetworkModel
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
-import com.edwin.data.model.mapToNetworkMediaSeason
 import com.edwin.data.repository.OneOffMediaRepository
 import com.edwin.network.GetTrendingAndPopularQuery
 import com.edwin.network.MediaNetworkDataSource
-import com.edwin.network.fragment.AnimeFragment
 import com.edwin.network.fragment.MediaFragment
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -29,7 +28,7 @@ class OneOffMediaRepositoryTest {
 
     private val mediaSeason = MediaSeason.FALL
     private val seasonYear = 2024
-    private val networkMediaSeason = mapToNetworkMediaSeason(mediaSeason)
+    private val networkMediaSeason = mediaSeason.asNetworkModel()
 
     @Test
     fun `getTrendingAndPopularMedia - Success`() = runTest {
@@ -37,11 +36,8 @@ class OneOffMediaRepositoryTest {
         val mockMediaFragment = mockk<MediaFragment>(relaxed = true) {
             every { id } returns mockAnimeId
         }
-        val mockAnimeFragment = mockk<AnimeFragment>(relaxed = true) {
-            every { mediaFragment } returns mockMediaFragment
-        }
         val mockMedium = mockk<GetTrendingAndPopularQuery.Medium> {
-            every { animeFragment } returns mockAnimeFragment
+            every { mediaFragment } returns mockMediaFragment
         }
         val mockTrendingAnime = mockk<GetTrendingAndPopularQuery.TrendingAnimeThisSeason> {
             every { media } returns listOf(mockMedium)
@@ -95,7 +91,7 @@ class OneOffMediaRepositoryTest {
         flow.collect { response ->
             assertEquals(
                 errorMessage,
-                (response as? NetworkResponse.Failure)?.errors?.firstOrNull()?.message
+                (response as? NetworkResponse.Error)?.errors?.firstOrNull()?.message
             )
         }
 

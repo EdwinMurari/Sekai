@@ -22,7 +22,7 @@ class BrowseViewModel @Inject constructor(
     val uiState: StateFlow<BrowseScreenUiState> =
         getTrendingAnimeForCurrentSeasonUseCase().map { networkResponse ->
             when (networkResponse) {
-                is NetworkResponse.Failure -> BrowseScreenUiState.Error
+                is NetworkResponse.Error -> BrowseScreenUiState.Error
                 is NetworkResponse.Success -> BrowseScreenUiState.Success(networkResponse.data)
             }
         }.stateIn(

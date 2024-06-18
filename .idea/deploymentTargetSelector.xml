@@ -16,7 +16,7 @@
       <SelectionState runConfigName="mobile">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PreviewTest">
+      <SelectionState runConfigName="PreviewDetailsScreen">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

@@ -1,0 +1,27 @@
+fragment MediaFragment on Media {
+    id
+    title {
+        english
+        romaji
+        native
+    }
+    coverImage {
+        large
+        color
+    }
+    averageScore
+    popularity
+    startDate {
+        year
+    }
+    episodes
+    nextAiringEpisode {
+        episode
+        timeUntilAiring
+    }
+    duration
+    bannerImage
+    genres
+    description
+    format
+}
