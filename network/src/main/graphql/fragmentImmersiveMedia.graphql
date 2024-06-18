@@ -1,0 +1,6 @@
+fragment ImmersiveMedia on Media {
+    ...MediaFragment
+    bannerImage
+    genres
+    description
+}

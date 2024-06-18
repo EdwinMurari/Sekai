@@ -1,0 +1,8 @@
+fragment AnimeFragment on Media {
+    ...MediaFragment
+    episodes
+    nextAiringEpisode {
+        episode
+        timeUntilAiring
+    }
+}

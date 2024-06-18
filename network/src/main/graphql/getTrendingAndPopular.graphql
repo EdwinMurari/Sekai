@@ -1,7 +1,7 @@
 query GetTrendingAndPopular($season: MediaSeason!, $seasonYear: Int!) {
     trendingAnimeThisSeason: Page(page: 1, perPage: 10) {
         media(type: ANIME, format: TV, sort: TRENDING_DESC, season: $season, seasonYear: $seasonYear) {
-            ...AnimeFragment
+            ...ImmersiveMedia
         }
     }
     trendingMoviesThisSeason: Page(page: 1, perPage: 10) {
@@ -59,39 +59,4 @@ query GetTrendingAndPopular($season: MediaSeason!, $seasonYear: Int!) {
             ...MovieFragment
         }
     }
-}
-
-fragment MediaFragment on Media {
-    id
-    title {
-        english
-        romaji
-        native
-    }
-    coverImage {
-        large
-        color
-    }
-    bannerImage
-    genres
-    averageScore
-    popularity
-    startDate {
-        year
-    }
-    description
-}
-
-fragment AnimeFragment on Media {
-    ...MediaFragment
-    episodes
-    nextAiringEpisode {
-        episode
-        timeUntilAiring
-    }
-}
-
-fragment MovieFragment on Media {
-    ...MediaFragment
-    duration
 }
