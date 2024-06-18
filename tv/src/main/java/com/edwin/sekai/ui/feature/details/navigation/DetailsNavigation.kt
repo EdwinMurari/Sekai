@@ -7,6 +7,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.feature.details.DetailsRoute
 import java.net.URLDecoder
 import kotlin.text.Charsets.UTF_8
@@ -37,7 +38,9 @@ fun NavHostController.navigateToDetails(
 }
 
 fun NavGraphBuilder.detailsScreen(
+    palettes: Map<String, Material3Palette>,
     onClickWatch: (Int, Int) -> Unit,
+    onMediaClick: (Int) -> Unit
 ) {
     composable(
         route = MEDIA_ROUTE,
@@ -49,6 +52,10 @@ fun NavGraphBuilder.detailsScreen(
             },
         ),
     ) {
-        DetailsRoute(onClickWatch = onClickWatch)
+        DetailsRoute(
+            palettes = palettes,
+            onClickWatch = onClickWatch,
+            onMediaClick = onMediaClick
+        )
     }
 }

@@ -33,16 +33,23 @@ private const val CAROUSEL_CONTENT_TYPE = "Carousel"
 @Composable
 fun BrowseRoute(
     onMediaClick: (Int) -> Unit,
+    palettes: Map<String, Material3Palette>,
     modifier: Modifier = Modifier,
     viewModel: BrowseViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    BrowseScreen(uiState = uiState, onMediaClick = onMediaClick, modifier = modifier)
+    BrowseScreen(
+        uiState = uiState,
+        palettes = palettes,
+        onMediaClick = onMediaClick,
+        modifier = modifier
+    )
 }
 
 @Composable
 fun BrowseScreen(
     uiState: BrowseViewModel.BrowseScreenUiState,
+    palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -51,6 +58,7 @@ fun BrowseScreen(
             MediaCollections(
                 modifier = modifier,
                 collection = uiState.collection,
+                palettes = palettes,
                 onMediaClick = onMediaClick
             )
         }
@@ -74,11 +82,9 @@ fun BrowseScreen(
 fun MediaCollections(
     modifier: Modifier,
     collection: MediaCollections,
+    palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit
 ) {
-    val context = LocalContext.current
-    val palettes = loadMaterial3Palettes(context)
-
     TvLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -198,10 +204,14 @@ private fun TvLazyListScope.carouselSection(
 @TvPreview
 @Composable
 fun PreviewBrowse(@PreviewParameter(MediaCollectionPreviewParameterProvider::class) mediaCollections: MediaCollections) {
+    val context = LocalContext.current
+    val palettes = loadMaterial3Palettes(context)
+
     SekaiTheme {
         BrowseScreen(
             uiState = BrowseViewModel.BrowseScreenUiState.Success(mediaCollections),
-            onMediaClick = {}
+            onMediaClick = {},
+            palettes = palettes
         )
     }
 }

@@ -24,16 +24,27 @@ import androidx.compose.ui.unit.sp
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyHorizontalGrid
 import androidx.tv.foundation.lazy.grid.items
+import androidx.tv.foundation.lazy.list.TvLazyListScope
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Tab
 import androidx.tv.material3.TabRow
 import androidx.tv.material3.Text
 import androidx.tv.material3.WideClassicCard
+import com.edwin.data.model.MediaDetails
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.designsystem.component.PreviewAbleSubComposeImage
 import java.io.Serializable
 import java.util.Locale
+
+fun TvLazyListScope.episodesSection(mediaDetails: MediaDetails, onClickWatch: (Int) -> Unit) {
+    if (mediaDetails is MediaDetails.TvSeries) {
+        sectionHeader("Episodes")
+        item {
+            EpisodesSection(onEpisodeSelected = onClickWatch)
+        }
+    }
+}
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable

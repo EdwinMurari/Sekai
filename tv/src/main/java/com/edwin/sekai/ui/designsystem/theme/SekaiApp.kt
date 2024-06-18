@@ -1,11 +1,13 @@
 package com.edwin.sekai.ui.designsystem.theme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
 import com.edwin.sekai.ui.designsystem.theme.ScreenArgumentKeys.DETAILS_ID_ARG
 import com.edwin.sekai.ui.designsystem.theme.ScreenArgumentKeys.EPISODE_NUMBER_ARG
 import com.edwin.sekai.ui.feature.details.navigation.detailsScreen
@@ -19,10 +21,20 @@ import com.edwin.sekai.ui.feature.stream.navigation.navigateToStream
 fun SekaiApp() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = HOME_ROUTE) {
-        homeRoute(onMediaClick = navController::navigateToDetails)
+    val context = LocalContext.current
+    val palettes = loadMaterial3Palettes(context)
 
-        detailsScreen(onClickWatch = navController::navigateToStream)
+    NavHost(navController = navController, startDestination = HOME_ROUTE) {
+        homeRoute(
+            onMediaClick = navController::navigateToDetails,
+            palettes = palettes
+        )
+
+        detailsScreen(
+            palettes = palettes,
+            onClickWatch = navController::navigateToStream,
+            onMediaClick = navController::navigateToDetails
+        )
 
         composable(
             route = Screen.WatchEpisode().route,

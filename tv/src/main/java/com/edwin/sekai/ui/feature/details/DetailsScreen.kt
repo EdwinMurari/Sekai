@@ -3,170 +3,149 @@ package com.edwin.sekai.ui.feature.details
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.foundation.lazy.list.TvLazyColumn
-import androidx.tv.foundation.lazy.list.TvLazyListScope
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Text
-import com.edwin.data.model.Media
+import com.edwin.data.model.MediaDetails
 import com.edwin.sekai.ui.designsystem.component.GradientBackdrop
-import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
-import com.edwin.sekai.ui.designsystem.previewprovider.PreviewParameterData
+import com.edwin.sekai.ui.designsystem.component.Loading
+import com.edwin.sekai.ui.designsystem.component.Material3Palette
+import com.edwin.sekai.ui.designsystem.component.SomethingWentWrong
+import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
+import com.edwin.sekai.ui.designsystem.previewprovider.MediaDetailsPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
-import com.edwin.sekai.ui.feature.details.components.EpisodesSection
 import com.edwin.sekai.ui.feature.details.components.MediaDetailsSection
+import com.edwin.sekai.ui.feature.details.components.episodesSection
+import com.edwin.sekai.ui.feature.details.components.recommendationsSection
+import com.edwin.sekai.ui.feature.details.components.relationsSection
 
 @Composable
 fun DetailsRoute(
+    palettes: Map<String, Material3Palette>,
     onClickWatch: (Int, Int) -> Unit,
+    onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DetailsViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DetailsScreen(
-        media = PreviewParameterData.tvSeriesList.first(), // TODO :: Get the real data
-        onClickWatch = onClickWatch
+        uiState = uiState,
+        palettes = palettes,
+        onClickWatch = onClickWatch,
+        onMediaClick = onMediaClick,
+        modifier = modifier
     )
+}
+
+@Composable
+fun DetailsScreen(
+    uiState: DetailsViewModel.DetailsUiState,
+    palettes: Map<String, Material3Palette>,
+    onClickWatch: (Int, Int) -> Unit,
+    onMediaClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (uiState) {
+        DetailsViewModel.DetailsUiState.Error -> {
+            SomethingWentWrong(
+                modifier = modifier,
+                text = "Something went wrong",
+                buttonText = "Retry",
+                onAction = {}
+            )
+        }
+
+        DetailsViewModel.DetailsUiState.Loading -> {
+            Loading(modifier = modifier)
+        }
+
+        is DetailsViewModel.DetailsUiState.Success -> {
+            Content(
+                mediaDetails = uiState.mediaDetails,
+                palettes = palettes,
+                onClickWatch = onClickWatch,
+                onMediaClick = onMediaClick,
+                modifier = modifier
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun DetailsScreen(
-    media: Media,
+fun Content(
+    mediaDetails: MediaDetails,
+    palettes: Map<String, Material3Palette>,
     onClickWatch: (Int, Int) -> Unit,
+    onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.background(color = MaterialTheme.colorScheme.surface)
     ) {
         GradientBackdrop(
-            imageUrl = media.bannerImage
+            imageUrl = mediaDetails.media.bannerImage
         )
 
-        Content(
-            media = media,
-            onClickWatch = onClickWatch
-        )
-    }
-}
-
-@Composable
-fun Content(
-    media: Media,
-    onClickWatch: (Int, Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TvLazyColumn(
-        contentPadding = PaddingValues(
-            top = 100.dp,
-            bottom = 58.dp,
-            start = 48.dp,
-            end = 48.dp
-        ),
-        modifier = modifier,
-    ) {
-        item {
-            MediaDetailsSection(
-                media = media,
-                onClickWatch = onClickWatch
-            )
-        }
-
-        sectionHeader("Episodes")
-        item {
-            EpisodesSection(onEpisodeSelected = { onClickWatch(media.id, it) })
-        }
-
-        /*item {
-            MoviesRow(
-                title = StringConstants
-                    .Composable
-                    .movieDetailsScreenSimilarTo(movieDetails.name),
-                titleStyle = MaterialTheme.typography.titleMedium,
-                movies = movieDetails.similarMovies,
-                onMovieClick = refreshScreenWithNewMovie
-            )
-        }
-
-        item {
-            MovieReviews(
-                modifier = Modifier.padding(top = childPadding.top),
-                reviewsAndRatings = movieDetails.reviewsAndRatings
-            )
-        }
-
-        item {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = childPadding.start)
-                    .padding(BottomDividerPadding)
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .alpha(0.15f)
-                    .background(MaterialTheme.colorScheme.onSurface)
-            )
-        }
-
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = childPadding.start),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val itemModifier = Modifier.width(192.dp)
-
-                TitleValueText(
-                    modifier = itemModifier,
-                    title = stringResource(R.string.status),
-                    value = movieDetails.status
-                )
-                TitleValueText(
-                    modifier = itemModifier,
-                    title = stringResource(R.string.original_language),
-                    value = movieDetails.originalLanguage
-                )
-                TitleValueText(
-                    modifier = itemModifier,
-                    title = stringResource(R.string.budget),
-                    value = movieDetails.budget
-                )
-                TitleValueText(
-                    modifier = itemModifier,
-                    title = stringResource(R.string.revenue),
-                    value = movieDetails.revenue
+        TvLazyColumn(
+            contentPadding = PaddingValues(
+                top = 100.dp,
+                bottom = 58.dp,
+                start = 48.dp,
+                end = 48.dp
+            ),
+            modifier = modifier,
+        ) {
+            item {
+                MediaDetailsSection(
+                    media = mediaDetails.media,
+                    onClickWatch = onClickWatch
                 )
             }
-        }*/
-    }
-}
 
-@OptIn(ExperimentalTvMaterial3Api::class)
-private fun TvLazyListScope.sectionHeader(text: String) {
-    item(contentType = "SectionHeader", key = "${text}SectionHeader") {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .padding(horizontal = 58.dp)
-        )
+            episodesSection(
+                mediaDetails = mediaDetails,
+                onClickWatch = { onClickWatch(mediaDetails.media.id, it) }
+            )
+
+            relationsSection(
+                mediaDetails = mediaDetails,
+                palettes = palettes,
+                onMediaClick = onMediaClick
+            )
+
+            recommendationsSection(
+                mediaDetails = mediaDetails,
+                palettes = palettes,
+                onMediaClick = onMediaClick
+            )
+        }
     }
 }
 
 @Preview
 @Composable
 fun PreviewDetailsScreen(
-    @PreviewParameter(MediaPreviewParameterProvider::class) media: Media
+    @PreviewParameter(MediaDetailsPreviewParameterProvider::class) mediaDetails: MediaDetails
 ) {
+    val context = LocalContext.current
+    val palettes = loadMaterial3Palettes(context)
+
     SekaiTheme {
-        DetailsScreen(media, onClickWatch = { _, _ -> })
+        DetailsScreen(
+            uiState = DetailsViewModel.DetailsUiState.Success(mediaDetails),
+            onClickWatch = { _, _ -> },
+            onMediaClick = {},
+            palettes = palettes
+        )
     }
 }

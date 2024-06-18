@@ -24,7 +24,7 @@ class DetailsViewModel @Inject constructor(
 
     private val mediaId = mediaDetailsArgs.mediaId
 
-    val mediaDetailsUiState: StateFlow<DetailsUiState> =
+    val uiState: StateFlow<DetailsUiState> =
         getMediaDetailsByIdUseCase(mediaId).map { networkResponse ->
             when (networkResponse) {
                 is NetworkResponse.Error -> DetailsUiState.Error
