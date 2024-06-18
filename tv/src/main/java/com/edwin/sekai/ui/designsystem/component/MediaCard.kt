@@ -5,7 +5,6 @@ package com.edwin.sekai.ui.designsystem.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,13 +43,16 @@ import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.utils.MediaTitle
+import com.edwin.sekai.ui.utils.Popularity
+import com.edwin.sekai.ui.utils.StarRating
+import com.edwin.sekai.ui.utils.StartYear
 import com.edwin.sekai.ui.utils.formatMovieDuration
 import com.edwin.sekai.ui.utils.getEpisodeInfo
 
 // Constants
 private const val CARD_MAX_HEIGHT = 234
 private const val CARD_ASPECT_RATIO = 2f / 3f
-private const val GRADIENT_START = 0.7f
+private const val GRADIENT_START = 1f
 private const val STAR_ICON_SIZE = 16
 private const val ICON_SPACING = 4
 
@@ -59,8 +61,8 @@ private const val ICON_SPACING = 4
 fun MediaCard(
     media: Media,
     palettes: Map<String, Material3Palette>,
-    relationType: String? = null,
     modifier: Modifier = Modifier,
+    relationType: String? = null,
     onClick: (Int) -> Unit = {}
 ) {
     val averageColor = remember {
@@ -75,10 +77,15 @@ fun MediaCard(
         } ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White
     }
     val gradientColors = remember(averageColor) {
-        listOf(
-            Color.Transparent,
-            closestPalette?.primary?.let { Color(android.graphics.Color.parseColor(it)) }
-                ?: averageColor
+        arrayOf(
+            0.5f to Color.Transparent,
+            GRADIENT_START to (closestPalette?.primary?.let {
+                Color(
+                    android.graphics.Color.parseColor(
+                        it
+                    )
+                )
+            } ?: averageColor)
         )
     }
 
@@ -104,12 +111,7 @@ fun MediaCard(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = gradientColors,
-                            startY = GRADIENT_START
-                        )
-                    )
+                    .background(Brush.verticalGradient(colorStops = gradientColors))
             )
 
             // Media Information
@@ -123,7 +125,7 @@ fun MediaCard(
 
             RelationTypeTag(
                 relationType = relationType,
-                backgroundColor = gradientColors[1],
+                backgroundColor = averageColor,
                 textColor = textColor,
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -159,11 +161,13 @@ private fun MediaInfo(
         Spacer(modifier = Modifier.height(4.dp))
 
         // Rating or Popularity
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            media.averageScore?.let { averageScore ->
-                ShowStarRating(averageScore, media.startDate, textColor)
-            } ?: ShowPopularity(media.popularity, media.startDate, textColor)
-        }
+        DotSeparatedRow(
+            contents = arrayOf(
+                media.averageScore?.let { { StarRating(it) } }
+                    ?: { Popularity(media.popularity) },
+                { StartYear(media.startDate) }
+            )
+        )
     }
 }
 
