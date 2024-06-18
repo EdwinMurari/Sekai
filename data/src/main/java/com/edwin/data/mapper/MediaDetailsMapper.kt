@@ -39,9 +39,8 @@ fun MediaDetailsFragment.StreamingEpisode.asExternalModel() = MediaDetails.Episo
 
 fun MediaDetailsFragment.Edge.asExternalModel() = MediaDetails.MediaRelation(
     relationType = relationType?.name,
-    node = node?.mediaFragment?.asExternalModel()
+    media = node?.mediaFragment?.asExternalModel()
 )
 
-private fun MediaDetailsFragment.Edge1.asExternalModel() = MediaDetails.MediaRecommendation(
-    media = node?.media?.mediaFragment?.asExternalModel()
-)
+private fun MediaDetailsFragment.Edge1.asExternalModel() =
+    node?.media?.mediaFragment?.asExternalModel()

@@ -4,13 +4,13 @@ sealed class MediaDetails {
     abstract val media: Media
     abstract val fullTitle: Title?
     abstract val relations: List<MediaRelation>?
-    abstract val recommendations: List<MediaRecommendation>?
+    abstract val recommendations: List<Media>?
 
     data class TvSeries(
         override val media: Media.TvSeries,
         override val fullTitle: Title?,
         override val relations: List<MediaRelation>?,
-        override val recommendations: List<MediaRecommendation>?,
+        override val recommendations: List<Media>?,
         val episodes: List<Episode>?
     ) : MediaDetails()
 
@@ -18,7 +18,7 @@ sealed class MediaDetails {
         override val media: Media.Movie,
         override val fullTitle: Title?,
         override val relations: List<MediaRelation>?,
-        override val recommendations: List<MediaRecommendation>?
+        override val recommendations: List<Media>?
     ) : MediaDetails()
 
     data class Title(
@@ -34,10 +34,6 @@ sealed class MediaDetails {
 
     data class MediaRelation(
         val relationType: String?,
-        val node: Media?
-    )
-
-    data class MediaRecommendation(
         val media: Media?
     )
 }
