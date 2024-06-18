@@ -47,4 +47,4 @@ fun MediaDetailsFragment.Edge.asExternalModel() =
     }
 
 private fun MediaDetailsFragment.Edge1.asExternalModel() =
-    node?.media?.mediaFragment?.asExternalModel()
+    node?.mediaRecommendation?.mediaFragment?.asExternalModel()

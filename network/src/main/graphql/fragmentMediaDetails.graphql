@@ -16,7 +16,7 @@ fragment MediaDetailsFragment on Media {
     recommendations(sort: RATING_DESC) {
         edges {
             node {
-                media {
+                mediaRecommendation {
                     ...MediaFragment
                 }
             }
