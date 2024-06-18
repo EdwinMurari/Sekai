@@ -28,8 +28,11 @@ sealed class MediaDetails {
     )
 
     data class Episode(
-        val title: String?,
-        val thumbnail: String?
+        val number: Int,
+        val title: String? = null,
+        val thumbnail: String? = null,
+        val filler: Boolean = false,
+        val duration: Int? = null,
     )
 
     data class MediaRelation(

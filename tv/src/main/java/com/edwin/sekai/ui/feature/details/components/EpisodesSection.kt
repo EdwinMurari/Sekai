@@ -34,26 +34,28 @@ import androidx.tv.material3.WideClassicCard
 import com.edwin.data.model.MediaDetails
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.designsystem.component.PreviewAbleSubComposeImage
-import java.io.Serializable
 import java.util.Locale
 
 fun TvLazyListScope.episodesSection(mediaDetails: MediaDetails, onClickWatch: (Int) -> Unit) {
-    if (mediaDetails is MediaDetails.TvSeries) {
+    if (mediaDetails is MediaDetails.TvSeries && !mediaDetails.episodes.isNullOrEmpty()) {
         sectionHeader("Episodes")
         item {
-            EpisodesSection(onEpisodeSelected = onClickWatch)
+            EpisodesSection(mediaDetails.episodes!!, onEpisodeSelected = onClickWatch)
         }
     }
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun EpisodesSection(modifier: Modifier = Modifier, onEpisodeSelected: (Int) -> Unit) {
-    val episodes = listOf<Episode>()
-    if (episodes.size > 50) {
+fun EpisodesSection(
+    episodesList: List<MediaDetails.Episode>,
+    onEpisodeSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (episodesList.size > 50) {
         Column(modifier = modifier) {
             val chunkSize = 26
-            val chunkedEpisodes = episodes.chunked(chunkSize)
+            val chunkedEpisodes = episodesList.chunked(chunkSize)
             var selectedTabIndex by remember { mutableIntStateOf(0) }
             TabRow(
                 modifier = Modifier.padding(horizontal = 58.dp, vertical = 12.dp),
@@ -81,14 +83,14 @@ fun EpisodesSection(modifier: Modifier = Modifier, onEpisodeSelected: (Int) -> U
         }
     } else {
         EpisodeListGrid(
-            episodesList = episodes,
+            episodesList = episodesList,
             onEpisodeSelected = onEpisodeSelected
         )
     }
 }
 
 @Composable
-fun EpisodeListGrid(episodesList: List<Episode>, onEpisodeSelected: (Int) -> Unit) {
+fun EpisodeListGrid(episodesList: List<MediaDetails.Episode>, onEpisodeSelected: (Int) -> Unit) {
     TvLazyHorizontalGrid(
         rows = TvGridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -107,13 +109,13 @@ fun EpisodeListGrid(episodesList: List<Episode>, onEpisodeSelected: (Int) -> Uni
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun EpisodeCard(episode: Episode, onEpisodeSelected: (Int) -> Unit) {
+fun EpisodeCard(episode: MediaDetails.Episode, onEpisodeSelected: (Int) -> Unit) {
     WideClassicCard(
         onClick = { onEpisodeSelected(episode.number) },
         image = {
             PreviewAbleSubComposeImage(
                 previewImage = painterResource(id = R.drawable.naruto_ep1),
-                imageUrl = episode.thumb,
+                imageUrl = episode.thumbnail,
                 contentScale = ContentScale.Crop,
                 contentDescription = "${episode.number} thumbnail",
                 modifier = Modifier
@@ -161,11 +163,3 @@ fun EpisodeCard(episode: Episode, onEpisodeSelected: (Int) -> Unit) {
         }
     )
 }
-
-data class Episode(
-    val number: Int,
-    val title: String? = null,
-    val thumb: String? = null,
-    val filler: Boolean = false,
-    val duration: Int? = null
-) : Serializable

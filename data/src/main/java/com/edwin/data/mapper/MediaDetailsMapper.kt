@@ -33,6 +33,7 @@ fun MediaFragment.Title.asExternalModel() = MediaDetails.Title(
 )
 
 fun MediaDetailsFragment.StreamingEpisode.asExternalModel() = MediaDetails.Episode(
+    number = 0, // TODO :: Get the episode data from another source get fill all the details
     title = title,
     thumbnail = thumbnail
 )
