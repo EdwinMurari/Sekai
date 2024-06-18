@@ -1,72 +1,79 @@
 package com.edwin.data.model
 
 import com.edwin.network.GetTrendingAndPopularQuery
-import com.edwin.network.fragment.AnimeFragment
+import com.edwin.network.fragment.MediaDetailsFragment
 import com.edwin.network.fragment.MediaFragment
-import com.edwin.network.fragment.MovieFragment
 import com.edwin.network.type.MediaSeason as NetworkMediaSeason
 
 fun GetTrendingAndPopularQuery.Data.asExternalModel() = MediaCollections(
-    trendingTvSeries = trendingAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+    trendingTvSeries = trendingAnimeThisSeason?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    trendingMovies = trendingMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+    trendingMovies = trendingMoviesThisSeason?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    popularTvSeries = popularAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+    popularTvSeries = popularAnimeThisSeason?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    topTvSeries = topAnimeThisSeason?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+    topTvSeries = topAnimeThisSeason?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    trendingTvSeriesAllTime = trendingAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+    trendingTvSeriesAllTime = trendingAnimeAllTime?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    popularTvSeriesAllTime = popularAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+    popularTvSeriesAllTime = popularAnimeAllTime?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    topTvSeriesAllTime = topAnimeAllTime?.media?.mapNotNull { it?.animeFragment?.asExternalModel() }
+    topTvSeriesAllTime = topAnimeAllTime?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    popularMovies = popularMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+    popularMovies = popularMoviesThisSeason?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    topMovies = topMoviesThisSeason?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+    topMovies = topMoviesThisSeason?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    trendingMoviesAllTime = trendingMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+    trendingMoviesAllTime = trendingMoviesAllTime?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    popularMoviesAllTime = popularMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+    popularMoviesAllTime = popularMoviesAllTime?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() },
-    topMoviesAllTime = topMoviesAllTime?.media?.mapNotNull { it?.movieFragment?.asExternalModel() }
+    topMoviesAllTime = topMoviesAllTime?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
         ?.takeIf { it.isNotEmpty() }
 )
 
-fun AnimeFragment.asExternalModel() = Media.TvSeries(
-    id = mediaFragment.id,
-    title = mediaFragment.getTitle(),
-    description = mediaFragment.description,
-    coverImage = mediaFragment.getCoverImage(),
-    bannerImage = mediaFragment.getBannerImage(),
-    genres = mediaFragment.getGenres(),
-    averageScore = mediaFragment.averageScore,
-    popularity = mediaFragment.popularity,
-    startDate = mediaFragment.startDate?.year,
-    averageColorHex = mediaFragment.getCoverAverageHex(),
+fun MediaFragment.asExternalModel() = Media(
+    id = id,
+    title = getTitle(),
+    description = description,
+    coverImage = getCoverImage(),
+    bannerImage = getBannerImage(),
+    genres = getGenres(),
+    averageScore = averageScore,
+    popularity = popularity,
+    startDate = startDate?.year,
+    averageColorHex = getCoverAverageHex(),
     episodesCount = episodes,
-    nextAiringEpisode = nextAiringEpisode?.asExternalModel()
+    nextAiringEpisode = nextAiringEpisode.asExternalModel(),
+    duration = duration
 )
 
-private fun AnimeFragment.NextAiringEpisode?.asExternalModel() = this?.let {
-    Media.TvSeries.NextAiringEpisode(
+private fun MediaFragment.NextAiringEpisode?.asExternalModel() = this?.let {
+    Media.NextAiringEpisode(
         episode = it.episode,
         timeUntilAiring = it.timeUntilAiring
     )
 }
 
-fun MovieFragment.asExternalModel() = Media.Movie(
-    id = mediaFragment.id,
-    title = mediaFragment.getTitle(),
-    description = mediaFragment.description,
-    coverImage = mediaFragment.getCoverImage(),
-    bannerImage = mediaFragment.getBannerImage(),
-    genres = mediaFragment.getGenres(),
-    averageScore = mediaFragment.averageScore,
-    popularity = mediaFragment.popularity,
-    startDate = mediaFragment.startDate?.year,
-    averageColorHex = mediaFragment.getCoverAverageHex(),
-    duration = duration
+fun MediaDetailsFragment.asExternalModel() = MediaDetails(
+    media = mediaFragment.asExternalModel(),
+    episodes = streamingEpisodes?.mapNotNull { it?.asExternalModel() },
+    relations = relations?.edges?.mapNotNull { it?.asExternalModel() },
+    recommendations = recommendations?.edges?.mapNotNull { it?.asExternalModel() }
+)
+
+fun MediaDetailsFragment.StreamingEpisode.asExternalModel() = MediaDetails.Episode(
+    title = title,
+    thumbnail = thumbnail
+)
+
+fun MediaDetailsFragment.Edge.asExternalModel() = MediaDetails.MediaRelation(
+    relationType = relationType?.name,
+    node = node?.mediaFragment?.asExternalModel()
+)
+
+private fun MediaDetailsFragment.Edge1.asExternalModel()= MediaDetails.MediaRecommendation(
+    media = node?.media?.mediaFragment?.asExternalModel()
 )
 
 private fun MediaFragment.getTitle() = title?.english ?: title?.romaji ?: title?.native

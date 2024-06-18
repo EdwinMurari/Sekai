@@ -9,6 +9,7 @@ import com.edwin.network.MediaNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class OneOffMediaRepository @Inject constructor(
@@ -36,4 +37,17 @@ internal class OneOffMediaRepository @Inject constructor(
     }.catch { exception ->
         emit(NetworkResponse.Failure(listOf(Error(exception.message))))
     }
+
+    override fun getMediaById(mediaId: Int) =
+        networkDataSource.getMediaById(mediaId).map { response ->
+            if (response.hasErrors()) {
+                return@map NetworkResponse.Failure(
+                    response.errors?.map { Error(it.message) } ?: listOf(Error())
+                )
+            } else {
+                return@map response.data?.Media?.mediaDetailsFragment?.let { mediaDetailsFragment ->
+                    NetworkResponse.Success(mediaDetailsFragment.asExternalModel())
+                } ?: NetworkResponse.Failure(listOf(Error()))
+            }
+        }
 }

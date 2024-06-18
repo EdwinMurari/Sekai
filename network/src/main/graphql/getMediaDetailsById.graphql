@@ -1,0 +1,5 @@
+query GetMediaDetailsById($mediaId: Int!) {
+    Media(id: $mediaId) {
+        ...MediaDetailsFragment
+    }
+}

@@ -14,4 +14,13 @@ fragment MediaFragment on Media {
     startDate {
         year
     }
+    episodes
+    nextAiringEpisode {
+        episode
+        timeUntilAiring
+    }
+    duration
+    bannerImage
+    genres
+    description
 }

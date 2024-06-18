@@ -1,6 +1,8 @@
 package com.edwin.network.apollo
 
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.ApolloRequest
+import com.edwin.network.GetMediaDetailsByIdQuery
 import com.edwin.network.GetTrendingAndPopularQuery
 import com.edwin.network.MediaNetworkDataSource
 import com.edwin.network.type.MediaSeason
@@ -26,4 +28,7 @@ internal class AniListMediaNetwork @Inject constructor(
             )
         ).execute()
     }
+
+    override fun getMediaById(mediaId: Int) =
+        apolloClient.executeAsFlow(ApolloRequest.Builder(GetMediaDetailsByIdQuery(mediaId)).build())
 }

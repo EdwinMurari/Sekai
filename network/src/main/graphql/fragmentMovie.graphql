@@ -1,4 +1,0 @@
-fragment MovieFragment on Media {
-    ...MediaFragment
-    duration
-}
