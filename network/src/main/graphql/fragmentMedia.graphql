@@ -23,4 +23,5 @@ fragment MediaFragment on Media {
     bannerImage
     genres
     description
+    format
 }

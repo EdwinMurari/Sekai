@@ -3,6 +3,7 @@ package com.edwin.data.model
 import com.edwin.network.GetTrendingAndPopularQuery
 import com.edwin.network.fragment.MediaDetailsFragment
 import com.edwin.network.fragment.MediaFragment
+import com.edwin.network.type.MediaFormat as NetworkMediaFormat
 import com.edwin.network.type.MediaSeason as NetworkMediaSeason
 
 fun GetTrendingAndPopularQuery.Data.asExternalModel() = MediaCollections(
@@ -34,6 +35,7 @@ fun GetTrendingAndPopularQuery.Data.asExternalModel() = MediaCollections(
 
 fun MediaFragment.asExternalModel() = Media(
     id = id,
+    mediaFormat = format?.asExternalModel(),
     title = getTitle(),
     description = description,
     coverImage = getCoverImage(),
@@ -47,6 +49,20 @@ fun MediaFragment.asExternalModel() = Media(
     nextAiringEpisode = nextAiringEpisode.asExternalModel(),
     duration = duration
 )
+
+private fun NetworkMediaFormat.asExternalModel() = when (this) {
+    NetworkMediaFormat.TV -> MediaFormat.TV
+    NetworkMediaFormat.TV_SHORT -> MediaFormat.TV_SHORT
+    NetworkMediaFormat.MOVIE -> MediaFormat.MOVIE
+    NetworkMediaFormat.SPECIAL -> MediaFormat.SPECIAL
+    NetworkMediaFormat.OVA -> MediaFormat.OVA
+    NetworkMediaFormat.ONA -> MediaFormat.ONA
+    NetworkMediaFormat.MUSIC -> MediaFormat.MUSIC
+    NetworkMediaFormat.MANGA -> MediaFormat.MANGA
+    NetworkMediaFormat.NOVEL -> MediaFormat.NOVEL
+    NetworkMediaFormat.ONE_SHOT -> MediaFormat.ONE_SHOT
+    else -> null
+}
 
 private fun MediaFragment.NextAiringEpisode?.asExternalModel() = this?.let {
     Media.NextAiringEpisode(
@@ -72,7 +88,7 @@ fun MediaDetailsFragment.Edge.asExternalModel() = MediaDetails.MediaRelation(
     node = node?.mediaFragment?.asExternalModel()
 )
 
-private fun MediaDetailsFragment.Edge1.asExternalModel()= MediaDetails.MediaRecommendation(
+private fun MediaDetailsFragment.Edge1.asExternalModel() = MediaDetails.MediaRecommendation(
     media = node?.media?.mediaFragment?.asExternalModel()
 )
 

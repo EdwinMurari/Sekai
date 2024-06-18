@@ -17,6 +17,7 @@ data class MediaCollections(
 
 data class Media(
     val id: Int,
+    val mediaFormat: MediaFormat?,
     val title: String?,
     val description: String?,
     val coverImage: String?,
