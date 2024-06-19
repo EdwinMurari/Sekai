@@ -5,21 +5,16 @@ package com.edwin.sekai.ui.designsystem.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,38 +24,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Icon
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.ProvideTextStyle
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
+import com.edwin.sekai.ui.utils.MediaContentInfo
+import com.edwin.sekai.ui.utils.MediaMetaData
 import com.edwin.sekai.ui.utils.MediaTitle
-import com.edwin.sekai.ui.utils.formatMovieDuration
-import com.edwin.sekai.ui.utils.getEpisodeInfo
 
 // Constants
-private const val CARD_MAX_HEIGHT = 234
+private const val CARD_HEIGHT = 234
 private const val CARD_ASPECT_RATIO = 2f / 3f
-private const val GRADIENT_START = 0.7f
-private const val STAR_ICON_SIZE = 16
-private const val ICON_SPACING = 4
+private const val GRADIENT_START = 1f
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaCard(
     media: Media,
     palettes: Map<String, Material3Palette>,
-    relationType: String? = null,
     modifier: Modifier = Modifier,
+    relationType: String? = null,
     onClick: (Int) -> Unit = {}
 ) {
     val averageColor = remember {
@@ -69,152 +61,97 @@ fun MediaCard(
     val closestPalette = remember(averageColor, palettes) {
         findClosestPalette(averageColor, palettes)
     }
-    val textColor = remember(closestPalette) {
+    val contentColor = remember(closestPalette) {
         closestPalette?.let {
             Color(android.graphics.Color.parseColor(it.onPrimary))
         } ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White
     }
+    val primaryColor = remember(closestPalette) {
+        (closestPalette?.primary?.let { Color(android.graphics.Color.parseColor(it)) }
+            ?: averageColor)
+    }
     val gradientColors = remember(averageColor) {
-        listOf(
-            Color.Transparent,
-            closestPalette?.primary?.let { Color(android.graphics.Color.parseColor(it)) }
-                ?: averageColor
+        arrayOf(
+            0.5f to Color.Transparent,
+            GRADIENT_START to primaryColor
         )
     }
 
     Card(
         onClick = { onClick(media.id) },
         modifier = modifier
-            .heightIn(max = CARD_MAX_HEIGHT.dp)
+            .heightIn(max = CARD_HEIGHT.dp)
             .aspectRatio(CARD_ASPECT_RATIO)
     ) {
-        Box {
-            // Background Image
-            PreviewAbleSubComposeImage(
-                imageUrl = media.coverImage,
-                previewImage = painterResource(id = R.drawable.naruto),
-                contentDescription = "${media.title} cover image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .fillMaxSize()
-            )
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            Box {
+                MediaCoverImage(
+                    imageUrl = media.coverImage,
+                    contentDescription = "${media.title} cover image"
+                )
 
-            // Gradient Overlay
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = gradientColors,
-                            startY = GRADIENT_START
-                        )
-                    )
-            )
+                GradientOverlay(gradientColors)
 
-            // Media Information
-            MediaInfo(
-                media = media,
-                textColor = textColor,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-            )
+                MediaInfo(
+                    media = media,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
+                )
 
-            RelationTypeTag(
-                relationType = relationType,
-                backgroundColor = gradientColors[1],
-                textColor = textColor,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(4.dp)
-            )
+                RelationTypeTag(
+                    relationType = relationType,
+                    backgroundColor = primaryColor,
+                    textColor = contentColor,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp)
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun GradientOverlay(gradientColors: Array<Pair<Float, Color>>) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(colorStops = gradientColors))
+    )
+}
+
+@Composable
+private fun MediaCoverImage(imageUrl: String?, contentDescription: String) {
+    PreviewAbleSubComposeImage(
+        imageUrl = imageUrl,
+        previewImage = painterResource(id = R.drawable.naruto),
+        contentDescription = contentDescription,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .fillMaxSize()
+    )
 }
 
 @Composable
 private fun MediaInfo(
     media: Media,
-    textColor: Color,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        // Episodes/Duration
-        Text(
-            text = when (media) {
-                is Media.TvSeries -> getEpisodeInfo(media)
-                is Media.Movie -> formatMovieDuration(media.duration)
-            },
-            style = MaterialTheme.typography.labelSmall,
-            color = textColor
-        )
+        ProvideTextStyle(MaterialTheme.typography.labelSmall) { MediaContentInfo(media) }
 
-        // Title
-        MediaTitle(
-            title = media.title,
-            textColor = textColor
-        )
+        ProvideTextStyle(MaterialTheme.typography.titleMedium) { MediaTitle(title = media.title) }
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Rating or Popularity
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            media.averageScore?.let { averageScore ->
-                ShowStarRating(averageScore, media.startDate, textColor)
-            } ?: ShowPopularity(media.popularity, media.startDate, textColor)
-        }
+        ProvideTextStyle(MaterialTheme.typography.labelMedium) { MediaMetaData(media) }
     }
 }
 
 @Composable
-private fun ShowStarRating(averageScore: Int?, startDate: Int?, textColor: Color) {
-    Icon(
-        imageVector = Icons.Filled.Star,
-        contentDescription = stringResource(R.string.star_rating_content_description),
-        tint = textColor,
-        modifier = Modifier.size(STAR_ICON_SIZE.dp)
-    )
-
-    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
-
-    Text(
-        text = listOfNotNull(
-            averageScore?.toFloat()?.div(10),
-            startDate
-        ).joinToString(stringResource(R.string.dot_separator)),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.labelMedium,
-        color = textColor
-    )
-}
-
-@Composable
-private fun ShowPopularity(popularity: Int?, startDate: Int?, textColor: Color) {
-    Icon(
-        imageVector = Icons.Filled.ThumbUp,
-        contentDescription = stringResource(R.string.popularity_content_description),
-        tint = textColor,
-        modifier = Modifier.size(STAR_ICON_SIZE.dp)
-    )
-
-    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
-
-    Text(
-        text = listOfNotNull(
-            popularity,
-            startDate
-        ).joinToString(stringResource(R.string.dot_separator)),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.labelMedium,
-        color = textColor
-    )
-}
-
-@Composable
-fun RelationTypeTag(
+private fun RelationTypeTag(
     relationType: String?,
     backgroundColor: Color,
     textColor: Color,

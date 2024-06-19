@@ -16,5 +16,6 @@
     <string name="ongoing">ONGOING</string>
     <string name="title_missing">Title missing</string>
 
-    <!-- Immersive list -->
+    <!-- Details -->
+    <string name="watch_now">Watch now</string>
 </resources>

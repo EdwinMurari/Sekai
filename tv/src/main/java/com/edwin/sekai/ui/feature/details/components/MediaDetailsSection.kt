@@ -1,8 +1,8 @@
 package com.edwin.sekai.ui.feature.details.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -10,220 +10,143 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.key.NativeKeyEvent
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.tv.foundation.lazy.list.TvLazyListScope
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.edwin.data.model.Media
+import com.edwin.data.model.MediaDetails
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
-import com.edwin.sekai.ui.designsystem.component.DotSeparatedRow
 import com.edwin.sekai.ui.designsystem.component.PreviewAbleSubComposeImage
-import com.edwin.sekai.ui.designsystem.component.getAnnotatedString
-import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
+import com.edwin.sekai.ui.designsystem.previewprovider.MediaDetailsPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
-import com.edwin.sekai.ui.utils.formatMovieDuration
-import com.edwin.sekai.ui.utils.getEpisodeInfo
-import java.util.Locale
+import com.edwin.sekai.ui.utils.GenreList
+import com.edwin.sekai.ui.utils.MediaDescription
+import com.edwin.sekai.ui.utils.MediaMetaDataDetailed
+import com.edwin.sekai.ui.utils.MediaTitles
+import kotlinx.coroutines.launch
 
 // Constants
-private const val STAR_ICON_SIZE = 16
-private const val ICON_SPACING = 4
+const val COVER_IMAGE_HEIGHT = 358
 
+fun TvLazyListScope.mediaDetailsSection(
+    mediaDetails: MediaDetails,
+    onClickWatch: (Int, Int) -> Unit
+) {
+    item {
+        MediaDetailsSection(
+            mediaDetails = mediaDetails,
+            onClickWatch = onClickWatch
+        )
+    }
+}
+
+
+@OptIn(ExperimentalTvMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MediaDetailsSection(
-    media: Media,
+    mediaDetails: MediaDetails,
     onClickWatch: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val episodeNumber = 20 // TODO :: Get the last watched episode number
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
     Column(
-        modifier = modifier
+        modifier = modifier.bringIntoViewRequester(bringIntoViewRequester)
     ) {
         Row {
-            PreviewAbleSubComposeImage(
-                imageUrl = media.coverImage,
-                contentDescription = "${media.title} cover image",
-                contentScale = ContentScale.Crop,
-                previewImage = painterResource(id = R.drawable.naruto),
-                modifier = Modifier
-                    .height(358.dp)
-                    .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(8.dp))
+            MediaCoverImage(
+                modifier = Modifier.height(COVER_IMAGE_HEIGHT.dp),
+                imageUrl = mediaDetails.media.coverImage,
+                contentDescription = "${mediaDetails.media.title} cover image"
             )
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 50.dp)
-                    .fillMaxWidth()
-            ) {
-                GenreList(
-                    genres = media.genres
-                )
-
-                MediaTitles(
-                    mediaTitle = media.title
-                )
-
-                // Rating or Popularity
-                DotSeparatedRow(
-                    contents = arrayOf(
-                        { Popularity(media.popularity) },
-                        { StarRating(media.averageScore) },
-                        { MediaContentInfo(media) },
-                        { StartYear(media.startDate) }
-                    )
-                )
-
-                MediaDescription(media.description)
-
-                WatchButton(
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                MediaDetailsColumn(
+                    mediaDetails = mediaDetails,
                     episodeNumber = episodeNumber,
-                    onClickWatch = { onClickWatch(media.id, it) }
+                    onClickWatch = onClickWatch,
+                    bringIntoViewRequester = bringIntoViewRequester
                 )
             }
         }
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun ColumnScope.MediaTitles(mediaTitle: String?, modifier: Modifier = Modifier) {
-    Text(
-        modifier = modifier,
-        text = mediaTitle ?: stringResource(R.string.title_missing),
-        style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
-
-    Text(
-        text = "Romaji Name",
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurface
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-private fun GenreList(
-    genres: List<String>?,
+private fun MediaCoverImage(
+    imageUrl: String?,
+    contentDescription: String,
     modifier: Modifier = Modifier
 ) {
-    genres?.let {
-        Text(
-            modifier = modifier,
-            text = genres.joinToString(stringResource(R.string.dot_separator)) { it.uppercase(Locale.ROOT) },
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-private fun StarRating(averageScore: Int?) {
-    if (averageScore == null) return
-
-    Icon(
-        imageVector = Icons.Filled.Star,
-        contentDescription = stringResource(R.string.star_rating_content_description),
-        tint = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.size(STAR_ICON_SIZE.dp)
-    )
-
-    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
-
-    Text(
-        text = averageScore.toFloat().div(10).toString(),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface
+    PreviewAbleSubComposeImage(
+        imageUrl = imageUrl,
+        contentDescription = contentDescription,
+        contentScale = ContentScale.Crop,
+        previewImage = painterResource(id = R.drawable.naruto),
+        modifier = modifier
+            .aspectRatio(2f / 3f)
+            .clip(RoundedCornerShape(8.dp))
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun Popularity(popularity: Int?) {
-    if (popularity == null) return
-
-    Icon(
-        imageVector = Icons.Filled.ThumbUp,
-        contentDescription = stringResource(R.string.popularity_content_description),
-        tint = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.size(STAR_ICON_SIZE.dp)
-    )
-
-    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
-
-    Text(
-        text = popularity.toString(),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-fun MediaContentInfo(media: Media) {
-    Text(
-        text = when (media) {
-            is Media.TvSeries -> getEpisodeInfo(media)
-            is Media.Movie -> formatMovieDuration(media.duration)
-        },
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-private fun StartYear(startDate: Int?) {
-    if (startDate == null) return
-
-    Text(
-        text = startDate.toString(),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-private fun MediaDescription(
-    description: String?,
-    modifier: Modifier = Modifier
+private fun MediaDetailsColumn(
+    mediaDetails: MediaDetails,
+    episodeNumber: Int,
+    onClickWatch: (Int, Int) -> Unit,
+    bringIntoViewRequester: BringIntoViewRequester
 ) {
-    description?.let {
-        Text(
-            modifier = modifier,
-            text = getAnnotatedString(htmlString = it),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 5
+    val coroutineScope = rememberCoroutineScope()
+    val media = mediaDetails.media
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 50.dp)
+            .fillMaxWidth()
+    ) {
+        GenreList(genres = media.genres)
+
+        MediaTitles(mainTitle = media.title, mediaTitle = mediaDetails.fullTitle)
+
+        MediaMetaDataDetailed(media)
+
+        MediaDescription(description = media.description, maxLines = 5)
+
+        WatchButton(
+            modifier = Modifier.onKeyEvent {
+                if (it.nativeKeyEvent.keyCode == NativeKeyEvent.KEYCODE_DPAD_UP) {
+                    coroutineScope.launch { bringIntoViewRequester.bringIntoView() }
+                }
+                false
+            },
+            episodeNumber = episodeNumber,
+            onClickWatch = { onClickWatch(media.id, it) }
         )
     }
 }
@@ -246,7 +169,7 @@ private fun WatchButton(
         )
         Spacer(Modifier.size(8.dp))
         Text(
-            text = "Watch now",
+            text = stringResource(R.string.watch_now),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -255,9 +178,9 @@ private fun WatchButton(
 @TvPreview
 @Composable
 fun PreviewMediaDetails(
-    @PreviewParameter(MediaPreviewParameterProvider::class) media: Media
+    @PreviewParameter(MediaDetailsPreviewParameterProvider::class) mediaDetails: MediaDetails
 ) {
     SekaiTheme {
-        MediaDetailsSection(media = media, onClickWatch = { _, _ -> })
+        MediaDetailsSection(mediaDetails = mediaDetails, onClickWatch = { _, _ -> })
     }
 }

@@ -16,13 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -31,28 +31,25 @@ import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.text.HtmlCompat
 import androidx.tv.foundation.lazy.list.TvLazyRow
 import androidx.tv.foundation.lazy.list.itemsIndexed
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.ImmersiveList
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Text
+import androidx.tv.material3.ProvideTextStyle
 import coil.compose.SubcomposeAsyncImage
 import com.edwin.data.model.Media
-import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
+import com.edwin.sekai.ui.utils.GenreList
+import com.edwin.sekai.ui.utils.MediaDescription
+import com.edwin.sekai.ui.utils.MediaMetaDataDetailed
 import com.edwin.sekai.ui.utils.MediaTitle
-import com.edwin.sekai.ui.utils.formatMovieDuration
-import com.edwin.sekai.ui.utils.getEpisodeInfo
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -64,19 +61,15 @@ fun ImmersiveMediaList(
     val immersiveListHeight = 426.dp
     val immersiveListWidth = 758.dp
     val cardHeight = 234.dp
+    val gradientEndPadding = 40.dp
+    val horizontalPadding = 58.dp
 
-    val backgroundColor = MaterialTheme.colorScheme.surface
-    val gradient = object : ShaderBrush() {
-        override fun createShader(size: Size): Shader {
-            val biggerDimension = maxOf(size.height, size.width)
-            return RadialGradientShader(
-                colors = listOf(Color.Transparent, backgroundColor),
-                center = Offset(size.width * 0.75f, 0f),
-                radius = biggerDimension,
-                colorStops = listOf(0f, 0.5f)
-            )
-        }
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val backgroundGradient = remember {
+        createRadialGradientBrush(surfaceColor)
     }
+
+    val focusRequester = remember { FocusRequester() }
 
     ImmersiveList(
         modifier = Modifier
@@ -88,55 +81,93 @@ fun ImmersiveMediaList(
                 targetState = mediaList[index],
                 label = "bannerBackdrop"
             ) { media ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .focusable(false)
-                ) {
-                    SubcomposeAsyncImage(
-                        model = media.bannerImage,
-                        contentDescription = "${media.title} banner image",
-                        contentScale = ContentScale.Crop,
-                        loading = { Loading() },
-                        modifier = Modifier
-                            .height(immersiveListHeight)
-                            .width(immersiveListWidth)
-                            .align(Alignment.TopEnd)
-                            .focusable(false)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(gradient)
-                    )
-                    ContentBlock(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(bottom = cardHeight + 40.dp, start = 58.dp)
-                            .focusable(false),
-                        media = media
-                    )
-                }
+                ImmersiveItemBackground(
+                    media = media,
+                    immersiveListHeight = immersiveListHeight,
+                    immersiveListWidth = immersiveListWidth,
+                    cardHeight = cardHeight,
+                    gradientEndPadding = gradientEndPadding,
+                    horizontalPadding = horizontalPadding,
+                    backgroundGradient = backgroundGradient
+                )
             }
         },
     ) {
         TvLazyRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
+                .focusRequester(focusRequester)
                 .wrapContentHeight(),
-            contentPadding = PaddingValues(horizontal = 58.dp)
+            contentPadding = PaddingValues(horizontal = horizontalPadding)
         ) {
             itemsIndexed(mediaList) { index, anime ->
-                var isFocused by remember { mutableStateOf(false) }
                 MediaCard(
                     media = anime,
-                    modifier = Modifier
-                        .onFocusChanged { isFocused = it.isFocused }
-                        .immersiveListItem(index),
+                    modifier = Modifier.immersiveListItem(index),
                     palettes = palettes,
                     onClick = onMediaClick
                 )
             }
+        }
+    }
+
+    LaunchedEffect(Unit) { // Request focus for the first item initially
+        focusRequester.requestFocus()
+    }
+}
+
+@Composable
+private fun ImmersiveItemBackground(
+    media: Media,
+    immersiveListHeight: Dp,
+    immersiveListWidth: Dp,
+    cardHeight: Dp,
+    gradientEndPadding: Dp,
+    horizontalPadding: Dp,
+    backgroundGradient: ShaderBrush
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .focusable(false)
+    ) {
+        SubcomposeAsyncImage(
+            model = media.bannerImage,
+            contentDescription = "${media.title} banner image",
+            contentScale = ContentScale.Crop,
+            loading = { Loading() },
+            modifier = Modifier
+                .height(immersiveListHeight)
+                .width(immersiveListWidth)
+                .align(Alignment.TopEnd)
+                .focusable(false)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundGradient)
+        )
+        ContentBlock(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = cardHeight + gradientEndPadding, start = horizontalPadding)
+                .focusable(false),
+            media = media
+        )
+    }
+}
+
+
+fun createRadialGradientBrush(backgroundColor: Color): ShaderBrush {
+    return object : ShaderBrush() {
+        override fun createShader(size: Size): Shader {
+            val biggerDimension = maxOf(size.height, size.width)
+            return RadialGradientShader(
+                colors = listOf(Color.Transparent, backgroundColor),
+                center = Offset(size.width * 0.75f, 0f),
+                radius = biggerDimension,
+                colorStops = listOf(0f, 0.5f)
+            )
         }
     }
 }
@@ -144,51 +175,29 @@ fun ImmersiveMediaList(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun ContentBlock(modifier: Modifier = Modifier, media: Media) {
-    Column(modifier = modifier) {
-        LabelText(
-            labels = listOfNotNull(
-                media.genres?.joinToString(stringResource(R.string.slash_separator)),
-                when (media) {
-                    is Media.TvSeries -> getEpisodeInfo(media)
-                    is Media.Movie -> formatMovieDuration(media.duration)
-                },
-                media.startDate.toString()
-            )
-        )
+    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            GenreList(genres = media.genres)
 
-        MediaTitle(
-            modifier = Modifier.padding(top = 4.dp),
-            title = media.title,
-            textColor = MaterialTheme.colorScheme.onSurface
-        )
+            ProvideTextStyle(MaterialTheme.typography.headlineMedium) {
+                MediaTitle(
+                    title = media.title
+                )
+            }
 
-        media.description?.let { description ->
-            Text(
-                text = getAnnotatedString(htmlString = description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .padding(top = 12.dp)
+            ProvideTextStyle(MaterialTheme.typography.labelMedium) {
+                MediaMetaDataDetailed(media)
+            }
+
+            MediaDescription(
+                description = media.description,
+                maxLines = 2,
+                modifier = Modifier.fillMaxWidth(0.5f)
             )
         }
-    }
-}
-
-@Composable
-fun LabelText(labels: List<String>) {
-    Text(
-        text = labels.joinToString(stringResource(R.string.dot_separator)),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-fun getAnnotatedString(htmlString: String): AnnotatedString {
-    return buildAnnotatedString {
-        append(HtmlCompat.fromHtml(htmlString, HtmlCompat.FROM_HTML_MODE_LEGACY))
     }
 }
 

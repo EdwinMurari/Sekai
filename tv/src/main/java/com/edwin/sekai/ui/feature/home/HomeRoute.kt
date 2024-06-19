@@ -1,6 +1,6 @@
 package com.edwin.sekai.ui.feature.home
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -26,6 +26,7 @@ import com.edwin.sekai.ui.feature.browse.BrowseRoute
 import com.edwin.sekai.ui.feature.categories.CategoriesScreen
 import com.edwin.sekai.ui.feature.extensions.ExtensionsScreen
 import com.edwin.sekai.ui.feature.search.SearchScreen
+import kotlin.enums.EnumEntries
 
 @Composable
 fun HomeRoute(
@@ -43,10 +44,6 @@ fun HomeRoute(
     )
 }
 
-@OptIn(
-    ExperimentalTvMaterial3Api::class,
-    ExperimentalComposeUiApi::class
-)
 @Composable
 fun HomeScreen(
     selectedTab: TabNavOption,
@@ -57,51 +54,79 @@ fun HomeScreen(
 ) {
     val tabs = TabNavOption.entries
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
-        TabRow(
-            selectedTabIndex = tabs.indexOf(selectedTab),
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .focusRestorer()
-                .padding(8.dp)
-        ) {
-            tabs.forEachIndexed { index, tab ->
-                key(index) {
-                    Tab(
-                        modifier = Modifier.padding(8.dp),
-                        selected = tab == selectedTab,
-                        onFocus = { onTabSelectionChange(tab) },
-                    ) {
-                        Text(text = tab.label)
-                    }
-                }
-            }
+        Content(
+            modifier = Modifier.fillMaxSize(),
+            selectedTab = selectedTab,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
+
+        NavigationTopBar(
+            modifier = Modifier.align(Alignment.TopCenter),
+            tabs = tabs,
+            selectedTab = selectedTab,
+            onTabSelectionChange = onTabSelectionChange
+        )
+    }
+}
+
+@Composable
+private fun Content(
+    selectedTab: TabNavOption,
+    modifier: Modifier,
+    palettes: Map<String, Material3Palette>,
+    onMediaClick: (Int) -> Unit
+) {
+    when (selectedTab) {
+        TabNavOption.Home -> {
+            BrowseRoute(
+                modifier = modifier,
+                palettes = palettes,
+                onMediaClick = onMediaClick,
+            )
         }
 
-        val contentModifier = Modifier.weight(1f)
+        TabNavOption.Categories -> {
+            CategoriesScreen(modifier = modifier)
+        }
 
-        when (selectedTab) {
-            TabNavOption.Home -> {
-                BrowseRoute(
-                    modifier = contentModifier,
-                    palettes = palettes,
-                    onMediaClick = onMediaClick,
-                )
-            }
+        TabNavOption.Search -> {
+            SearchScreen(modifier = modifier)
+        }
 
-            TabNavOption.Categories -> {
-                CategoriesScreen(modifier = contentModifier)
-            }
+        TabNavOption.Extensions -> {
+            ExtensionsScreen(modifier = modifier)
+        }
+    }
+}
 
-            TabNavOption.Search -> {
-                SearchScreen(modifier = contentModifier)
-            }
-
-            TabNavOption.Extensions -> {
-                ExtensionsScreen(modifier = contentModifier)
+@Composable
+@OptIn(ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
+private fun NavigationTopBar(
+    tabs: EnumEntries<TabNavOption>,
+    selectedTab: TabNavOption,
+    onTabSelectionChange: (TabNavOption) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TabRow(
+        selectedTabIndex = tabs.indexOf(selectedTab),
+        modifier = modifier
+            .padding(top = 24.dp)
+            .focusRestorer()
+            .padding(8.dp)
+    ) {
+        tabs.forEachIndexed { index, tab ->
+            key(index) {
+                Tab(
+                    modifier = Modifier.padding(8.dp),
+                    selected = tab == selectedTab,
+                    onFocus = { onTabSelectionChange(tab) },
+                ) {
+                    Text(text = tab.label)
+                }
             }
         }
     }

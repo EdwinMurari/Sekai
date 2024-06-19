@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +25,7 @@ import com.edwin.sekai.ui.designsystem.previewprovider.MediaDetailsPreviewParame
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.details.components.MediaDetailsSection
 import com.edwin.sekai.ui.feature.details.components.episodesSection
+import com.edwin.sekai.ui.feature.details.components.mediaDetailsSection
 import com.edwin.sekai.ui.feature.details.components.recommendationsSection
 import com.edwin.sekai.ui.feature.details.components.relationsSection
 
@@ -106,12 +106,10 @@ fun Content(
             ),
             modifier = modifier,
         ) {
-            item {
-                MediaDetailsSection(
-                    media = mediaDetails.media,
-                    onClickWatch = onClickWatch
-                )
-            }
+            mediaDetailsSection(
+                mediaDetails = mediaDetails,
+                onClickWatch = onClickWatch
+            )
 
             episodesSection(
                 mediaDetails = mediaDetails,

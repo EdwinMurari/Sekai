@@ -90,7 +90,10 @@ fun EpisodesSection(
 }
 
 @Composable
-fun EpisodeListGrid(episodesList: List<MediaDetails.Episode>, onEpisodeSelected: (Int) -> Unit) {
+private fun EpisodeListGrid(
+    episodesList: List<MediaDetails.Episode>,
+    onEpisodeSelected: (Int) -> Unit
+) {
     TvLazyHorizontalGrid(
         rows = TvGridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -109,7 +112,7 @@ fun EpisodeListGrid(episodesList: List<MediaDetails.Episode>, onEpisodeSelected:
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun EpisodeCard(episode: MediaDetails.Episode, onEpisodeSelected: (Int) -> Unit) {
+private fun EpisodeCard(episode: MediaDetails.Episode, onEpisodeSelected: (Int) -> Unit) {
     WideClassicCard(
         onClick = { onEpisodeSelected(episode.number) },
         image = {
