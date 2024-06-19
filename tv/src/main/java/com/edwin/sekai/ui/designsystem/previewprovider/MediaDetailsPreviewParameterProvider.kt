@@ -22,9 +22,9 @@ class MediaDetailsPreviewParameterProvider : PreviewParameterProvider<MediaDetai
                     duration = 1234
                 ),
                 fullTitle = MediaDetails.Title(
-                    english = "",
-                    romaji = "",
-                    native = ""
+                    english = "Attack on Titan",
+                    romaji = "Shingeki no Kyojin",
+                    native = "進撃の巨人"
                 ),
                 relations = listOf(
                     MediaDetails.MediaRelation(

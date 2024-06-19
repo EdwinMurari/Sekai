@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Button
@@ -29,20 +28,16 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.edwin.data.model.Media
 import com.edwin.data.model.MediaDetails
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
-import com.edwin.sekai.ui.designsystem.component.DotSeparatedRow
 import com.edwin.sekai.ui.designsystem.component.PreviewAbleSubComposeImage
-import com.edwin.sekai.ui.designsystem.component.getAnnotatedString
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaDetailsPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.utils.GenreList
-import com.edwin.sekai.ui.utils.MediaContentInfo
-import com.edwin.sekai.ui.utils.Popularity
-import com.edwin.sekai.ui.utils.StarRating
-import com.edwin.sekai.ui.utils.StartYear
+import com.edwin.sekai.ui.utils.MediaDescription
+import com.edwin.sekai.ui.utils.MediaMetaDataDetailed
+import com.edwin.sekai.ui.utils.MediaTitles
 
 // Constants
 const val COVER_IMAGE_HEIGHT = 358
@@ -110,64 +105,15 @@ private fun MediaDetailsColumn(
     ) {
         GenreList(genres = media.genres)
 
-        MediaTitles(mediaTitle = mediaDetails.fullTitle)
+        MediaTitles(mainTitle = media.title, mediaTitle = mediaDetails.fullTitle)
 
         MediaMetaDataDetailed(media)
 
-        MediaDescription(media.description)
+        MediaDescription(description = media.description, maxLines = 5)
 
         WatchButton(
             episodeNumber = episodeNumber,
             onClickWatch = { onClickWatch(media.id, it) }
-        )
-    }
-}
-
-@Composable
-private fun MediaMetaDataDetailed(media: Media) {
-    DotSeparatedRow(
-        contents = arrayOf(
-            { Popularity(media.popularity) },
-            { StarRating(media.averageScore) },
-            { MediaContentInfo(media) },
-            { StartYear(media.startDate) }
-        )
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-private fun MediaTitles(mediaTitle: MediaDetails.Title?, modifier: Modifier = Modifier) {
-    Text(
-        modifier = modifier,
-        text = mediaTitle?.english ?: mediaTitle?.native ?: stringResource(R.string.title_missing),
-        style = MaterialTheme.typography.headlineMedium,
-        color = LocalContentColor.current,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
-
-    Text(
-        text = mediaTitle?.romaji ?: stringResource(R.string.title_missing),
-        style = MaterialTheme.typography.titleMedium,
-        color = LocalContentColor.current
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-private fun MediaDescription(
-    description: String?,
-    modifier: Modifier = Modifier
-) {
-    description?.let {
-        Text(
-            modifier = modifier,
-            text = getAnnotatedString(htmlString = it),
-            style = MaterialTheme.typography.bodyMedium,
-            color = LocalContentColor.current,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 5
         )
     }
 }

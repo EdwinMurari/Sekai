@@ -38,10 +38,8 @@ import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.utils.MediaContentInfo
+import com.edwin.sekai.ui.utils.MediaMetaData
 import com.edwin.sekai.ui.utils.MediaTitle
-import com.edwin.sekai.ui.utils.Popularity
-import com.edwin.sekai.ui.utils.StarRating
-import com.edwin.sekai.ui.utils.StartYear
 
 // Constants
 private const val CARD_HEIGHT = 234
@@ -150,17 +148,6 @@ private fun MediaInfo(
 
         ProvideTextStyle(MaterialTheme.typography.labelMedium) { MediaMetaData(media) }
     }
-}
-
-@Composable
-private fun MediaMetaData(media: Media) {
-    DotSeparatedRow(
-        contents = arrayOf(
-            media.averageScore?.let { { StarRating(it) } }
-                ?: { Popularity(media.popularity) },
-            { StartYear(media.startDate) }
-        )
-    )
 }
 
 @Composable
