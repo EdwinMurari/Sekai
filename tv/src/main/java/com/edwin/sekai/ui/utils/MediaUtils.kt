@@ -105,57 +105,6 @@ fun GenreList(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun StarRating(averageScore: Int?) {
-    if (averageScore == null) return
-
-    Icon(
-        imageVector = Icons.Filled.Star,
-        contentDescription = stringResource(R.string.star_rating_content_description),
-        tint = LocalContentColor.current,
-        modifier = Modifier.size(STAR_ICON_SIZE.dp)
-    )
-
-    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
-
-    Text(
-        text = averageScore.toFloat().div(10).toString(),
-        color = LocalContentColor.current
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-fun Popularity(popularity: Int?) {
-    if (popularity == null) return
-
-    Icon(
-        imageVector = Icons.Filled.ThumbUp,
-        contentDescription = stringResource(R.string.popularity_content_description),
-        tint = LocalContentColor.current,
-        modifier = Modifier.size(STAR_ICON_SIZE.dp)
-    )
-
-    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
-
-    Text(
-        text = popularity.toString(),
-        color = LocalContentColor.current
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-fun StartYear(startDate: Int?) {
-    if (startDate == null) return
-
-    Text(
-        text = startDate.toString(),
-        color = LocalContentColor.current
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
 fun MediaContentInfo(media: Media) {
     Text(
         text = when (media) {
@@ -193,8 +142,59 @@ fun MediaMetaDataDetailed(media: Media, modifier: Modifier = Modifier) {
     )
 }
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun getEpisodeInfo(media: Media.TvSeries): String {
+private fun StarRating(averageScore: Int?) {
+    if (averageScore == null) return
+
+    Icon(
+        imageVector = Icons.Filled.Star,
+        contentDescription = stringResource(R.string.star_rating_content_description),
+        tint = LocalContentColor.current,
+        modifier = Modifier.size(STAR_ICON_SIZE.dp)
+    )
+
+    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
+
+    Text(
+        text = averageScore.toFloat().div(10).toString(),
+        color = LocalContentColor.current
+    )
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun Popularity(popularity: Int?) {
+    if (popularity == null) return
+
+    Icon(
+        imageVector = Icons.Filled.ThumbUp,
+        contentDescription = stringResource(R.string.popularity_content_description),
+        tint = LocalContentColor.current,
+        modifier = Modifier.size(STAR_ICON_SIZE.dp)
+    )
+
+    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
+
+    Text(
+        text = popularity.toString(),
+        color = LocalContentColor.current
+    )
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun StartYear(startDate: Int?) {
+    if (startDate == null) return
+
+    Text(
+        text = startDate.toString(),
+        color = LocalContentColor.current
+    )
+}
+
+@Composable
+private fun getEpisodeInfo(media: Media.TvSeries): String {
     return when {
         media.episodesCount != null && media.episodesCount!! > 0 -> {
             media.nextAiringEpisode?.episode?.let { nextAiringEpisode ->
@@ -215,7 +215,7 @@ fun getEpisodeInfo(media: Media.TvSeries): String {
 }
 
 @Composable
-fun formatMovieDuration(durationMinutes: Int?): String {
+private fun formatMovieDuration(durationMinutes: Int?): String {
     return durationMinutes?.let {
         val hours = it / 60
         val minutes = it % 60
