@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.tv.foundation.lazy.list.TvLazyListScope
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -49,6 +50,19 @@ import kotlinx.coroutines.launch
 
 // Constants
 const val COVER_IMAGE_HEIGHT = 358
+
+fun TvLazyListScope.mediaDetailsSection(
+    mediaDetails: MediaDetails,
+    onClickWatch: (Int, Int) -> Unit
+) {
+    item {
+        MediaDetailsSection(
+            mediaDetails = mediaDetails,
+            onClickWatch = onClickWatch
+        )
+    }
+}
+
 
 @OptIn(ExperimentalTvMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable

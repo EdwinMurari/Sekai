@@ -25,6 +25,7 @@ import com.edwin.sekai.ui.designsystem.previewprovider.MediaDetailsPreviewParame
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.details.components.MediaDetailsSection
 import com.edwin.sekai.ui.feature.details.components.episodesSection
+import com.edwin.sekai.ui.feature.details.components.mediaDetailsSection
 import com.edwin.sekai.ui.feature.details.components.recommendationsSection
 import com.edwin.sekai.ui.feature.details.components.relationsSection
 
@@ -105,12 +106,10 @@ fun Content(
             ),
             modifier = modifier,
         ) {
-            item {
-                MediaDetailsSection(
-                    mediaDetails = mediaDetails,
-                    onClickWatch = onClickWatch
-                )
-            }
+            mediaDetailsSection(
+                mediaDetails = mediaDetails,
+                onClickWatch = onClickWatch
+            )
 
             episodesSection(
                 mediaDetails = mediaDetails,
