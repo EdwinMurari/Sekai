@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +43,9 @@ import androidx.tv.foundation.lazy.list.TvLazyRow
 import androidx.tv.foundation.lazy.list.itemsIndexed
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.ImmersiveList
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.ProvideTextStyle
 import androidx.tv.material3.Text
 import coil.compose.SubcomposeAsyncImage
 import com.edwin.data.model.Media
@@ -144,37 +147,46 @@ fun ImmersiveMediaList(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun ContentBlock(modifier: Modifier = Modifier, media: Media) {
-    Column(modifier = modifier) {
-        LabelText(
-            labels = listOfNotNull(
-                media.genres?.joinToString(stringResource(R.string.slash_separator)),
-                when (media) {
-                    is Media.TvSeries -> getEpisodeInfo(media)
-                    is Media.Movie -> formatMovieDuration(media.duration)
-                },
-                media.startDate.toString()
+    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+        Column(modifier = modifier) {
+            LabelText(
+                labels = listOfNotNull(
+                    media.genres?.joinToString(stringResource(R.string.slash_separator)),
+                    when (media) {
+                        is Media.TvSeries -> getEpisodeInfo(media)
+                        is Media.Movie -> formatMovieDuration(media.duration)
+                    },
+                    media.startDate.toString()
+                )
             )
-        )
 
-        MediaTitle(
-            modifier = Modifier.padding(top = 4.dp),
-            title = media.title,
-            textColor = MaterialTheme.colorScheme.onSurface
-        )
+            ProvideTextStyle(MaterialTheme.typography.headlineMedium) {
+                MediaTitle(
+                    modifier = Modifier.padding(top = 4.dp),
+                    title = media.title
+                )
+            }
 
-        media.description?.let { description ->
-            Text(
-                text = getAnnotatedString(htmlString = description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .padding(top = 12.dp)
-            )
+            MediaDescription(media.description)
         }
     }
+}
+
+@Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun MediaDescription(description: String?) {
+    if (description == null) return
+
+    Text(
+        text = getAnnotatedString(htmlString = description),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .fillMaxWidth(0.5f)
+            .padding(top = 12.dp)
+    )
 }
 
 @Composable

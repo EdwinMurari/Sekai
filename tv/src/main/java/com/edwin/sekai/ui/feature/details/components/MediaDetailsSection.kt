@@ -44,6 +44,9 @@ import com.edwin.sekai.ui.utils.Popularity
 import com.edwin.sekai.ui.utils.StarRating
 import com.edwin.sekai.ui.utils.StartYear
 
+// Constants
+const val COVER_IMAGE_HEIGHT = 358
+
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaDetailsSection(
@@ -58,6 +61,7 @@ fun MediaDetailsSection(
     ) {
         Row {
             MediaCoverImage(
+                modifier = Modifier.height(COVER_IMAGE_HEIGHT.dp),
                 imageUrl = mediaDetails.media.coverImage,
                 contentDescription = "${mediaDetails.media.title} cover image"
             )
@@ -76,15 +80,15 @@ fun MediaDetailsSection(
 @Composable
 private fun MediaCoverImage(
     imageUrl: String?,
-    contentDescription: String
+    contentDescription: String,
+    modifier: Modifier = Modifier
 ) {
     PreviewAbleSubComposeImage(
         imageUrl = imageUrl,
         contentDescription = contentDescription,
         contentScale = ContentScale.Crop,
         previewImage = painterResource(id = R.drawable.naruto),
-        modifier = Modifier
-            .height(358.dp)
+        modifier = modifier
             .aspectRatio(2f / 3f)
             .clip(RoundedCornerShape(8.dp))
     )

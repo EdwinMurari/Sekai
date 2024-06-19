@@ -11,14 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,33 +24,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Icon
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.ProvideTextStyle
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
+import com.edwin.sekai.ui.utils.MediaContentInfo
 import com.edwin.sekai.ui.utils.MediaTitle
 import com.edwin.sekai.ui.utils.Popularity
 import com.edwin.sekai.ui.utils.StarRating
 import com.edwin.sekai.ui.utils.StartYear
-import com.edwin.sekai.ui.utils.formatMovieDuration
-import com.edwin.sekai.ui.utils.getEpisodeInfo
 
 // Constants
-private const val CARD_MAX_HEIGHT = 234
+private const val CARD_HEIGHT = 234
 private const val CARD_ASPECT_RATIO = 2f / 3f
 private const val GRADIENT_START = 1f
-private const val STAR_ICON_SIZE = 16
-private const val ICON_SPACING = 4
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -71,154 +63,108 @@ fun MediaCard(
     val closestPalette = remember(averageColor, palettes) {
         findClosestPalette(averageColor, palettes)
     }
-    val textColor = remember(closestPalette) {
+    val contentColor = remember(closestPalette) {
         closestPalette?.let {
             Color(android.graphics.Color.parseColor(it.onPrimary))
         } ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White
     }
+    val primaryColor = remember(closestPalette) {
+        (closestPalette?.primary?.let { Color(android.graphics.Color.parseColor(it)) }
+            ?: averageColor)
+    }
     val gradientColors = remember(averageColor) {
         arrayOf(
             0.5f to Color.Transparent,
-            GRADIENT_START to (closestPalette?.primary?.let {
-                Color(
-                    android.graphics.Color.parseColor(
-                        it
-                    )
-                )
-            } ?: averageColor)
+            GRADIENT_START to primaryColor
         )
     }
 
     Card(
         onClick = { onClick(media.id) },
         modifier = modifier
-            .heightIn(max = CARD_MAX_HEIGHT.dp)
+            .heightIn(max = CARD_HEIGHT.dp)
             .aspectRatio(CARD_ASPECT_RATIO)
     ) {
-        Box {
-            // Background Image
-            PreviewAbleSubComposeImage(
-                imageUrl = media.coverImage,
-                previewImage = painterResource(id = R.drawable.naruto),
-                contentDescription = "${media.title} cover image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .fillMaxSize()
-            )
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            Box {
+                MediaCoverImage(
+                    imageUrl = media.coverImage,
+                    contentDescription = "${media.title} cover image"
+                )
 
-            // Gradient Overlay
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Brush.verticalGradient(colorStops = gradientColors))
-            )
+                GradientOverlay(gradientColors)
 
-            // Media Information
-            MediaInfo(
-                media = media,
-                textColor = textColor,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-            )
+                MediaInfo(
+                    media = media,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
+                )
 
-            RelationTypeTag(
-                relationType = relationType,
-                backgroundColor = averageColor,
-                textColor = textColor,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(4.dp)
-            )
+                RelationTypeTag(
+                    relationType = relationType,
+                    backgroundColor = primaryColor,
+                    textColor = contentColor,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
+private fun GradientOverlay(gradientColors: Array<Pair<Float, Color>>) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(colorStops = gradientColors))
+    )
+}
+
+@Composable
+private fun MediaCoverImage(imageUrl: String?, contentDescription: String) {
+    PreviewAbleSubComposeImage(
+        imageUrl = imageUrl,
+        previewImage = painterResource(id = R.drawable.naruto),
+        contentDescription = contentDescription,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .fillMaxSize()
+    )
+}
+
+@Composable
 private fun MediaInfo(
     media: Media,
-    textColor: Color,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        // Episodes/Duration
-        Text(
-            text = when (media) {
-                is Media.TvSeries -> getEpisodeInfo(media)
-                is Media.Movie -> formatMovieDuration(media.duration)
-            },
-            style = MaterialTheme.typography.labelSmall,
-            color = textColor
-        )
+        ProvideTextStyle(MaterialTheme.typography.labelSmall) { MediaContentInfo(media) }
 
-        // Title
-        MediaTitle(
-            title = media.title,
-            textColor = textColor
-        )
+        ProvideTextStyle(MaterialTheme.typography.titleMedium) { MediaTitle(title = media.title) }
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Rating or Popularity
-        DotSeparatedRow(
-            contents = arrayOf(
-                media.averageScore?.let { { StarRating(it) } }
-                    ?: { Popularity(media.popularity) },
-                { StartYear(media.startDate) }
-            )
-        )
+        ProvideTextStyle(MaterialTheme.typography.labelMedium) { MediaMetaData(media) }
     }
 }
 
 @Composable
-private fun ShowStarRating(averageScore: Int?, startDate: Int?, textColor: Color) {
-    Icon(
-        imageVector = Icons.Filled.Star,
-        contentDescription = stringResource(R.string.star_rating_content_description),
-        tint = textColor,
-        modifier = Modifier.size(STAR_ICON_SIZE.dp)
-    )
-
-    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
-
-    Text(
-        text = listOfNotNull(
-            averageScore?.toFloat()?.div(10),
-            startDate
-        ).joinToString(stringResource(R.string.dot_separator)),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.labelMedium,
-        color = textColor
+private fun MediaMetaData(media: Media) {
+    DotSeparatedRow(
+        contents = arrayOf(
+            media.averageScore?.let { { StarRating(it) } }
+                ?: { Popularity(media.popularity) },
+            { StartYear(media.startDate) }
+        )
     )
 }
 
 @Composable
-private fun ShowPopularity(popularity: Int?, startDate: Int?, textColor: Color) {
-    Icon(
-        imageVector = Icons.Filled.ThumbUp,
-        contentDescription = stringResource(R.string.popularity_content_description),
-        tint = textColor,
-        modifier = Modifier.size(STAR_ICON_SIZE.dp)
-    )
-
-    Spacer(modifier = Modifier.width(ICON_SPACING.dp))
-
-    Text(
-        text = listOfNotNull(
-            popularity,
-            startDate
-        ).joinToString(stringResource(R.string.dot_separator)),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.labelMedium,
-        color = textColor
-    )
-}
-
-@Composable
-fun RelationTypeTag(
+private fun RelationTypeTag(
     relationType: String?,
     backgroundColor: Color,
     textColor: Color,

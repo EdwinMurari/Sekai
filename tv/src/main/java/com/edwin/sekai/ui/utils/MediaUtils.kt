@@ -8,18 +8,17 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.LocalContentColor
+import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
 import com.edwin.sekai.R
-import com.edwin.sekai.ui.designsystem.component.DotSeparatedRow
 import java.util.Locale
 
 // Constants
@@ -30,16 +29,15 @@ private const val ICON_SPACING = 4
 @Composable
 fun MediaTitle(
     modifier: Modifier = Modifier,
-    title: String?,
-    textColor: Color
+    title: String?
 ) {
     Text(
         modifier = modifier,
         text = title ?: stringResource(R.string.title_missing),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.titleMedium,
-        color = textColor
+        style = LocalTextStyle.current,
+        color = LocalContentColor.current
     )
 }
 
@@ -108,7 +106,6 @@ fun StarRating(averageScore: Int?) {
 
     Text(
         text = averageScore.toFloat().div(10).toString(),
-        style = MaterialTheme.typography.labelMedium,
         color = LocalContentColor.current
     )
 }
@@ -129,7 +126,6 @@ fun Popularity(popularity: Int?) {
 
     Text(
         text = popularity.toString(),
-        style = MaterialTheme.typography.labelMedium,
         color = LocalContentColor.current
     )
 }
@@ -141,7 +137,6 @@ fun StartYear(startDate: Int?) {
 
     Text(
         text = startDate.toString(),
-        style = MaterialTheme.typography.labelMedium,
         color = LocalContentColor.current
     )
 }
@@ -154,7 +149,7 @@ fun MediaContentInfo(media: Media) {
             is Media.TvSeries -> getEpisodeInfo(media)
             is Media.Movie -> formatMovieDuration(media.duration)
         },
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface
+        style = LocalTextStyle.current,
+        color = LocalContentColor.current
     )
 }
