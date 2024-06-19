@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.feature.details.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,13 +10,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.key.NativeKeyEvent
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,11 +45,12 @@ import com.edwin.sekai.ui.utils.GenreList
 import com.edwin.sekai.ui.utils.MediaDescription
 import com.edwin.sekai.ui.utils.MediaMetaDataDetailed
 import com.edwin.sekai.ui.utils.MediaTitles
+import kotlinx.coroutines.launch
 
 // Constants
 const val COVER_IMAGE_HEIGHT = 358
 
-@OptIn(ExperimentalTvMaterial3Api::class)
+@OptIn(ExperimentalTvMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MediaDetailsSection(
     mediaDetails: MediaDetails,
@@ -50,9 +58,10 @@ fun MediaDetailsSection(
     modifier: Modifier = Modifier
 ) {
     val episodeNumber = 20 // TODO :: Get the last watched episode number
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
     Column(
-        modifier = modifier
+        modifier = modifier.bringIntoViewRequester(bringIntoViewRequester)
     ) {
         Row {
             MediaCoverImage(
@@ -65,7 +74,8 @@ fun MediaDetailsSection(
                 MediaDetailsColumn(
                     mediaDetails = mediaDetails,
                     episodeNumber = episodeNumber,
-                    onClickWatch = onClickWatch
+                    onClickWatch = onClickWatch,
+                    bringIntoViewRequester = bringIntoViewRequester
                 )
             }
         }
@@ -89,12 +99,15 @@ private fun MediaCoverImage(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MediaDetailsColumn(
     mediaDetails: MediaDetails,
     episodeNumber: Int,
-    onClickWatch: (Int, Int) -> Unit
+    onClickWatch: (Int, Int) -> Unit,
+    bringIntoViewRequester: BringIntoViewRequester
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val media = mediaDetails.media
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -112,6 +125,12 @@ private fun MediaDetailsColumn(
         MediaDescription(description = media.description, maxLines = 5)
 
         WatchButton(
+            modifier = Modifier.onKeyEvent {
+                if (it.nativeKeyEvent.keyCode == NativeKeyEvent.KEYCODE_DPAD_UP) {
+                    coroutineScope.launch { bringIntoViewRequester.bringIntoView() }
+                }
+                false
+            },
             episodeNumber = episodeNumber,
             onClickWatch = { onClickWatch(media.id, it) }
         )
