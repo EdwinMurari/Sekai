@@ -180,14 +180,16 @@ fun MediaMetaData(media: Media) {
 
 @Composable
 fun MediaMetaDataDetailed(media: Media, modifier: Modifier = Modifier) {
+    val contentList = mutableListOf<@Composable () -> Unit>().apply {
+        media.popularity?.let { add { Popularity(it) } }
+        media.averageScore?.let { add { StarRating(it) } }
+        add { MediaContentInfo(media) }
+        add { StartYear(media.startDate) }
+    }
+
     DotSeparatedRow(
         modifier = modifier,
-        contents = arrayOf(
-            { Popularity(media.popularity) },
-            { StarRating(media.averageScore) },
-            { MediaContentInfo(media) },
-            { StartYear(media.startDate) }
-        )
+        contents = contentList.toTypedArray()
     )
 }
 
