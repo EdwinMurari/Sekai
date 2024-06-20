@@ -8,9 +8,14 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,19 +58,32 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val tabs = TabNavOption.entries
+    val contentFocusRequester = FocusRequester()
 
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         Content(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .focusRequester(contentFocusRequester),
             selectedTab = selectedTab,
             palettes = palettes,
             onMediaClick = onMediaClick
         )
 
         NavigationTopBar(
-            modifier = Modifier.align(Alignment.TopCenter),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .onPreviewKeyEvent {
+                    when {
+                        KeyEventType.KeyUp == it.type && Key.DirectionDown == it.key -> {
+                            // TODO :: Temp fix, look into the cause
+                            contentFocusRequester.requestFocus()
+                            true
+                        }
+
+                        else -> false
+                    }
+                },
             tabs = tabs,
             selectedTab = selectedTab,
             onTabSelectionChange = onTabSelectionChange
@@ -104,8 +122,8 @@ private fun Content(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
-private fun NavigationTopBar(
+@OptIn(ExperimentalTvMaterial3Api::class)
+fun NavigationTopBar(
     tabs: EnumEntries<TabNavOption>,
     selectedTab: TabNavOption,
     onTabSelectionChange: (TabNavOption) -> Unit,
@@ -115,7 +133,6 @@ private fun NavigationTopBar(
         selectedTabIndex = tabs.indexOf(selectedTab),
         modifier = modifier
             .padding(top = 24.dp)
-            .focusRestorer()
             .padding(8.dp)
     ) {
         tabs.forEachIndexed { index, tab ->
