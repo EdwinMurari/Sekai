@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -59,6 +61,7 @@ fun HomeScreen(
 ) {
     val tabs = TabNavOption.entries
     val contentFocusRequester = FocusRequester()
+    val (isTopBarVisible, setTopBarVisibility) = remember { mutableStateOf(true) }
 
     Box(modifier = modifier.fillMaxSize()) {
         Content(
@@ -67,27 +70,33 @@ fun HomeScreen(
                 .focusRequester(contentFocusRequester),
             selectedTab = selectedTab,
             palettes = palettes,
-            onMediaClick = onMediaClick
+            onMediaClick = onMediaClick,
+            showTopBar = setTopBarVisibility
         )
 
-        NavigationTopBar(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .onPreviewKeyEvent {
-                    when {
-                        KeyEventType.KeyUp == it.type && Key.DirectionDown == it.key -> {
-                            // TODO :: Temp fix, look into the cause
-                            contentFocusRequester.requestFocus()
-                            true
+        if (isTopBarVisible) {
+            NavigationTopBar(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .onPreviewKeyEvent {
+                        when {
+                            KeyEventType.KeyUp == it.type && Key.DirectionDown == it.key -> {
+                                // TODO :: Temp fix, look into the cause
+                                contentFocusRequester.requestFocus()
+
+                                setTopBarVisibility(false)
+                                true
+                            }
+
+                            else -> false
                         }
+                    },
+                tabs = tabs,
+                selectedTab = selectedTab,
+                onTabSelectionChange = onTabSelectionChange
+            )
+        }
 
-                        else -> false
-                    }
-                },
-            tabs = tabs,
-            selectedTab = selectedTab,
-            onTabSelectionChange = onTabSelectionChange
-        )
     }
 }
 
@@ -96,7 +105,8 @@ private fun Content(
     selectedTab: TabNavOption,
     modifier: Modifier,
     palettes: Map<String, Material3Palette>,
-    onMediaClick: (Int) -> Unit
+    onMediaClick: (Int) -> Unit,
+    showTopBar: (Boolean) -> Unit
 ) {
     when (selectedTab) {
         TabNavOption.Home -> {
@@ -104,6 +114,7 @@ private fun Content(
                 modifier = modifier,
                 palettes = palettes,
                 onMediaClick = onMediaClick,
+                showTopBar = showTopBar
             )
         }
 

@@ -13,12 +13,14 @@ fun NavController.navigateToBrowse(navOptions: NavOptions) = navigate(BROWSE_ROU
 
 fun NavGraphBuilder.browseScreen(
     palettes: Map<String, Material3Palette>,
-    onMediaClick: (Int) -> Unit
+    onMediaClick: (Int) -> Unit,
+    showTopBar: (Boolean) -> Unit
 ) {
     composable(route = BROWSE_ROUTE) {
         BrowseRoute(
             onMediaClick = onMediaClick,
-            palettes = palettes
+            palettes = palettes,
+            showTopBar = showTopBar
         )
     }
 }

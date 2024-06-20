@@ -35,6 +35,7 @@ fun BrowseRoute(
     onMediaClick: (Int) -> Unit,
     palettes: Map<String, Material3Palette>,
     modifier: Modifier = Modifier,
+    showTopBar: (Boolean) -> Unit,
     viewModel: BrowseViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -42,6 +43,7 @@ fun BrowseRoute(
         uiState = uiState,
         palettes = palettes,
         onMediaClick = onMediaClick,
+        showTopBar = showTopBar,
         modifier = modifier
     )
 }
@@ -51,6 +53,7 @@ fun BrowseScreen(
     uiState: BrowseViewModel.BrowseScreenUiState,
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit,
+    showTopBar: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (uiState) {
@@ -59,7 +62,8 @@ fun BrowseScreen(
                 modifier = modifier,
                 collection = uiState.collection,
                 palettes = palettes,
-                onMediaClick = onMediaClick
+                onMediaClick = onMediaClick,
+                showTopBar = showTopBar
             )
         }
 
@@ -83,99 +87,115 @@ fun MediaCollections(
     modifier: Modifier,
     collection: MediaCollections,
     palettes: Map<String, Material3Palette>,
-    onMediaClick: (Int) -> Unit
+    onMediaClick: (Int) -> Unit,
+    showTopBar: (Boolean) -> Unit
 ) {
     TvLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(24.dp),
         contentPadding = PaddingValues(bottom = 56.dp)
     ) {
-        collection.trendingTvSeries?.let {
-            item(
-                contentType = IMMERSIVE_LIST_CONTENT_TYPE
-            ) {
-                ImmersiveMediaList(
-                    mediaList = it,
-                    palettes = palettes,
-                    onMediaClick = onMediaClick
-                )
-            }
+        immersiveListSection(
+            mediaList = collection.trendingTvSeries,
+            palettes = palettes,
+            onMediaClick = onMediaClick,
+            showTopBar = showTopBar
+        )
 
-            carouselSection(
-                sectionHeader = "Trending Movies This Season",
-                mediaList = collection.trendingMovies,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Trending Movies This Season",
+            mediaList = collection.trendingMovies,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Popular Series This Season",
-                mediaList = collection.popularTvSeries,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Popular Series This Season",
+            mediaList = collection.popularTvSeries,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Top Series This Season",
-                mediaList = collection.topTvSeries,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Top Series This Season",
+            mediaList = collection.topTvSeries,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Trending Series All Time",
-                mediaList = collection.trendingTvSeriesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Trending Series All Time",
+            mediaList = collection.trendingTvSeriesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Popular Series All Time",
-                mediaList = collection.popularTvSeriesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Popular Series All Time",
+            mediaList = collection.popularTvSeriesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Top Series All Time",
-                mediaList = collection.topTvSeriesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Top Series All Time",
+            mediaList = collection.topTvSeriesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Popular Movies This Season",
-                mediaList = collection.popularMovies,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Popular Movies This Season",
+            mediaList = collection.popularMovies,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Top Movies This Season",
-                mediaList = collection.topMovies,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Top Movies This Season",
+            mediaList = collection.topMovies,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Trending Movies All Time",
-                mediaList = collection.topMoviesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Trending Movies All Time",
+            mediaList = collection.topMoviesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Popular Movies All Time",
-                mediaList = collection.popularMoviesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Popular Movies All Time",
+            mediaList = collection.popularMoviesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Top Movies All Time",
-                mediaList = collection.topMoviesAllTime,
+        carouselSection(
+            sectionHeader = "Top Movies All Time",
+            mediaList = collection.topMoviesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
+    }
+}
+
+private fun TvLazyListScope.immersiveListSection(
+    mediaList: List<Media.TvSeries>?,
+    palettes: Map<String, Material3Palette>,
+    onMediaClick: (Int) -> Unit,
+    showTopBar: (Boolean) -> Unit
+) {
+    mediaList?.let {
+        item(
+            contentType = IMMERSIVE_LIST_CONTENT_TYPE
+        ) {
+            ImmersiveMediaList(
+                mediaList = it,
                 palettes = palettes,
-                onMediaClick = onMediaClick
+                onMediaClick = onMediaClick,
+                showTopBar = showTopBar
             )
         }
     }
@@ -211,6 +231,7 @@ fun PreviewBrowse(@PreviewParameter(MediaCollectionPreviewParameterProvider::cla
         BrowseScreen(
             uiState = BrowseViewModel.BrowseScreenUiState.Success(mediaCollections),
             onMediaClick = {},
+            showTopBar = {},
             palettes = palettes
         )
     }
