@@ -20,21 +20,12 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RadialGradientShader
 import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -62,8 +53,7 @@ import com.edwin.sekai.ui.utils.MediaTitle
 fun ImmersiveMediaList(
     mediaList: List<Media>,
     palettes: Map<String, Material3Palette>,
-    onMediaClick: (Int) -> Unit,
-    showTopBar: (Boolean) -> Unit
+    onMediaClick: (Int) -> Unit
 ) {
     val immersiveListHeight = 426.dp
     val immersiveListWidth = 758.dp
@@ -100,26 +90,7 @@ fun ImmersiveMediaList(
     ) {
         TvLazyRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .wrapContentHeight()
-                .onFocusChanged {
-                    if (it.hasFocus) {
-                        showTopBar(false)
-                    }
-                }
-                .onPreviewKeyEvent {
-                    when {
-                        Key.DirectionUp == it.key -> {
-                            showTopBar(true)
-                            true
-                        }
-
-                        else -> {
-                            showTopBar(false)
-                            false
-                        }
-                    }
-                },
+            modifier = Modifier.wrapContentHeight(),
             contentPadding = PaddingValues(horizontal = horizontalPadding)
         ) {
             itemsIndexed(mediaList) { index, anime ->
@@ -230,7 +201,7 @@ fun ImmersiveMediaListPreview(
         ImmersiveMediaList(
             mediaList = mediaList,
             palettes = palettes,
-            onMediaClick = {},
-            showTopBar = {})
+            onMediaClick = {}
+        )
     }
 }

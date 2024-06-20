@@ -35,7 +35,6 @@ fun BrowseRoute(
     onMediaClick: (Int) -> Unit,
     palettes: Map<String, Material3Palette>,
     modifier: Modifier = Modifier,
-    showTopBar: (Boolean) -> Unit,
     viewModel: BrowseViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -43,7 +42,6 @@ fun BrowseRoute(
         uiState = uiState,
         palettes = palettes,
         onMediaClick = onMediaClick,
-        showTopBar = showTopBar,
         modifier = modifier
     )
 }
@@ -53,7 +51,6 @@ fun BrowseScreen(
     uiState: BrowseViewModel.BrowseScreenUiState,
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit,
-    showTopBar: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (uiState) {
@@ -62,8 +59,7 @@ fun BrowseScreen(
                 modifier = modifier,
                 collection = uiState.collection,
                 palettes = palettes,
-                onMediaClick = onMediaClick,
-                showTopBar = showTopBar
+                onMediaClick = onMediaClick
             )
         }
 
@@ -87,8 +83,7 @@ fun MediaCollections(
     modifier: Modifier,
     collection: MediaCollections,
     palettes: Map<String, Material3Palette>,
-    onMediaClick: (Int) -> Unit,
-    showTopBar: (Boolean) -> Unit
+    onMediaClick: (Int) -> Unit
 ) {
     TvLazyColumn(
         modifier = modifier,
@@ -98,8 +93,7 @@ fun MediaCollections(
         immersiveListSection(
             mediaList = collection.trendingTvSeries,
             palettes = palettes,
-            onMediaClick = onMediaClick,
-            showTopBar = showTopBar
+            onMediaClick = onMediaClick
         )
 
         carouselSection(
@@ -184,8 +178,7 @@ fun MediaCollections(
 private fun TvLazyListScope.immersiveListSection(
     mediaList: List<Media.TvSeries>?,
     palettes: Map<String, Material3Palette>,
-    onMediaClick: (Int) -> Unit,
-    showTopBar: (Boolean) -> Unit
+    onMediaClick: (Int) -> Unit
 ) {
     mediaList?.let {
         item(
@@ -194,8 +187,7 @@ private fun TvLazyListScope.immersiveListSection(
             ImmersiveMediaList(
                 mediaList = it,
                 palettes = palettes,
-                onMediaClick = onMediaClick,
-                showTopBar = showTopBar
+                onMediaClick = onMediaClick
             )
         }
     }
@@ -231,7 +223,6 @@ fun PreviewBrowse(@PreviewParameter(MediaCollectionPreviewParameterProvider::cla
         BrowseScreen(
             uiState = BrowseViewModel.BrowseScreenUiState.Success(mediaCollections),
             onMediaClick = {},
-            showTopBar = {},
             palettes = palettes
         )
     }
