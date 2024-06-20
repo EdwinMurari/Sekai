@@ -1,22 +1,31 @@
 package com.edwin.sekai.ui.feature.home
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Tab
-import androidx.tv.material3.TabRow
+import androidx.tv.material3.Icon
+import androidx.tv.material3.NavigationDrawer
+import androidx.tv.material3.NavigationDrawerItem
 import androidx.tv.material3.Text
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
@@ -26,7 +35,6 @@ import com.edwin.sekai.ui.feature.browse.BrowseRoute
 import com.edwin.sekai.ui.feature.categories.CategoriesScreen
 import com.edwin.sekai.ui.feature.extensions.ExtensionsScreen
 import com.edwin.sekai.ui.feature.search.SearchScreen
-import kotlin.enums.EnumEntries
 
 @Composable
 fun HomeRoute(
@@ -52,25 +60,15 @@ fun HomeScreen(
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tabs = TabNavOption.entries
 
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
+    ModalNavDrawer(selectedTab, onTabSelectionChange, modifier = modifier, content = { adawd ->
         Content(
             modifier = Modifier.fillMaxSize(),
             selectedTab = selectedTab,
             palettes = palettes,
             onMediaClick = onMediaClick
         )
-
-        NavigationTopBar(
-            modifier = Modifier.align(Alignment.TopCenter),
-            tabs = tabs,
-            selectedTab = selectedTab,
-            onTabSelectionChange = onTabSelectionChange
-        )
-    }
+    })
 }
 
 @Composable
@@ -85,7 +83,7 @@ private fun Content(
             BrowseRoute(
                 modifier = modifier,
                 palettes = palettes,
-                onMediaClick = onMediaClick,
+                onMediaClick = onMediaClick
             )
         }
 
@@ -103,40 +101,58 @@ private fun Content(
     }
 }
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
-private fun NavigationTopBar(
-    tabs: EnumEntries<TabNavOption>,
-    selectedTab: TabNavOption,
-    onTabSelectionChange: (TabNavOption) -> Unit,
+fun ModalNavDrawer(
+    currentNavOption: TabNavOption,
+    onCurrentScreenUpdate: (TabNavOption) -> Unit,
+    content: @Composable (TabNavOption) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    TabRow(
-        selectedTabIndex = tabs.indexOf(selectedTab),
-        modifier = modifier
-            .padding(top = 24.dp)
-            .focusRestorer()
-            .padding(8.dp)
-    ) {
-        tabs.forEachIndexed { index, tab ->
-            key(index) {
-                Tab(
-                    modifier = Modifier.padding(8.dp),
-                    selected = tab == selectedTab,
-                    onFocus = { onTabSelectionChange(tab) },
-                ) {
-                    Text(text = tab.label)
+
+    val tabs = TabNavOption.entries
+
+    NavigationDrawer(
+        modifier = modifier,
+        drawerContent = { drawerValue ->
+            Column(
+                Modifier
+                    .background(Color.Transparent)
+                    .fillMaxHeight()
+                    .selectableGroup(),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+
+                tabs.forEachIndexed { index, tab ->
+                    key(index) {
+                        NavigationDrawerItem(
+                            selected = currentNavOption == tab,
+                            onClick = {
+                                onCurrentScreenUpdate(tab)
+                            },
+                            leadingContent = {
+                                Icon(
+                                    imageVector = tab.icon,
+                                    contentDescription = null,
+                                )
+                            }
+                        ) {
+                            Text(tab.label)
+                        }
+                    }
                 }
             }
-        }
-    }
+        },
+        content = { content(currentNavOption) }
+    )
 }
 
-enum class TabNavOption(val label: String) {
-    Home("Home"),
-    Categories("Categories"),
-    Search("Search"),
-    Extensions("Extensions")
+enum class TabNavOption(val icon: ImageVector, val label: String) {
+    Home(Icons.Default.Home, "Home"),
+    Categories(Icons.Default.Menu, "Categories"),
+    Search(Icons.Default.Search, "Search"),
+    Extensions(Icons.Default.List, "Extensions")
 }
 
 @TvPreview

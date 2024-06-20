@@ -90,90 +90,102 @@ fun MediaCollections(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         contentPadding = PaddingValues(bottom = 56.dp)
     ) {
-        collection.trendingTvSeries?.let {
-            item(
-                contentType = IMMERSIVE_LIST_CONTENT_TYPE
-            ) {
-                ImmersiveMediaList(
-                    mediaList = it,
-                    palettes = palettes,
-                    onMediaClick = onMediaClick
-                )
-            }
+        immersiveListSection(
+            mediaList = collection.trendingTvSeries,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Trending Movies This Season",
-                mediaList = collection.trendingMovies,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Trending Movies This Season",
+            mediaList = collection.trendingMovies,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Popular Series This Season",
-                mediaList = collection.popularTvSeries,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Popular Series This Season",
+            mediaList = collection.popularTvSeries,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Top Series This Season",
-                mediaList = collection.topTvSeries,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Top Series This Season",
+            mediaList = collection.topTvSeries,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Trending Series All Time",
-                mediaList = collection.trendingTvSeriesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Trending Series All Time",
+            mediaList = collection.trendingTvSeriesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Popular Series All Time",
-                mediaList = collection.popularTvSeriesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Popular Series All Time",
+            mediaList = collection.popularTvSeriesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Top Series All Time",
-                mediaList = collection.topTvSeriesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Top Series All Time",
+            mediaList = collection.topTvSeriesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Popular Movies This Season",
-                mediaList = collection.popularMovies,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Popular Movies This Season",
+            mediaList = collection.popularMovies,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Top Movies This Season",
-                mediaList = collection.topMovies,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Top Movies This Season",
+            mediaList = collection.topMovies,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Trending Movies All Time",
-                mediaList = collection.topMoviesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Trending Movies All Time",
+            mediaList = collection.topMoviesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Popular Movies All Time",
-                mediaList = collection.popularMoviesAllTime,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        carouselSection(
+            sectionHeader = "Popular Movies All Time",
+            mediaList = collection.popularMoviesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
 
-            carouselSection(
-                sectionHeader = "Top Movies All Time",
-                mediaList = collection.topMoviesAllTime,
+        carouselSection(
+            sectionHeader = "Top Movies All Time",
+            mediaList = collection.topMoviesAllTime,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
+    }
+}
+
+private fun TvLazyListScope.immersiveListSection(
+    mediaList: List<Media.TvSeries>?,
+    palettes: Map<String, Material3Palette>,
+    onMediaClick: (Int) -> Unit
+) {
+    mediaList?.let {
+        item(
+            contentType = IMMERSIVE_LIST_CONTENT_TYPE
+        ) {
+            ImmersiveMediaList(
+                mediaList = it,
                 palettes = palettes,
                 onMediaClick = onMediaClick
             )

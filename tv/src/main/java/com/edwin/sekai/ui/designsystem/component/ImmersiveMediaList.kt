@@ -17,12 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -69,8 +66,6 @@ fun ImmersiveMediaList(
         createRadialGradientBrush(surfaceColor)
     }
 
-    val focusRequester = remember { FocusRequester() }
-
     ImmersiveList(
         modifier = Modifier
             .height(immersiveListHeight + cardHeight / 4)
@@ -95,9 +90,7 @@ fun ImmersiveMediaList(
     ) {
         TvLazyRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .wrapContentHeight(),
+            modifier = Modifier.wrapContentHeight(),
             contentPadding = PaddingValues(horizontal = horizontalPadding)
         ) {
             itemsIndexed(mediaList) { index, anime ->
@@ -109,10 +102,6 @@ fun ImmersiveMediaList(
                 )
             }
         }
-    }
-
-    LaunchedEffect(Unit) { // Request focus for the first item initially
-        focusRequester.requestFocus()
     }
 }
 
@@ -209,6 +198,10 @@ fun ImmersiveMediaListPreview(
     val context = LocalContext.current
     val palettes = loadMaterial3Palettes(context)
     SekaiTheme {
-        ImmersiveMediaList(mediaList = mediaList, palettes = palettes, onMediaClick = {})
+        ImmersiveMediaList(
+            mediaList = mediaList,
+            palettes = palettes,
+            onMediaClick = {}
+        )
     }
 }
