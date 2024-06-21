@@ -36,8 +36,7 @@ android {
 
 dependencies {
 
-    implementation(project(":network"))
-
+    implementation(project(":anilist"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
