@@ -1,4 +1,4 @@
-package com.edwin.kitsu
+package com.edwin.jikan
 
 import org.junit.Test
 

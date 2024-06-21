@@ -1,6 +1,6 @@
-package com.edwin.network.kitsu.di
+package com.edwin.network.jikan.di
 
-import com.edwin.network.kitsu.BuildConfig
+import com.edwin.network.jikan.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.edwin.network.kitsu"
+    namespace = "com.edwin.network.jikan"
     compileSdk = 34
 
     defaultConfig {
@@ -16,7 +16,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
-        buildConfigField("String", "KITSU_API_URL", "\"https://kitsu.io/api/edge/\"")
+        buildConfigField("String", "BASE_API_URL", "\"https://api.jikan.moe/v4/\"")
     }
 
     buildTypes {

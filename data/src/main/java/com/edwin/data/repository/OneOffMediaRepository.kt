@@ -6,7 +6,7 @@ import com.edwin.data.model.MediaCollections
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
 import com.edwin.network.anilist.MediaNetworkDataSource
-import com.edwin.network.kitsu.KitsuNetworkDataSource
+import com.edwin.network.jikan.JikanNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 internal class OneOffMediaRepository @Inject constructor(
     private val networkDataSource: MediaNetworkDataSource,
-    private val kitsuDataSource: KitsuNetworkDataSource
+    private val jikanDataSource: JikanNetworkDataSource
 ) : MediaRepository {
 
     override fun getTrendingAndPopularMedia(
@@ -48,10 +48,10 @@ internal class OneOffMediaRepository @Inject constructor(
                 )
             } else {
                 return@map response.data?.Media?.mediaDetailsFragment?.let { mediaDetailsFragment ->
-                    val kitsuId = kitsuDataSource.getKitsuIdFromMalId(mediaDetailsFragment.mediaFragment.id, "anilist/anime")
-                    val kitsuResponse = kitsuId?.let { kitsuDataSource.getEpisodeForAnime(it) }
+                    val jikanEpisodesResponse =
+                        mediaDetailsFragment.idMal?.let { jikanDataSource.getEpisodeForAnime(it) }
 
-                    mediaDetailsFragment.asExternalModel(kitsuResponse)?.let {
+                    mediaDetailsFragment.asExternalModel(jikanEpisodesResponse)?.let {
                         NetworkResponse.Success(it)
                     } ?: NetworkResponse.Error(listOf(Error()))
                 } ?: NetworkResponse.Error(listOf(Error()))

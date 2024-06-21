@@ -3,24 +3,31 @@ package com.edwin.data.mapper
 import com.edwin.data.model.MediaDetails
 import com.edwin.network.anilist.fragment.MediaDetailsFragment
 import com.edwin.network.anilist.fragment.MediaFragment
-import com.edwin.network.kitsu.model.KitsuEpisodeResponse
+import com.edwin.network.jikan.model.JikanEpisodesResponse
 
-fun MediaDetailsFragment.asExternalModel(kitsuResponse: KitsuEpisodeResponse?) = when {
-    mediaFragment.format.isTvSeries() -> asExternalTvSeriesModel(kitsuResponse)
+fun MediaDetailsFragment.asExternalModel(jikanResponse: JikanEpisodesResponse?) = when {
+    mediaFragment.format.isTvSeries() -> asExternalTvSeriesModel(jikanResponse)
     mediaFragment.format.isMovie() -> asExternalMovieModel()
     else -> null
 }
 
-fun MediaDetailsFragment.asExternalTvSeriesModel(kitsuResponse: KitsuEpisodeResponse?) = MediaDetails.TvSeries(
-    media = mediaFragment.asExternalTvSeriesModel(),
-    fullTitle = mediaFragment.title?.asExternalModel(),
-    relations = relations?.edges?.mapNotNull { it?.asExternalModel() },
-    recommendations = recommendations?.edges?.mapNotNull { it?.asExternalModel() },
-    episodes = kitsuResponse?.asExternalModel()
-)
+fun MediaDetailsFragment.asExternalTvSeriesModel(jikanEpisodesResponse: JikanEpisodesResponse?) =
+    MediaDetails.TvSeries(
+        media = mediaFragment.asExternalTvSeriesModel(),
+        fullTitle = mediaFragment.title?.asExternalModel(),
+        relations = relations?.edges?.mapNotNull { it?.asExternalModel() },
+        recommendations = recommendations?.edges?.mapNotNull { it?.asExternalModel() },
+        episodes = jikanEpisodesResponse?.asExternalModel()
+    )
 
-private fun KitsuEpisodeResponse?.asExternalModel(): List<MediaDetails.Episode>? {
-    return listOf<MediaDetails.Episode>()
+private fun JikanEpisodesResponse?.asExternalModel(): List<MediaDetails.Episode>? {
+    return this?.data?.map {
+        MediaDetails.Episode(
+            number = it.malId,
+            title = it.title ?: it.titleRomanji ?: it.titleJapanese,
+            filler = it.filler
+        )
+    }
 }
 
 fun MediaDetailsFragment.asExternalMovieModel() = MediaDetails.Movie(
