@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.edwin.anilist"
+    namespace = "com.edwin.network.anilist"
     compileSdk = 34
 
     defaultConfig {
@@ -60,7 +60,7 @@ dependencies {
 
 apollo {
     service("service") {
-        packageName.set("com.edwin.anilist")
+        packageName.set("com.edwin.network.anilist")
     }
 }
 

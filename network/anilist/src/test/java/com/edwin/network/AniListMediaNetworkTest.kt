@@ -1,8 +1,9 @@
 package com.edwin.network
 
 import com.apollographql.apollo3.ApolloClient
-import com.edwin.network.apollo.AniListMediaNetwork
-import com.edwin.network.type.MediaSeason
+import com.edwin.network.anilist.BuildConfig
+import com.edwin.network.anilist.apollo.AniListMediaNetwork
+import com.edwin.network.anilist.type.MediaSeason
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

@@ -5,7 +5,7 @@ import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
 import com.edwin.data.mapper.asExternalModel
 import com.edwin.data.mapper.asNetworkModel
-import com.edwin.network.MediaNetworkDataSource
+import com.edwin.network.anilist.MediaNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow

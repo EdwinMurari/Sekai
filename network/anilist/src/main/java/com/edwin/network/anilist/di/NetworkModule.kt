@@ -1,7 +1,7 @@
-package com.edwin.network.di
+package com.edwin.network.anilist.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.edwin.network.BuildConfig
+import com.edwin.network.anilist.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

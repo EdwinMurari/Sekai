@@ -1,8 +1,8 @@
 package com.edwin.data.mapper
 
 import com.edwin.data.model.MediaDetails
-import com.edwin.network.fragment.MediaDetailsFragment
-import com.edwin.network.fragment.MediaFragment
+import com.edwin.network.anilist.fragment.MediaDetailsFragment
+import com.edwin.network.anilist.fragment.MediaFragment
 
 fun MediaDetailsFragment.asExternalModel() = when {
     mediaFragment.format.isTvSeries() -> asExternalTvSeriesModel()

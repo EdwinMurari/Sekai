@@ -1,7 +1,7 @@
-package com.edwin.network
+package com.edwin.network.anilist
 
 import com.apollographql.apollo3.api.ApolloResponse
-import com.edwin.network.type.MediaSeason
+import com.edwin.network.anilist.type.MediaSeason
 import kotlinx.coroutines.flow.Flow
 
 interface MediaNetworkDataSource {

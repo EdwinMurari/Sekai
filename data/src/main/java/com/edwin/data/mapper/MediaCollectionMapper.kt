@@ -1,7 +1,7 @@
 package com.edwin.data.mapper
 
 import com.edwin.data.model.MediaCollections
-import com.edwin.network.GetTrendingAndPopularQuery
+import com.edwin.network.anilist.GetTrendingAndPopularQuery
 
 fun GetTrendingAndPopularQuery.Data.asExternalModel() = MediaCollections(
     trendingTvSeries = trendingAnimeThisSeason?.media

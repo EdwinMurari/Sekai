@@ -1,7 +1,7 @@
-package com.edwin.network.di
+package com.edwin.network.anilist.di
 
-import com.edwin.network.MediaNetworkDataSource
-import com.edwin.network.apollo.AniListMediaNetwork
+import com.edwin.network.anilist.MediaNetworkDataSource
+import com.edwin.network.anilist.apollo.AniListMediaNetwork
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

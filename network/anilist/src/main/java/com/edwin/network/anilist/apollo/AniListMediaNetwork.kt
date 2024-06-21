@@ -1,11 +1,11 @@
-package com.edwin.network.apollo
+package com.edwin.network.anilist.apollo
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloRequest
-import com.edwin.network.GetMediaDetailsByIdQuery
-import com.edwin.network.GetTrendingAndPopularQuery
-import com.edwin.network.MediaNetworkDataSource
-import com.edwin.network.type.MediaSeason
+import com.edwin.network.anilist.GetMediaDetailsByIdQuery
+import com.edwin.network.anilist.GetTrendingAndPopularQuery
+import com.edwin.network.anilist.MediaNetworkDataSource
+import com.edwin.network.anilist.type.MediaSeason
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
