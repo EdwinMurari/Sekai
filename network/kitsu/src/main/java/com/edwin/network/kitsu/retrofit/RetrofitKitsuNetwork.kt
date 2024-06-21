@@ -3,6 +3,7 @@ package com.edwin.network.kitsu.retrofit
 import com.edwin.network.kitsu.BuildConfig
 import com.edwin.network.kitsu.KitsuNetworkDataSource
 import com.edwin.network.kitsu.model.KitsuEpisodeResponse
+import com.edwin.network.kitsu.model.KitsuMappingResponse
 import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
@@ -17,8 +18,14 @@ private interface KitsuService {
 
     @GET("episodes")
     suspend fun getAnimeEpisodes(
-        @Query("filter[malId]") malId: Int,
+        @Query("filter[id]") animeId: String,
     ): KitsuEpisodeResponse
+
+    @GET("mappings")
+    suspend fun getKitsuIdFromMalId(
+        @Query("filter[externalSite]") externalSite: String,
+        @Query("filter[externalId]") malId: Int
+    ): KitsuMappingResponse
 }
 
 @Singleton
@@ -41,7 +48,12 @@ internal class RetrofitKitsuNetwork @Inject constructor(
 
     private val service: KitsuService = retrofit.create(KitsuService::class.java)
 
-    override suspend fun getEpisodeForAnime(malId: Int): KitsuEpisodeResponse {
-        return service.getAnimeEpisodes(malId)
+    override suspend fun getEpisodeForAnime(animeId: String): KitsuEpisodeResponse {
+        return service.getAnimeEpisodes(animeId)
+    }
+
+    override suspend fun getKitsuIdFromMalId(malId: Int, externalSite: String): String? {
+        val response = service.getKitsuIdFromMalId(malId = malId, externalSite = externalSite)
+        return response.data?.firstOrNull()?.id // Get the first mapping ID (if found)
     }
 }

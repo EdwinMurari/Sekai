@@ -16,7 +16,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
-        buildConfigField("String", "KITSU_API_URL", "\"https://kitsu.io/api/edge\"")
+        buildConfigField("String", "KITSU_API_URL", "\"https://kitsu.io/api/edge/\"")
     }
 
     buildTypes {

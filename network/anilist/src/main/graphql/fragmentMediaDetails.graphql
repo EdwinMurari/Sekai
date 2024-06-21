@@ -1,6 +1,8 @@
 fragment MediaDetailsFragment on Media {
     ...MediaFragment
 
+    idMal
+
     streamingEpisodes {
         title
         thumbnail

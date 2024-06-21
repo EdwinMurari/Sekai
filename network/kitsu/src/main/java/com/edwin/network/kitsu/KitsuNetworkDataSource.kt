@@ -4,5 +4,7 @@ import com.edwin.network.kitsu.model.KitsuEpisodeResponse
 
 interface KitsuNetworkDataSource {
 
-    suspend fun getEpisodeForAnime(malId: Int): KitsuEpisodeResponse
+    suspend fun getEpisodeForAnime(animeId: String): KitsuEpisodeResponse
+
+    suspend fun getKitsuIdFromMalId(malId: Int, externalSite: String): String?
 }

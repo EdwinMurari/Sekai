@@ -13,6 +13,6 @@ abstract class DataSourceModule {
 
     @Binds
     internal abstract fun bindsMediaNetworkDataSource(
-        dataSource: KitsuNetworkDataSource
-    ): RetrofitKitsuNetwork
+        dataSource: RetrofitKitsuNetwork
+    ): KitsuNetworkDataSource
 }
