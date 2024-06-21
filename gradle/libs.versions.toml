@@ -18,6 +18,7 @@ constraintlayout = "2.1.4"
 composeBom = "2024.06.00"
 mockk = "1.13.11"
 navVersion = "2.7.7"
+retrofit = "2.11.0"
 tvFoundation = "1.0.0-alpha10"
 tvMaterial = "1.0.0-alpha10"
 lifecycleRuntimeKtx = "2.8.2"
@@ -56,6 +57,8 @@ androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", nam
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "paletteKtx" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
