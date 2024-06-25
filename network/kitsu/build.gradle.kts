@@ -1,10 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
+    id("com.apollographql.apollo3").version("3.8.4")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
-    namespace = "com.edwin.kitsu"
+    namespace = "com.edwin.network.kitsu"
     compileSdk = 34
 
     defaultConfig {
@@ -12,6 +15,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField("String", "GRAPHQL_URL", "\"https://kitsu.io/api/graphql\"")
     }
 
     buildTypes {
@@ -30,6 +35,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -40,4 +49,22 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Apollo GraphQL
+    implementation(libs.apollo.runtime)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+}
+
+apollo {
+    service("service") {
+        packageName.set("com.edwin.network.kitsu")
+    }
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }

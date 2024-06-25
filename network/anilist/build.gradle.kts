@@ -51,6 +51,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.kotlinx.coroutines.test)
 
+    // Apollo GraphQL
     implementation(libs.apollo.runtime)
 
     // Hilt
