@@ -4,7 +4,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.edwin.network.anilist.type.MediaSeason
 import kotlinx.coroutines.flow.Flow
 
-interface MediaNetworkDataSource {
+interface AnilistNetworkDataSource {
 
     suspend fun getTrendingAndPopularMedia(
         season: MediaSeason,

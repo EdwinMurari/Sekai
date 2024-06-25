@@ -4,7 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloRequest
 import com.edwin.network.anilist.GetMediaDetailsByIdQuery
 import com.edwin.network.anilist.GetTrendingAndPopularQuery
-import com.edwin.network.anilist.MediaNetworkDataSource
+import com.edwin.network.anilist.AnilistNetworkDataSource
 import com.edwin.network.anilist.type.MediaSeason
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -12,10 +12,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class AniListMediaNetwork @Inject constructor(
+internal class ApolloAnilistNetworkDataSource @Inject constructor(
     private val apolloClient: ApolloClient,
     private val ioDispatcher: CoroutineDispatcher,
-) : MediaNetworkDataSource {
+) : AnilistNetworkDataSource {
 
     override suspend fun getTrendingAndPopularMedia(
         season: MediaSeason,

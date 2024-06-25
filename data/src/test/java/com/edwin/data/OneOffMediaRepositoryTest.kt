@@ -6,9 +6,10 @@ import com.edwin.data.mapper.asNetworkModel
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
 import com.edwin.data.repository.OneOffMediaRepository
-import com.edwin.network.GetTrendingAndPopularQuery
-import com.edwin.network.MediaNetworkDataSource
-import com.edwin.network.fragment.MediaFragment
+import com.edwin.network.anilist.GetTrendingAndPopularQuery
+import com.edwin.network.anilist.AnilistNetworkDataSource
+import com.edwin.network.anilist.fragment.MediaFragment
+import com.edwin.network.jikan.JikanNetworkDataSource
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -23,8 +24,12 @@ import com.apollographql.apollo3.api.Error as ApolloError
 @ExperimentalCoroutinesApi
 class OneOffMediaRepositoryTest {
 
-    private val networkDataSource: MediaNetworkDataSource = mockk<MediaNetworkDataSource>()
-    private val repository = OneOffMediaRepository(networkDataSource)
+    private val networkDataSource = mockk<AnilistNetworkDataSource>()
+    private val jikanNetworkDataSource = mockk<JikanNetworkDataSource>()
+    private val repository = OneOffMediaRepository(
+        networkDataSource = networkDataSource,
+        jikanDataSource = jikanNetworkDataSource
+    )
 
     private val mediaSeason = MediaSeason.FALL
     private val seasonYear = 2024

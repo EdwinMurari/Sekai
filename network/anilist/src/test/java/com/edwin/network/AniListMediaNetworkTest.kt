@@ -2,7 +2,7 @@ package com.edwin.network
 
 import com.apollographql.apollo3.ApolloClient
 import com.edwin.network.anilist.BuildConfig
-import com.edwin.network.anilist.apollo.AniListMediaNetwork
+import com.edwin.network.anilist.apollo.ApolloAnilistNetworkDataSource
 import com.edwin.network.anilist.type.MediaSeason
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +18,7 @@ import org.junit.Test
 class AniListMediaNetworkTest {
 
     private lateinit var apolloClient: ApolloClient
-    private lateinit var networkDataSource: AniListMediaNetwork
+    private lateinit var networkDataSource: ApolloAnilistNetworkDataSource
 
     private val mediaSeason = MediaSeason.FALL
     private val seasonYear = 2024
@@ -28,7 +28,7 @@ class AniListMediaNetworkTest {
         apolloClient = ApolloClient.Builder()
             .serverUrl(BuildConfig.ANILIST_GRAPHQL_URL)
             .build()
-        networkDataSource = AniListMediaNetwork(apolloClient, Dispatchers.IO)
+        networkDataSource = ApolloAnilistNetworkDataSource(apolloClient, Dispatchers.IO)
     }
 
     @Test

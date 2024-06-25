@@ -1,7 +1,7 @@
 package com.edwin.network.jikan.di
 
 import com.edwin.network.jikan.JikanNetworkDataSource
-import com.edwin.network.jikan.retrofit.RetrofitJikanNetwork
+import com.edwin.network.jikan.retrofit.RetrofitJikanNetworkDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,6 +13,6 @@ abstract class DataSourceModule {
 
     @Binds
     internal abstract fun bindsMediaNetworkDataSource(
-        dataSource: RetrofitJikanNetwork
+        dataSource: RetrofitJikanNetworkDataSource
     ): JikanNetworkDataSource
 }
