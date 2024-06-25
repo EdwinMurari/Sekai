@@ -40,7 +40,11 @@ fun TvLazyListScope.episodesSection(mediaDetails: MediaDetails, onClickWatch: (I
     if (mediaDetails is MediaDetails.TvSeries && !mediaDetails.episodes.isNullOrEmpty()) {
         sectionHeader("Episodes")
         item {
-            EpisodesSection(mediaDetails.episodes!!, onEpisodeSelected = onClickWatch)
+            EpisodesSection(
+                episodesList = mediaDetails.episodes!!,
+                fallbackBanner = mediaDetails.media.bannerImage,
+                onEpisodeSelected = onClickWatch
+            )
         }
     }
 }
@@ -49,6 +53,7 @@ fun TvLazyListScope.episodesSection(mediaDetails: MediaDetails, onClickWatch: (I
 @Composable
 fun EpisodesSection(
     episodesList: List<MediaDetails.Episode>,
+    fallbackBanner: String?,
     onEpisodeSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -78,12 +83,14 @@ fun EpisodesSection(
 
             EpisodeListGrid(
                 episodesList = chunkedEpisodes[selectedTabIndex].toList(),
+                fallbackBanner = fallbackBanner,
                 onEpisodeSelected = onEpisodeSelected
             )
         }
     } else {
         EpisodeListGrid(
             episodesList = episodesList,
+            fallbackBanner = fallbackBanner,
             onEpisodeSelected = onEpisodeSelected
         )
     }
@@ -92,6 +99,7 @@ fun EpisodesSection(
 @Composable
 private fun EpisodeListGrid(
     episodesList: List<MediaDetails.Episode>,
+    fallbackBanner: String?,
     onEpisodeSelected: (Int) -> Unit
 ) {
     TvLazyHorizontalGrid(
@@ -104,6 +112,7 @@ private fun EpisodeListGrid(
         items(episodesList) { episode -> // TODO :: Add key
             EpisodeCard(
                 episode = episode,
+                fallbackBanner = fallbackBanner,
                 onEpisodeSelected = onEpisodeSelected
             )
         }
@@ -112,13 +121,17 @@ private fun EpisodeListGrid(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun EpisodeCard(episode: MediaDetails.Episode, onEpisodeSelected: (Int) -> Unit) {
+private fun EpisodeCard(
+    episode: MediaDetails.Episode,
+    fallbackBanner: String?,
+    onEpisodeSelected: (Int) -> Unit
+) {
     WideClassicCard(
         onClick = { onEpisodeSelected(episode.number) },
         image = {
             PreviewAbleSubComposeImage(
                 previewImage = painterResource(id = R.drawable.naruto_ep1),
-                imageUrl = episode.thumbnail,
+                imageUrl = episode.thumbnail ?: fallbackBanner,
                 contentScale = ContentScale.Crop,
                 contentDescription = "${episode.number} thumbnail",
                 modifier = Modifier

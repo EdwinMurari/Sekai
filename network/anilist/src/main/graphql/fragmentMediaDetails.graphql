@@ -1,0 +1,27 @@
+fragment MediaDetailsFragment on Media {
+    ...MediaFragment
+
+    idMal
+
+    streamingEpisodes {
+        title
+        thumbnail
+    }
+    relations {
+        edges {
+            relationType
+            node {
+                ...MediaFragment
+            }
+        }
+    }
+    recommendations(sort: RATING_DESC) {
+        edges {
+            node {
+                mediaRecommendation {
+                    ...MediaFragment
+                }
+            }
+        }
+    }
+}

@@ -36,11 +36,11 @@ android {
 
 dependencies {
 
-    implementation(project(":network"))
-
+    implementation(project(":network:anilist"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(project(":network:jikan"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

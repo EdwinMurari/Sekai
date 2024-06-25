@@ -9,9 +9,13 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/anilist" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/mobile" />
             <option value="$PROJECT_DIR$/network" />
+            <option value="$PROJECT_DIR$/network/anilist" />
+            <option value="$PROJECT_DIR$/network/jikan" />
+            <option value="$PROJECT_DIR$/network/kitsu" />
             <option value="$PROJECT_DIR$/tv" />
           </set>
         </option>

@@ -1,11 +1,12 @@
 package com.edwin.data.repository
 
+import com.edwin.data.mapper.asExternalModel
+import com.edwin.data.mapper.asNetworkModel
 import com.edwin.data.model.MediaCollections
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
-import com.edwin.data.mapper.asExternalModel
-import com.edwin.data.mapper.asNetworkModel
-import com.edwin.network.MediaNetworkDataSource
+import com.edwin.network.anilist.MediaNetworkDataSource
+import com.edwin.network.jikan.JikanNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class OneOffMediaRepository @Inject constructor(
-    private val networkDataSource: MediaNetworkDataSource
+    private val networkDataSource: MediaNetworkDataSource,
+    private val jikanDataSource: JikanNetworkDataSource
 ) : MediaRepository {
 
     override fun getTrendingAndPopularMedia(
@@ -45,10 +47,14 @@ internal class OneOffMediaRepository @Inject constructor(
                     response.errors?.map { Error(it.message) } ?: listOf(Error())
                 )
             } else {
-                return@map response.data?.Media?.mediaDetailsFragment?.asExternalModel()
-                    ?.let { mediaDetails ->
-                        NetworkResponse.Success(mediaDetails)
+                return@map response.data?.Media?.mediaDetailsFragment?.let { mediaDetailsFragment ->
+                    val jikanEpisodesResponse =
+                        mediaDetailsFragment.idMal?.let { jikanDataSource.getEpisodeForAnime(it) }
+
+                    mediaDetailsFragment.asExternalModel(jikanEpisodesResponse)?.let {
+                        NetworkResponse.Success(it)
                     } ?: NetworkResponse.Error(listOf(Error()))
+                } ?: NetworkResponse.Error(listOf(Error()))
             }
         }
 }

@@ -2,9 +2,9 @@ package com.edwin.data.mapper
 
 import com.edwin.data.model.Media
 import com.edwin.data.model.MediaSeason
-import com.edwin.network.fragment.MediaFragment
-import com.edwin.network.type.MediaFormat as NetworkMediaFormat
-import com.edwin.network.type.MediaSeason as NetworkMediaSeason
+import com.edwin.network.anilist.fragment.MediaFragment
+import com.edwin.network.anilist.type.MediaFormat as NetworkMediaFormat
+import com.edwin.network.anilist.type.MediaSeason as NetworkMediaSeason
 
 fun MediaFragment.asExternalTvSeriesModel() = Media.TvSeries(
     id = id,

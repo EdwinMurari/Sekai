@@ -22,5 +22,8 @@ dependencyResolutionManagement {
 rootProject.name = "Sekai"
 include(":mobile")
 include(":tv")
-include(":network")
+include(":anilist")
 include(":data")
+include(":network:anilist")
+include(":network:jikan")
+include(":network:kitsu")
