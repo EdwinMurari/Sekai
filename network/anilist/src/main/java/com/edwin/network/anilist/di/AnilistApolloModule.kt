@@ -1,25 +1,31 @@
-package com.edwin.network.kitsu.di
+package com.edwin.network.anilist.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.edwin.network.kitsu.BuildConfig
+import com.edwin.network.anilist.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AniListApolloClient
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object AnilistApolloModule {
 
     @Provides
     @Singleton
-    internal fun apolloClient(ioDispatcher: CoroutineDispatcher): ApolloClient {
+    @AniListApolloClient
+    internal fun providesAnilistApolloClient(ioDispatcher: CoroutineDispatcher): ApolloClient {
         return ApolloClient.Builder()
             .dispatcher(ioDispatcher)
-            .serverUrl(BuildConfig.GRAPHQL_URL)
+            .serverUrl(BuildConfig.ANILIST_GRAPHQL_URL)
             .build()
     }
 
