@@ -9,7 +9,7 @@ query GetEpisodeForAnilistMediaId($mediaId: ID!) {
                     titles {
                         canonical
                     }
-                    description
+                    length
                     thumbnail {
                         original {
                             url

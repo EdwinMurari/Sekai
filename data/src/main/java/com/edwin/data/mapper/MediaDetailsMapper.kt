@@ -1,31 +1,58 @@
 package com.edwin.data.mapper
 
+import com.apollographql.apollo3.api.ApolloResponse
 import com.edwin.data.model.MediaDetails
 import com.edwin.network.anilist.fragment.MediaDetailsFragment
 import com.edwin.network.anilist.fragment.MediaFragment
 import com.edwin.network.jikan.model.JikanEpisodesResponse
+import com.edwin.network.kitsu.GetEpisodeForAnilistMediaIdQuery
 
-fun MediaDetailsFragment.asExternalModel(jikanResponse: JikanEpisodesResponse?) = when {
-    mediaFragment.format.isTvSeries() -> asExternalTvSeriesModel(jikanResponse)
+fun MediaDetailsFragment.asExternalModel(
+    jikanResponse: JikanEpisodesResponse?,
+    kitsuEpisodesResponse: ApolloResponse<GetEpisodeForAnilistMediaIdQuery.Data>
+) = when {
+    mediaFragment.format.isTvSeries() -> asExternalTvSeriesModel(
+        jikanResponse,
+        kitsuEpisodesResponse
+    )
+
     mediaFragment.format.isMovie() -> asExternalMovieModel()
     else -> null
 }
 
-fun MediaDetailsFragment.asExternalTvSeriesModel(jikanEpisodesResponse: JikanEpisodesResponse?) =
+fun MediaDetailsFragment.asExternalTvSeriesModel(
+    jikanEpisodesResponse: JikanEpisodesResponse?,
+    kitsuEpisodesResponse: ApolloResponse<GetEpisodeForAnilistMediaIdQuery.Data>
+) =
     MediaDetails.TvSeries(
         media = mediaFragment.asExternalTvSeriesModel(),
         fullTitle = mediaFragment.title?.asExternalModel(),
         relations = relations?.edges?.mapNotNull { it?.asExternalModel() },
         recommendations = recommendations?.edges?.mapNotNull { it?.asExternalModel() },
-        episodes = jikanEpisodesResponse?.asExternalModel()
+        episodes = mapEpisodes(jikanEpisodesResponse, kitsuEpisodesResponse)
     )
 
-private fun JikanEpisodesResponse?.asExternalModel(): List<MediaDetails.Episode>? {
-    return this?.data?.map {
+private fun mapEpisodes(
+    jikanEpisodesResponse: JikanEpisodesResponse?,
+    kitsuEpisodesResponse: ApolloResponse<GetEpisodeForAnilistMediaIdQuery.Data>
+): List<MediaDetails.Episode> {
+    val jikanEpisodes = jikanEpisodesResponse?.data ?: emptyList()
+    val kitsuEpisodes = kitsuEpisodesResponse.data?.lookupMapping?.onAnime?.episodes?.nodes
+        ?: emptyList()
+
+    val jikanEpisodeMap = jikanEpisodes.associateBy { it.malId }
+
+    return kitsuEpisodes.mapNotNull { kitsuEpisode ->
+        val episodeNumber = kitsuEpisode?.number ?: return@mapNotNull null
+        val jikanEpisode = jikanEpisodeMap[episodeNumber]
+
         MediaDetails.Episode(
-            number = it.malId,
-            title = it.title ?: it.titleRomanji ?: it.titleJapanese,
-            filler = it.filler
+            number = episodeNumber,
+            title = kitsuEpisode.titles.canonical,
+            thumbnail = kitsuEpisode.thumbnail?.original?.url,
+            filler = jikanEpisode?.filler ?: false,
+            recap = jikanEpisode?.recap ?: false,
+            duration = kitsuEpisode.length
         )
     }
 }
@@ -42,12 +69,6 @@ fun MediaFragment.Title.asExternalModel() = MediaDetails.Title(
     english = english,
     romaji = romaji,
     native = native
-)
-
-fun MediaDetailsFragment.StreamingEpisode.asExternalModel() = MediaDetails.Episode(
-    number = 0, // TODO :: Get the episode data from another source get fill all the details
-    title = title,
-    thumbnail = thumbnail
 )
 
 fun MediaDetailsFragment.Edge.asExternalModel() =
