@@ -7,7 +7,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -27,11 +26,5 @@ object AnilistApolloModule {
             .dispatcher(ioDispatcher)
             .serverUrl(BuildConfig.ANILIST_GRAPHQL_URL)
             .build()
-    }
-
-    @Provides
-    @Singleton
-    internal fun ioDispatcher(): CoroutineDispatcher {
-        return Dispatchers.IO
     }
 }
