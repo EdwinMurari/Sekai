@@ -7,8 +7,8 @@ import com.edwin.data.model.MediaDetails
 class MediaDetailsPreviewParameterProvider : PreviewParameterProvider<MediaDetails> {
     override val values: Sequence<MediaDetails>
         get() = sequenceOf(
-            MediaDetails.Movie(
-                media = Media.Movie(
+            MediaDetails.TvSeries(
+                media = Media.TvSeries(
                     id = 16498,
                     title = "Attack on Titan",
                     description = "Several hundred years ago, humans were nearly exterminated by titans...",
@@ -19,7 +19,8 @@ class MediaDetailsPreviewParameterProvider : PreviewParameterProvider<MediaDetai
                     popularity = 774584,
                     startDate = 2013,
                     averageColorHex = "#f1a143",
-                    duration = 1234
+                    episodesCount = 4,
+                    nextAiringEpisode = null
                 ),
                 fullTitle = MediaDetails.Title(
                     english = "Attack on Titan",
@@ -89,12 +90,13 @@ class MediaDetailsPreviewParameterProvider : PreviewParameterProvider<MediaDetai
                         averageColorHex = "#f1d6a1",
                         duration = 125 // Example duration
                     )
-                )
+                ),
+                episodes = PreviewParameterData.episodes
             ),
 
             // Naruto: Shippuden (TV Series) Example
-            MediaDetails.TvSeries(
-                media = Media.TvSeries(
+            MediaDetails.Movie(
+                media = Media.Movie(
                     id = 1735,
                     title = "Naruto: Shippuden",
                     description = "Naruto: Shippuuden is the continuation of the original...",
@@ -107,14 +109,13 @@ class MediaDetailsPreviewParameterProvider : PreviewParameterProvider<MediaDetai
                     popularity = 459035,
                     startDate = 2007,
                     averageColorHex = "#e4865d",
-                    episodesCount = 500
+                    duration = 1234
                 ),
                 fullTitle = MediaDetails.Title(
                     english = "Naruto: Shippuden",
                     romaji = "NARUTO: Shippuuden",
                     native = "NARUTO -ナルト- 疾風伝"
                 ),
-                episodes = listOf(),
                 relations = listOf(
                     MediaDetails.MediaRelation(
                         relationType = "Prequel",

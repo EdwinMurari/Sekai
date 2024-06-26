@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.tv.foundation.lazy.grid.TvGridCells
@@ -33,7 +34,10 @@ import androidx.tv.material3.Text
 import androidx.tv.material3.WideClassicCard
 import com.edwin.data.model.MediaDetails
 import com.edwin.sekai.R
+import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.PreviewAbleSubComposeImage
+import com.edwin.sekai.ui.designsystem.previewprovider.EpisodePreviewParameterProvider
+import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import java.util.Locale
 
 fun TvLazyListScope.episodesSection(mediaDetails: MediaDetails, onClickWatch: (Int) -> Unit) {
@@ -69,9 +73,7 @@ fun EpisodesSection(
                 chunkedEpisodes.forEachIndexed { index, _ ->
                     Tab(
                         selected = selectedTabIndex == index,
-                        onFocus = {
-                            selectedTabIndex = index
-                        },
+                        onFocus = { selectedTabIndex = index },
                     ) {
                         Text(
                             "${(index * chunkSize) + 1} - ${(index + 1) * chunkSize}",
@@ -109,7 +111,7 @@ private fun EpisodeListGrid(
         contentPadding = PaddingValues(horizontal = 58.dp, vertical = 12.dp),
         modifier = Modifier.height((83 * 2 + 8).dp)
     ) {
-        items(episodesList) { episode -> // TODO :: Add key
+        items(episodesList, key = { it.number }) { episode ->
             EpisodeCard(
                 episode = episode,
                 fallbackBanner = fallbackBanner,
@@ -178,4 +180,19 @@ private fun EpisodeCard(
         description = {
         }
     )
+}
+
+
+@TvPreview
+@Composable
+fun EpisodePreview(
+    @PreviewParameter(EpisodePreviewParameterProvider::class) episode: MediaDetails.Episode
+) {
+    SekaiTheme {
+        EpisodeCard(
+            episode = episode,
+            onEpisodeSelected = {},
+            fallbackBanner = null
+        )
+    }
 }
