@@ -4,7 +4,6 @@ import com.apollographql.apollo3.ApolloClient
 import com.edwin.network.anilist.BuildConfig
 import com.edwin.network.anilist.apollo.ApolloAnilistNetworkDataSource
 import com.edwin.network.anilist.type.MediaSeason
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
@@ -28,7 +27,7 @@ class AniListMediaNetworkTest {
         apolloClient = ApolloClient.Builder()
             .serverUrl(BuildConfig.ANILIST_GRAPHQL_URL)
             .build()
-        networkDataSource = ApolloAnilistNetworkDataSource(apolloClient, Dispatchers.IO)
+        networkDataSource = ApolloAnilistNetworkDataSource(apolloClient)
     }
 
     @Test

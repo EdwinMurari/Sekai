@@ -1,7 +1,7 @@
-package com.edwin.network.anilist.di
+package com.edwin.network.kitsu.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.edwin.network.anilist.BuildConfig
+import com.edwin.network.kitsu.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,10 +16,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    internal fun apolloClient(): ApolloClient {
+    internal fun apolloClient(ioDispatcher: CoroutineDispatcher): ApolloClient {
         return ApolloClient.Builder()
-            .dispatcher(ioDispatcher())
-            .serverUrl(BuildConfig.ANILIST_GRAPHQL_URL)
+            .dispatcher(ioDispatcher)
+            .serverUrl(BuildConfig.GRAPHQL_URL)
             .build()
     }
 
