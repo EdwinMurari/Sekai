@@ -4,6 +4,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.edwin.data.model.MediaDetails
 import com.edwin.network.anilist.fragment.MediaDetailsFragment
 import com.edwin.network.anilist.fragment.MediaFragment
+import com.edwin.network.jikan.model.JikanEpisodeData
 import com.edwin.network.jikan.model.JikanEpisodesResponse
 import com.edwin.network.kitsu.GetEpisodeForAnilistMediaIdQuery
 
@@ -35,27 +36,62 @@ fun MediaDetailsFragment.asExternalTvSeriesModel(
 private fun mapEpisodes(
     jikanEpisodesResponse: JikanEpisodesResponse?,
     kitsuEpisodesResponse: ApolloResponse<GetEpisodeForAnilistMediaIdQuery.Data>
-): List<MediaDetails.Episode> {
-    val jikanEpisodes = jikanEpisodesResponse?.data ?: emptyList()
+): List<MediaDetails.Episode>? {
+    val jikanEpisodes = jikanEpisodesResponse?.data
+        ?.takeUnless { it.isEmpty() }
+        ?.map { it.asExternalModel() }
     val kitsuEpisodes = kitsuEpisodesResponse.data?.lookupMapping?.onAnime?.episodes?.nodes
-        ?: emptyList()
+        ?.takeUnless { it.isEmpty() }
+        ?.mapNotNull { it?.asExternalModel() }
 
-    val jikanEpisodeMap = jikanEpisodes.associateBy { it.malId }
-
-    return kitsuEpisodes.mapNotNull { kitsuEpisode ->
-        val episodeNumber = kitsuEpisode?.number ?: return@mapNotNull null
-        val jikanEpisode = jikanEpisodeMap[episodeNumber]
-
-        MediaDetails.Episode(
-            number = episodeNumber,
-            title = kitsuEpisode.titles.canonical,
-            thumbnail = kitsuEpisode.thumbnail?.original?.url,
-            filler = jikanEpisode?.filler ?: false,
-            recap = jikanEpisode?.recap ?: false,
-            duration = kitsuEpisode.length
+    return when {
+        kitsuEpisodes != null && jikanEpisodes != null -> mergeEpisodes(
+            kitsuEpisodes,
+            jikanEpisodes
         )
+
+        kitsuEpisodes != null -> kitsuEpisodes
+        jikanEpisodes != null -> jikanEpisodes
+        else -> null
     }
 }
+
+private fun mergeEpisodes(
+    kitsuEpisodes: List<MediaDetails.Episode>,
+    jikanEpisodes: List<MediaDetails.Episode>
+): List<MediaDetails.Episode> {
+    val jikanEpisodeMap = jikanEpisodes.associateBy { it.number }
+
+    return (kitsuEpisodes.map { kitsuEpisode ->
+        jikanEpisodeMap[kitsuEpisode.number]?.let { jikanEpisode ->
+            kitsuEpisode.copy(
+                title = kitsuEpisode.title ?: jikanEpisode.title,
+                filler = jikanEpisode.filler,
+                recap = jikanEpisode.recap
+            )
+        } ?: kitsuEpisode
+    } + jikanEpisodes.filterNot { jikanEpisode ->  // Add unique Jikan episodes
+        kitsuEpisodes.any { it.number == jikanEpisode.number }
+    }).sortedBy { it.number }
+}
+
+private fun JikanEpisodeData.asExternalModel() = MediaDetails.Episode(
+    number = malId,
+    title = title ?: titleRomanji ?: titleJapanese,
+    thumbnail = null,
+    filler = filler,
+    recap = recap,
+    duration = null
+)
+
+private fun GetEpisodeForAnilistMediaIdQuery.Node.asExternalModel() = MediaDetails.Episode(
+    number = number,
+    title = titles.canonical,
+    thumbnail = thumbnail?.original?.url,
+    filler = false,
+    recap = false,
+    duration = length
+)
 
 fun MediaDetailsFragment.asExternalMovieModel() = MediaDetails.Movie(
     media = mediaFragment.asExternalMovieModel(),
