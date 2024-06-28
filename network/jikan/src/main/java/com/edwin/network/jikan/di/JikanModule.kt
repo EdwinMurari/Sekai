@@ -17,17 +17,17 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object JikanModule {
 
     @Provides
     @Singleton
-    fun providesNetworkJson(): Json = Json {
+    internal fun providesNetworkJson(): Json = Json {
         ignoreUnknownKeys = true
     }
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
+    internal fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
         .addInterceptor(
             HttpLoggingInterceptor()
                 .apply {
@@ -40,7 +40,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideService(
+    internal fun provideService(
         json: Json,
         okhttpCallFactory: dagger.Lazy<Call.Factory>
     ): JikanService = Retrofit.Builder()

@@ -43,6 +43,8 @@ android {
 
 dependencies {
 
+    api(project(":network:common"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -51,6 +53,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.kotlinx.coroutines.test)
 
+    // Apollo GraphQL
     implementation(libs.apollo.runtime)
 
     // Hilt

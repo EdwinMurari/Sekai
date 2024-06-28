@@ -1,6 +1,7 @@
 package com.edwin.sekai.ui.designsystem.previewprovider
 
 import com.edwin.data.model.Media
+import com.edwin.data.model.MediaDetails
 
 object PreviewParameterData {
 
@@ -121,6 +122,41 @@ object PreviewParameterData {
             description = "It is mid-December, and SOS Brigade chief Haruhi Suzumiya announces that the Brigade is going to hold a Christmas party in their clubroom, with Japanese hotpot for dinner. The brigade members Kyon, Yuki Nagato, Mikuru Asahina and Itsuki Koizumi start preparing everything for the party, such as costumes and decorations. But a couple of days later, Kyon arrives at school only to find that Haruhi is missing. Not only that, but Mikuru claims she has never known Kyon before, Koizumi is also missing, and Yuki has become the sole member of the literature club. The SOS Brigade seems to have never existed, nor has Haruhi Suzumiya. No one in the school has ever heard about her... except for Kyon.\n\n(Source: Anime News Network)",
             bannerImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx7311-9yOqvUKyflJG.jpg",
             genres = listOf("Drama", "Mystery", "Sci-Fi", "Supernatural")
+        )
+    )
+
+    val episodes = listOf(
+        MediaDetails.Episode(
+            number = 1,
+            title = "The Town Where Everything Began",
+            thumbnail = "https://media.kitsu.io/episodes/thumbnails/256494/original.jpg",
+            filler = false,
+            recap = false,
+            duration = 1435
+        ),
+        MediaDetails.Episode(
+            number = 2,
+            title = "Thunder Spears",
+            thumbnail = "https://media.kitsu.io/episodes/thumbnails/256495/original.jpg",
+            filler = true,
+            recap = false,
+            duration = 1435
+        ),
+        MediaDetails.Episode(
+            number = 3,
+            title = "Descent",
+            thumbnail = "https://media.kitsu.io/episodes/thumbnails/256496/original.jpg",
+            filler = false,
+            recap = true,
+            duration = 1435
+        ),
+        MediaDetails.Episode(
+            number = 4,
+            title = "Perfect Game",
+            thumbnail = "https://media.kitsu.io/episodes/thumbnails/256497/original.jpg",
+            filler = true,
+            recap = true,
+            duration = 1435
         )
     )
 }

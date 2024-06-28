@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class RetrofitJikanNetwork @Inject constructor(
+internal class RetrofitJikanNetworkDataSource @Inject constructor(
     private val service: JikanService
 ) : JikanNetworkDataSource {
 

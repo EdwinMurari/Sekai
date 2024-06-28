@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.edwin.data"
+    namespace = "com.edwin.network.common"
     compileSdk = 34
 
     defaultConfig {
@@ -36,26 +36,16 @@ android {
 
 dependencies {
 
-    implementation(project(":network:anilist"))
-    implementation(project(":network:jikan"))
-    implementation(project(":network:kitsu"))
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    testImplementation(libs.kotlinx.coroutines.test)
 
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
-
-    api(libs.apollo.runtime)
-
-    // Mockk framework
-    testImplementation(libs.mockk)
 }
 
 // Allow references to generated code

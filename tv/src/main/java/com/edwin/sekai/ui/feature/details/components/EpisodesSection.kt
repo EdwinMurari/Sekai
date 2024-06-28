@@ -3,6 +3,7 @@ package com.edwin.sekai.ui.feature.details.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.tv.foundation.lazy.grid.TvGridCells
@@ -33,7 +35,10 @@ import androidx.tv.material3.Text
 import androidx.tv.material3.WideClassicCard
 import com.edwin.data.model.MediaDetails
 import com.edwin.sekai.R
+import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.PreviewAbleSubComposeImage
+import com.edwin.sekai.ui.designsystem.previewprovider.EpisodePreviewParameterProvider
+import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import java.util.Locale
 
 fun TvLazyListScope.episodesSection(mediaDetails: MediaDetails, onClickWatch: (Int) -> Unit) {
@@ -69,9 +74,7 @@ fun EpisodesSection(
                 chunkedEpisodes.forEachIndexed { index, _ ->
                     Tab(
                         selected = selectedTabIndex == index,
-                        onFocus = {
-                            selectedTabIndex = index
-                        },
+                        onFocus = { selectedTabIndex = index },
                     ) {
                         Text(
                             "${(index * chunkSize) + 1} - ${(index + 1) * chunkSize}",
@@ -109,7 +112,7 @@ private fun EpisodeListGrid(
         contentPadding = PaddingValues(horizontal = 58.dp, vertical = 12.dp),
         modifier = Modifier.height((83 * 2 + 8).dp)
     ) {
-        items(episodesList) { episode -> // TODO :: Add key
+        items(episodesList, key = { it.number }) { episode ->
             EpisodeCard(
                 episode = episode,
                 fallbackBanner = fallbackBanner,
@@ -163,19 +166,46 @@ private fun EpisodeCard(
             )
         },
         subtitle = {
-            if (episode.filler) {
-                Text(
-                    text = "Filler".uppercase(Locale.getDefault()),
-                    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onTertiaryContainer),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .width(138.dp)
-                )
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if (episode.filler) {
+                    Text(
+                        text = "Filler".uppercase(Locale.getDefault()),
+                        style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onTertiaryContainer),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                if (episode.recap) {
+                    Text(
+                        text = "Recap".uppercase(Locale.getDefault()),
+                        style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onTertiaryContainer),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         },
         description = {
         }
     )
+}
+
+
+@TvPreview
+@Composable
+fun EpisodePreview(
+    @PreviewParameter(EpisodePreviewParameterProvider::class) episode: MediaDetails.Episode
+) {
+    SekaiTheme {
+        EpisodeCard(
+            episode = episode,
+            onEpisodeSelected = {},
+            fallbackBanner = null
+        )
+    }
 }

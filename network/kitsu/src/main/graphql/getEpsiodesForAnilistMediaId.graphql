@@ -1,0 +1,22 @@
+query GetEpisodeForAnilistMediaId($mediaId: ID!) {
+    lookupMapping(externalId: $mediaId, externalSite: ANILIST_ANIME) {
+        __typename
+        ... on Anime {
+            id
+            episodes(first: 2000) {
+                nodes {
+                    number
+                    titles {
+                        canonical
+                    }
+                    length
+                    thumbnail {
+                        original {
+                            url
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

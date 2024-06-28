@@ -7,24 +7,24 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AniListApolloClient
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object AnilistApolloModule {
 
     @Provides
     @Singleton
-    internal fun apolloClient(): ApolloClient {
+    @AniListApolloClient
+    internal fun providesAnilistApolloClient(ioDispatcher: CoroutineDispatcher): ApolloClient {
         return ApolloClient.Builder()
+            .dispatcher(ioDispatcher)
             .serverUrl(BuildConfig.ANILIST_GRAPHQL_URL)
             .build()
-    }
-
-    @Provides
-    @Singleton
-    internal fun ioDispatcher(): CoroutineDispatcher {
-        return Dispatchers.IO
     }
 }
