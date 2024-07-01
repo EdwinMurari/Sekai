@@ -29,6 +29,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.material3.Border
@@ -38,12 +41,14 @@ import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
+import com.edwin.data.model.Media
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
+import com.edwin.sekai.ui.designsystem.component.MediaCard
+import com.edwin.sekai.ui.designsystem.component.MediaCardPlaceholder
 import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
-import com.edwin.sekai.ui.feature.home.TabNavOption
 
 @Composable
 fun SearchRoute(
@@ -52,23 +57,27 @@ fun SearchRoute(
     viewModel: SearchViewModel = hiltViewModel(),
     palettes: Map<String, Material3Palette>
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val lazyPagingItems = viewModel.uiState.collectAsLazyPagingItems()
+
     SearchScreen(
-        uiState = uiState,
+        searchQuery = searchQuery,
+        pagingItems = lazyPagingItems,
         palettes = palettes,
         onMediaClick = onMediaClick,
-        onSearchQueryChange = viewModel::query,
+        onSearchQueryChange = viewModel::onQueryChange,
         modifier = modifier
     )
 }
 
 @Composable
 fun SearchScreen(
-    uiState: SearchViewModel.SearchUiState,
+    searchQuery: String,
+    pagingItems: LazyPagingItems<Media>,
     palettes: Map<String, Material3Palette>,
     onSearchQueryChange: (String) -> Unit,
     onMediaClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     TvLazyVerticalGrid(
         modifier = modifier,
@@ -76,9 +85,25 @@ fun SearchScreen(
     ) {
         item {
             SearchTextField(
-                searchQuery = uiState.searchQuery,
+                searchQuery = searchQuery,
                 onSearchQueryChange = onSearchQueryChange
             )
+        }
+
+        items(
+            pagingItems.itemCount,
+            key = pagingItems.itemKey { it.id }
+        ) { index ->
+            val media = pagingItems[index]
+            if (media != null) {
+                MediaCard(
+                    media = media,
+                    palettes = palettes,
+                    onClick = onMediaClick
+                )
+            } else {
+                MediaCardPlaceholder(palettes = palettes)
+            }
         }
     }
 }
@@ -176,24 +201,6 @@ fun SearchTextField(
             textStyle = MaterialTheme.typography.titleSmall.copy(
                 color = MaterialTheme.colorScheme.onSurface
             )
-        )
-    }
-}
-
-@TvPreview
-@Composable
-fun PreviewSearchScreen() {
-    val context = LocalContext.current
-    val palettes = loadMaterial3Palettes(context)
-
-    val (searchQuery, setSearchQuery) = remember { mutableStateOf("") }
-
-    SekaiTheme {
-        SearchScreen(
-            uiState = SearchViewModel.SearchUiState.InitialState,
-            palettes = palettes,
-            onSearchQueryChange = setSearchQuery,
-            onMediaClick = {}
         )
     }
 }

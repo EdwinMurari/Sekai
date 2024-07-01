@@ -112,6 +112,22 @@ fun MediaCard(
     }
 }
 
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+fun MediaCardPlaceholder(
+    palettes: Map<String, Material3Palette>,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = {},
+        modifier = modifier
+            .heightIn(max = CARD_HEIGHT.dp)
+            .aspectRatio(CARD_ASPECT_RATIO)
+    ) {
+        Box(modifier = Modifier.background(color = Color.Green))
+    }
+}
+
 @Composable
 private fun GradientOverlay(gradientColors: Array<Pair<Float, Color>>) {
     Box(

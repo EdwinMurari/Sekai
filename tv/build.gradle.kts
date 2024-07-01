@@ -77,6 +77,9 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // Paging
+    implementation("androidx.paging:paging-compose:3.3.0")
 }
 
 // Allow references to generated code
