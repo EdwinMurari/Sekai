@@ -1,5 +1,5 @@
 [versions]
-agp = "8.6.0-alpha04"
+agp = "8.6.0-alpha08"
 apolloRuntime = "3.8.4"
 coilCompose = "2.6.0"
 hilt = "2.51.1"
