@@ -39,8 +39,8 @@ class SearchViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             searchQuery
-                .debounce(300L) // Debounce to avoid too many requests while typing
-                .distinctUntilChanged() // Only search when the query actually changes
+                .debounce(300L)
+                .distinctUntilChanged()
                 .flatMapLatest { query ->
                     if (query.isBlank()) {
                         flowOf(PagingData.empty())
@@ -48,7 +48,7 @@ class SearchViewModel @Inject constructor(
                         searchMedia(query)
                     }
                 }
-                .cachedIn(viewModelScope) // Important: Cache results in ViewModel scope
+                .cachedIn(viewModelScope)
                 .collect { pagingData ->
                     _uiState.value = pagingData
                 }
