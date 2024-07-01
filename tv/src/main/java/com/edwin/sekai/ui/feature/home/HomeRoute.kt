@@ -34,6 +34,7 @@ import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.browse.BrowseRoute
 import com.edwin.sekai.ui.feature.categories.CategoriesScreen
 import com.edwin.sekai.ui.feature.extensions.ExtensionsScreen
+import com.edwin.sekai.ui.feature.search.SearchRoute
 import com.edwin.sekai.ui.feature.search.SearchScreen
 
 @Composable
@@ -92,7 +93,11 @@ private fun Content(
         }
 
         TabNavOption.Search -> {
-            SearchScreen(modifier = modifier)
+            SearchRoute(
+                modifier = modifier,
+                palettes = palettes,
+                onMediaClick = onMediaClick
+            )
         }
 
         TabNavOption.Extensions -> {

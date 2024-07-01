@@ -37,7 +37,7 @@ fun NavHostController.navigateToDetails(
     navigate(route, navOptions)
 }
 
-fun NavGraphBuilder.detailsScreen(
+fun NavGraphBuilder.detailsRoute(
     palettes: Map<String, Material3Palette>,
     onClickWatch: (Int, Int) -> Unit,
     onMediaClick: (Int) -> Unit
