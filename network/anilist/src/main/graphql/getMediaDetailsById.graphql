@@ -1,5 +1,5 @@
 query GetMediaDetailsById($mediaId: Int!) {
-    Media(id: $mediaId) {
+    Media(id: $mediaId, type: ANIME) {
         ...MediaDetailsFragment
     }
 }

@@ -7,7 +7,6 @@ import com.edwin.network.anilist.GetMediaDetailsByIdQuery
 import com.edwin.network.anilist.GetTrendingAndPopularQuery
 import com.edwin.network.anilist.di.AniListApolloClient
 import com.edwin.network.anilist.type.MediaSeason
-import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 import javax.inject.Singleton
 
