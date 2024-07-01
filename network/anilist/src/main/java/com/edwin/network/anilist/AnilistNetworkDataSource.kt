@@ -22,7 +22,7 @@ interface AnilistNetworkDataSource {
         pageSize: Int,
         page: Int,
         query: String? = null,
-        format: MediaFormat? = null,
+        formats: List<MediaFormat>? = null,
         status: MediaStatus? = null,
         seasonYear: Int? = null,
         season: MediaSeason? = null,

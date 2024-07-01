@@ -2,7 +2,7 @@ query SearchMedia(
     $page: Int
     $perPage: Int
     $search: String
-    $format: MediaFormat
+    $formats: [MediaFormat]
     $status: MediaStatus
     $season: MediaSeason
     $seasonYear: Int
@@ -21,7 +21,7 @@ query SearchMedia(
         media(
             search: $search
             type: ANIME
-            format: $format
+            format_in: $formats
             status: $status
             season: $season
             seasonYear: $seasonYear
