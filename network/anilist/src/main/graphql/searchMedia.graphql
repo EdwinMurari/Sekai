@@ -1,0 +1,36 @@
+query SearchMedia(
+    $page: Int
+    $perPage: Int
+    $search: String
+    $format: MediaFormat
+    $status: MediaStatus
+    $season: MediaSeason
+    $seasonYear: Int
+    $genres: [String]
+    $tags: [String]
+    $minimumScore: Int
+    $sort: [MediaSort]
+) {
+    Page(page: $page, perPage: $perPage) {
+        pageInfo {
+            total
+            currentPage
+            lastPage
+            hasNextPage
+        }
+        media(
+            search: $search
+            type: ANIME
+            format: $format
+            status: $status
+            season: $season
+            seasonYear: $seasonYear
+            genre_in: $genres
+            tag_in: $tags
+            averageScore_greater: $minimumScore
+            sort: $sort
+        ) {
+            ...MediaFragment
+        }
+    }
+}
