@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,27 +26,19 @@ class SearchViewModel @Inject constructor(
     private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery = _searchQuery.asStateFlow()
-
     private val _uiState = MutableStateFlow<PagingData<Media>>(PagingData.empty())
     val uiState = _uiState.asStateFlow()
 
-    fun onQueryChange(query: String) {
-        _searchQuery.value = query
-    }
+    private val _filterState = MutableStateFlow(FilterState())
+    val filterState = _filterState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            searchQuery
+            filterState
                 .debounce(300L)
                 .distinctUntilChanged()
-                .flatMapLatest { query ->
-                    if (query.isBlank()) {
-                        flowOf(PagingData.empty())
-                    } else {
-                        searchMedia(query)
-                    }
+                .flatMapLatest { filterState ->
+                    searchMedia(filterState.searchParams)
                 }
                 .cachedIn(viewModelScope)
                 .collect { pagingData ->
@@ -55,13 +47,28 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun searchMedia(query: String): Flow<PagingData<Media>> {
-        return mediaRepository.getPagedSearchResults(
-            SearchParams(
-                page = 0,
-                perPage = 20,
-                query = query
-            )
-        )
+    fun onQueryChange(query: String) {
+        _filterState.update { it.copy(searchParams = it.searchParams.copy(query = query)) }
     }
+
+    private fun searchMedia(searchParams: SearchParams): Flow<PagingData<Media>> {
+        return mediaRepository.getPagedSearchResults(searchParams)
+    }
+
+    fun onFilterClick() {
+        _filterState.update { it.copy(showFilterOverlay = true) }
+    }
+
+    fun onFilterOverlayDismiss() {
+        _filterState.update { it.copy(showFilterOverlay = false) }
+    }
+
+    fun onFilterParamsChanged(newSearchParams: SearchParams) {
+        _filterState.update { it.copy(searchParams = newSearchParams) }
+    }
+
+    data class FilterState(
+        val searchParams: SearchParams = SearchParams(perPage = 20, page = 1),
+        val showFilterOverlay: Boolean = false
+    )
 }

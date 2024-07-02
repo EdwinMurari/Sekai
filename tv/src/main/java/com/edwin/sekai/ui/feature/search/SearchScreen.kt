@@ -2,10 +2,12 @@ package com.edwin.sekai.ui.feature.search
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -20,10 +22,12 @@ import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvGridItemSpan
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.list.TvLazyRow
+import androidx.tv.material3.Button
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.FilterChip
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
+import com.edwin.data.model.SearchParams
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.MediaCard
@@ -41,14 +45,15 @@ fun SearchRoute(
     viewModel: SearchViewModel = hiltViewModel(),
     palettes: Map<String, Material3Palette>
 ) {
-    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val filterState by viewModel.filterState.collectAsStateWithLifecycle()
     val lazyPagingItems = viewModel.uiState.collectAsLazyPagingItems()
 
     SearchScreen(
-        searchQuery = searchQuery,
         pagingItems = lazyPagingItems,
+        filterState = filterState,
         palettes = palettes,
         onMediaClick = onMediaClick,
+        onFilterClick = viewModel::onFilterClick,
         onSearchQueryChange = viewModel::onQueryChange,
         modifier = modifier
     )
@@ -57,11 +62,12 @@ fun SearchRoute(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    searchQuery: String,
     pagingItems: LazyPagingItems<Media>,
+    filterState: SearchViewModel.FilterState,
     palettes: Map<String, Material3Palette>,
     onSearchQueryChange: (String) -> Unit,
     onMediaClick: (Int) -> Unit,
+    onFilterClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TvLazyVerticalGrid(
@@ -72,10 +78,20 @@ fun SearchScreen(
         columns = TvGridCells.Adaptive(minSize = 156.dp)
     ) {
         item(span = { TvGridItemSpan(maxLineSpan) }) {
-            SearchTextField(
-                searchQuery = searchQuery,
-                onSearchQueryChange = onSearchQueryChange
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SearchTextField(
+                    modifier = Modifier.weight(1f),
+                    searchQuery = filterState.searchParams.query,
+                    onSearchQueryChange = onSearchQueryChange
+                )
+
+                Button(onClick = onFilterClick) {
+                    Text("Filter")
+                }
+            }
         }
 
         item(span = { TvGridItemSpan(maxLineSpan) }) {
@@ -125,11 +141,18 @@ fun PreviewSearchScreen(
 
     SekaiTheme {
         SearchScreen(
-            searchQuery = searchQuery,
             onSearchQueryChange = setSearchQuery,
+            filterState = SearchViewModel.FilterState(
+                searchParams = SearchParams(
+                    page = 1,
+                    perPage = 20,
+                    query = searchQuery
+                )
+            ),
             palettes = palettes,
             pagingItems = lazyPagingItems,
-            onMediaClick = {}
+            onMediaClick = {},
+            onFilterClick = {}
         )
     }
 }
