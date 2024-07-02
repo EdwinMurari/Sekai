@@ -64,11 +64,18 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onFilterParamsChanged(newSearchParams: SearchParams) {
-        _filterState.update { it.copy(searchParams = newSearchParams) }
+        _filterState.update {
+            it.copy(
+                searchParams = newSearchParams,
+                appliedFilters = newSearchParams.getAppliedFilters()
+                    .takeIf { newSearchParams.hasAppliedFilters() }
+            )
+        }
     }
 
     data class FilterState(
         val searchParams: SearchParams = SearchParams(perPage = 20, page = 1),
+        val appliedFilters: List<Pair<String, Any?>>? = null,
         val showFilterOverlay: Boolean = false
     )
 }
