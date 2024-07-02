@@ -74,12 +74,13 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material.icons.extended)
 
     // Coil
     implementation(libs.coil.compose)
 
     // Paging
-    implementation("androidx.paging:paging-compose:3.3.0")
+    implementation(libs.androidx.paging.compose)
 }
 
 // Allow references to generated code

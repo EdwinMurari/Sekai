@@ -7,9 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Tag
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -69,7 +75,7 @@ fun FilterList(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             FilterButton(
-                icon = Icons.Default.FormatListBulleted,
+                icon = Icons.AutoMirrored.Filled.FormatListBulleted,
                 label = "Format",
                 onClick = { /* Handle format filter */ }
             )
@@ -79,7 +85,7 @@ fun FilterList(
                 onClick = { /* Handle status filter */ }
             )
             FilterButton(
-                icon = Icons.Default.Sort,
+                icon = Icons.AutoMirrored.Filled.Sort,
                 label = "Sort By",
                 onClick = { /* Handle sort filter */ }
             )
@@ -110,7 +116,7 @@ fun FilterButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(imageVector = icon, contentDescription = label)
