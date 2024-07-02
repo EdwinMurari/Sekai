@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
@@ -37,14 +37,23 @@ import com.edwin.sekai.R
 @OptIn(ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTextField(
-    searchQuery: String,
+    modifier: Modifier = Modifier,
+    searchQuery: String?,
     onSearchQueryChange: (String) -> Unit
 ) {
-    val tfFocusRequester = remember { FocusRequester() }
+    val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    val tfInteractionSource = remember { MutableInteractionSource() }
+    val interactionSource = remember { MutableInteractionSource() }
 
-    val isTfFocused by tfInteractionSource.collectIsFocusedAsState()
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    // Use a descriptive name for the color animation label
+    val borderColor by animateColorAsState(
+        targetValue = if (isFocused) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.border,
+        label = "Search Field Border Color"
+    )
+
     Surface(
         colors = ClickableSurfaceDefaults.colors(
             containerColor = MaterialTheme.colorScheme.inverseOnSurface,
@@ -56,29 +65,26 @@ fun SearchTextField(
         border = ClickableSurfaceDefaults.border(
             focusedBorder = Border(
                 border = BorderStroke(
-                    width = if (isTfFocused) 2.dp else 1.dp,
-                    color = animateColorAsState(
-                        targetValue = if (isTfFocused) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.border, label = ""
-                    ).value
+                    width = if (isFocused) 2.dp else 1.dp,
+                    color = borderColor
                 )
             )
         ),
         tonalElevation = 2.dp,
-        modifier = Modifier.padding(top = 8.dp),
-        onClick = { tfFocusRequester.requestFocus() }
+        modifier = modifier.padding(top = 8.dp),
+        onClick = { focusRequester.requestFocus() }
     ) {
         BasicTextField(
-            value = searchQuery,
+            value = searchQuery ?: "",
             onValueChange = onSearchQueryChange,
-            decorationBox = {
+            decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
                         .padding(vertical = 16.dp)
                         .padding(start = 20.dp),
                 ) {
-                    it()
-                    if (searchQuery.isEmpty()) {
+                    innerTextField()
+                    if (searchQuery.isNullOrEmpty()) {
                         Text(
                             modifier = Modifier.graphicsLayer { alpha = 0.6f },
                             text = stringResource(R.string.search_field_placeholder),
@@ -93,37 +99,24 @@ fun SearchTextField(
                     vertical = 4.dp,
                     horizontal = 8.dp
                 )
-                .focusRequester(tfFocusRequester)
+                .focusRequester(focusRequester)
                 .onKeyEvent {
                     if (it.nativeKeyEvent.action == KeyEvent.ACTION_UP) {
                         when (it.nativeKeyEvent.keyCode) {
-                            KeyEvent.KEYCODE_DPAD_DOWN -> {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-
-                            KeyEvent.KEYCODE_DPAD_UP -> {
-                                focusManager.moveFocus(FocusDirection.Up)
-                            }
-
-                            KeyEvent.KEYCODE_BACK -> {
-                                focusManager.moveFocus(FocusDirection.Exit)
-                            }
+                            KeyEvent.KEYCODE_DPAD_DOWN -> focusManager.moveFocus(FocusDirection.Down)
+                            KeyEvent.KEYCODE_DPAD_UP -> focusManager.moveFocus(FocusDirection.Up)
+                            KeyEvent.KEYCODE_BACK -> focusManager.clearFocus() // Use clearFocus for back key
                         }
                     }
                     true
                 },
-            cursorBrush = Brush.verticalGradient(
-                colors = listOf(
-                    LocalContentColor.current,
-                    LocalContentColor.current,
-                )
-            ),
+            cursorBrush = SolidColor(LocalContentColor.current), // Simplify cursor brush
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
                 imeAction = ImeAction.Search
             ),
             maxLines = 1,
-            interactionSource = tfInteractionSource,
+            interactionSource = interactionSource,
             textStyle = MaterialTheme.typography.titleSmall.copy(
                 color = MaterialTheme.colorScheme.onSurface
             )
