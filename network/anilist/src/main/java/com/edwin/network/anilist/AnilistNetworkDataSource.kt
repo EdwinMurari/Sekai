@@ -29,6 +29,7 @@ interface AnilistNetworkDataSource {
         genres: List<String>? = null,
         tags: List<String>? = null,
         minScore: Int? = null,
-        sort: List<MediaSort>? = null
+        sort: List<MediaSort>? = null,
+        isAdult: Boolean? = null
     ): ApolloResponse<SearchMediaQuery.Data>
 }

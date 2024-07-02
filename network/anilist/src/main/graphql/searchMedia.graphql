@@ -9,7 +9,8 @@ query SearchMedia(
     $genres: [String]
     $tags: [String]
     $minimumScore: Int
-    $sort: [MediaSort]
+    $sort: [MediaSort],
+    $isAdult: Boolean
 ) {
     Page(page: $page, perPage: $perPage) {
         pageInfo {
@@ -28,7 +29,8 @@ query SearchMedia(
             genre_in: $genres
             tag_in: $tags
             averageScore_greater: $minimumScore
-            sort: $sort
+            sort: $sort,
+            isAdult: $isAdult
         ) {
             ...MediaFragment
         }

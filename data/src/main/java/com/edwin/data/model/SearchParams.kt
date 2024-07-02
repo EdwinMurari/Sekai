@@ -14,7 +14,8 @@ data class SearchParams(
     val tags: List<String>? = null,
     val minScore: Int? = null,
     val seasonYear: Int? = null,
-    val season: MediaSeason? = null
+    val season: MediaSeason? = null,
+    val isAdult: Boolean? = null
 ) {
     fun getNetworkMediaSort() = when (sortBy to order) {
         MediaSort.TITLE to Order.ASCENDING -> NetworkMediaSort.TITLE_ENGLISH

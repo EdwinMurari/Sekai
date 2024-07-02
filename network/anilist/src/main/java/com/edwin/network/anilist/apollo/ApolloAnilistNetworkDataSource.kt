@@ -44,7 +44,8 @@ internal class ApolloAnilistNetworkDataSource @Inject constructor(
         genres: List<String>?,
         tags: List<String>?,
         minScore: Int?,
-        sort: List<MediaSort>?
+        sort: List<MediaSort>?,
+        isAdult: Boolean?
     ) = apolloClient.query(
         SearchMediaQuery(
             perPage = Optional.present(pageSize),
@@ -57,7 +58,8 @@ internal class ApolloAnilistNetworkDataSource @Inject constructor(
             genres = Optional.presentIfNotNull(genres),
             tags = Optional.presentIfNotNull(tags),
             minimumScore = Optional.presentIfNotNull(minScore),
-            sort = Optional.presentIfNotNull(sort)
+            sort = Optional.presentIfNotNull(sort),
+            isAdult = Optional.presentIfNotNull(isAdult)
         )
     ).execute()
 }
