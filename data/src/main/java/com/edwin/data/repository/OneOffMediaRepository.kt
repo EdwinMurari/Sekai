@@ -74,11 +74,14 @@ internal class OneOffMediaRepository @Inject constructor(
     override fun getPagedSearchResults(
         searchParams: SearchParams
     ): Flow<PagingData<Media>> {
-        return Pager(PagingConfig(pageSize = searchParams.perPage)) {
-            SearchMediaPagingSource(
-                anilistDataSource,
-                searchParams
-            )
-        }.flow
+        return Pager(
+            config = PagingConfig(pageSize = searchParams.perPage),
+            pagingSourceFactory = {
+                SearchMediaPagingSource(
+                    anilistDataSource,
+                    searchParams
+                )
+            }
+        ).flow
     }
 }

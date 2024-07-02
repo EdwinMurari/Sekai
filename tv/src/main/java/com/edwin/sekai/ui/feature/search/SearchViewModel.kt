@@ -12,12 +12,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -26,26 +28,21 @@ class SearchViewModel @Inject constructor(
     private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<PagingData<Media>>(PagingData.empty())
-    val uiState = _uiState.asStateFlow()
-
     private val _filterState = MutableStateFlow(FilterState())
     val filterState = _filterState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            filterState
-                .debounce(300L)
-                .distinctUntilChanged()
-                .flatMapLatest { filterState ->
-                    searchMedia(filterState.searchParams)
-                }
-                .cachedIn(viewModelScope)
-                .collect { pagingData ->
-                    _uiState.value = pagingData
-                }
+    val searchResults: StateFlow<PagingData<Media>> = filterState
+        .debounce(300L)
+        .distinctUntilChanged()
+        .flatMapLatest { filterState ->
+            searchMedia(filterState.searchParams)
         }
-    }
+        .cachedIn(viewModelScope)
+        .stateIn(
+            scope = viewModelScope,
+            initialValue = PagingData.empty(),
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
 
     fun onQueryChange(query: String) {
         _filterState.update { it.copy(searchParams = it.searchParams.copy(query = query)) }
@@ -55,27 +52,37 @@ class SearchViewModel @Inject constructor(
         return mediaRepository.getPagedSearchResults(searchParams)
     }
 
-    fun onFilterClick() {
-        _filterState.update { it.copy(showFilterOverlay = true) }
-    }
-
     fun onFilterOverlayDismiss() {
-        _filterState.update { it.copy(showFilterOverlay = false) }
+        _filterState.update { it.copy(filterScreenState = null) }
     }
 
-    fun onFilterParamsChanged(newSearchParams: SearchParams) {
+    fun onFilterTypeSelected(filterType: FilterType, value: Any?) {
         _filterState.update {
             it.copy(
-                searchParams = newSearchParams,
-                appliedFilters = newSearchParams.getAppliedFilters()
-                    .takeIf { newSearchParams.hasAppliedFilters() }
+                filterScreenState = FilterScreen.FilterOption(
+                    filterType = filterType,
+                    value = value
+                )
             )
+        }
+    }
+
+    fun onFilterParamChanged(filterType: FilterType, value: Any?) {
+        _filterState.update {
+            it.copy(searchParams = it.searchParams.updateFilter(filterType, value))
         }
     }
 
     data class FilterState(
         val searchParams: SearchParams = SearchParams(perPage = 20, page = 1),
-        val appliedFilters: List<Pair<String, Any?>>? = null,
-        val showFilterOverlay: Boolean = false
+        val filterScreenState: FilterScreen? = null
     )
+
+    sealed interface FilterScreen {
+
+        data class FilterOption(
+            val filterType: FilterType,
+            val value: Any? = null
+        ) : FilterScreen
+    }
 }

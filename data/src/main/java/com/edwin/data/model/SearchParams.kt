@@ -44,24 +44,4 @@ data class SearchParams(
 
         else -> null
     }
-
-    fun hasAppliedFilters(): Boolean {
-        return format != null || status != null || sortBy != null ||
-                !genres.isNullOrEmpty() || !tags.isNullOrEmpty() ||
-                minScore != null || seasonYear != null || season != null || isAdult != null
-    }
-
-    fun getAppliedFilters(): List<Pair<String, Any?>> {
-        val filters = mutableListOf<Pair<String, Any?>>()
-        if (format != null) filters.add("Format" to format)
-        if (status != null) filters.add("Status" to status)
-        if (sortBy != null) filters.add("Sort By" to sortBy)
-        if (!genres.isNullOrEmpty()) filters.add("Genres" to genres)
-        if (!tags.isNullOrEmpty()) filters.add("Tags" to tags)
-        if (minScore != null) filters.add("Min Score" to minScore)
-        if (seasonYear != null) filters.add("Season Year" to seasonYear)
-        if (season != null) filters.add("Season" to season)
-        if (isAdult != null) filters.add("Adult" to isAdult)
-        return filters
-    }
 }

@@ -4,14 +4,12 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
@@ -28,7 +26,6 @@ import androidx.tv.foundation.lazy.grid.TvGridItemSpan
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.list.TvLazyRow
 import androidx.tv.foundation.lazy.list.items
-import androidx.tv.material3.Button
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.FilterChip
 import androidx.tv.material3.Icon
@@ -54,17 +51,17 @@ fun SearchRoute(
     palettes: Map<String, Material3Palette>
 ) {
     val filterState by viewModel.filterState.collectAsStateWithLifecycle()
-    val lazyPagingItems = viewModel.uiState.collectAsLazyPagingItems()
+    val lazyPagingItems = viewModel.searchResults.collectAsLazyPagingItems()
 
     SearchScreen(
         pagingItems = lazyPagingItems,
         filterState = filterState,
         palettes = palettes,
         onMediaClick = onMediaClick,
-        onFilterClick = viewModel::onFilterClick,
         onFilterDismiss = viewModel::onFilterOverlayDismiss,
         onSearchQueryChange = viewModel::onQueryChange,
-        onFilterParamsChanged = viewModel::onFilterParamsChanged,
+        onFilterParamChanged = viewModel::onFilterParamChanged,
+        onFilterOptionClick = viewModel::onFilterTypeSelected,
         modifier = modifier
     )
 }
@@ -76,44 +73,49 @@ fun SearchScreen(
     palettes: Map<String, Material3Palette>,
     onSearchQueryChange: (String) -> Unit,
     onMediaClick: (Int) -> Unit,
-    onFilterClick: () -> Unit,
     onFilterDismiss: () -> Unit,
-    onFilterParamsChanged: (SearchParams) -> Unit,
+    onFilterOptionClick: (FilterType, Any?) -> Unit,
+    onFilterParamChanged: (FilterType, Any?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         SearchContent(
-            modifier = modifier.focusProperties { canFocus = filterState.showFilterOverlay.not() },
+            modifier = modifier
+                .focusProperties { canFocus = filterState.filterScreenState == null },
             filterState = filterState,
             onSearchQueryChange = onSearchQueryChange,
-            onFilterClick = onFilterClick,
             pagingItems = pagingItems,
             palettes = palettes,
-            onMediaClick = onMediaClick
+            onMediaClick = onMediaClick,
+            onFilterOptionClick = onFilterOptionClick
         )
 
-        if (filterState.showFilterOverlay) {
-            BackHandler { onFilterDismiss() }
+        when (filterState.filterScreenState) {
+            is SearchViewModel.FilterScreen.FilterOption -> {
+                BackHandler { onFilterDismiss() }
 
-            FilterSelectionPopup(
-                modifier = Modifier,
-                searchParams = filterState.searchParams,
-                onFilterParamsChanged = onFilterParamsChanged
-            )
+                FilterSelectionPopup(
+                    modifier = Modifier,
+                    filterType = filterState.filterScreenState.filterType,
+                    selectedValue = filterState.filterScreenState.value,
+                    onFilterParamChanged = onFilterParamChanged
+                )
+            }
+
+            null -> {}
         }
     }
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun SearchContent(
     modifier: Modifier,
     filterState: SearchViewModel.FilterState,
-    onSearchQueryChange: (String) -> Unit,
-    onFilterClick: () -> Unit,
     pagingItems: LazyPagingItems<Media>,
     palettes: Map<String, Material3Palette>,
-    onMediaClick: (Int) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onMediaClick: (Int) -> Unit,
+    onFilterOptionClick: (FilterType, Any?) -> Unit
 ) {
     TvLazyVerticalGrid(
         modifier = modifier,
@@ -123,48 +125,21 @@ private fun SearchContent(
         columns = TvGridCells.Adaptive(minSize = 156.dp)
     ) {
         item(span = { TvGridItemSpan(maxLineSpan) }) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                SearchTextField(
-                    modifier = Modifier.weight(1f),
-                    searchQuery = filterState.searchParams.query,
-                    onSearchQueryChange = onSearchQueryChange
-                )
-
-                Button(onClick = onFilterClick) {
-                    Text("Filter")
-                }
-            }
+            SearchTextField(
+                searchQuery = filterState.searchParams.query,
+                onSearchQueryChange = onSearchQueryChange
+            )
         }
 
-        filterState.appliedFilters?.let { appliedFilters ->
-            item(span = { TvGridItemSpan(maxLineSpan) }) {
-                TvLazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(appliedFilters) { filter ->
-                        FilterChip(
-                            content = {
-                                Text("${filter.first}: ${filter.second}")
-                            },
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Remove Filter"
-                                )
-                            },
-                            selected = false,
-                            onClick = {}
-                        )
-                    }
-                }
-            }
+        item(span = { TvGridItemSpan(maxLineSpan) }) {
+            FilterChipRow(
+                filterState = filterState,
+                onFilterOptionClick = onFilterOptionClick
+            )
         }
 
         items(
-            pagingItems.itemCount,
+            count = pagingItems.itemCount,
             key = pagingItems.itemKey { it.id }
         ) { index ->
             val media = pagingItems[index]
@@ -177,6 +152,34 @@ private fun SearchContent(
             } else {
                 MediaCardPlaceholder(palettes = palettes)
             }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun FilterChipRow(
+    filterState: SearchViewModel.FilterState,
+    onFilterOptionClick: (FilterType, Any?) -> Unit
+) {
+    TvLazyRow(
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(FilterType.entries) { filterType ->
+            val value = filterState.searchParams.getFilterValue(filterType)
+            FilterChip(
+                content = {
+                    Text(value?.toString() ?: filterType.name)
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Select filter option"
+                    )
+                },
+                selected = value != null,
+                onClick = { onFilterOptionClick(filterType, value) }
+            )
         }
     }
 }
@@ -208,9 +211,9 @@ fun PreviewSearchScreen(
             palettes = palettes,
             pagingItems = lazyPagingItems,
             onMediaClick = {},
-            onFilterClick = {},
             onFilterDismiss = {},
-            onFilterParamsChanged = {}
+            onFilterParamChanged = { _, _ -> },
+            onFilterOptionClick = { _, _ -> }
         )
     }
 }
