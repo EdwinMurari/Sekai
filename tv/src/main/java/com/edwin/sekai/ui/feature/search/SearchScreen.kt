@@ -1,17 +1,15 @@
 package com.edwin.sekai.ui.feature.search
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -24,11 +22,9 @@ import androidx.paging.compose.itemKey
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvGridItemSpan
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
-import androidx.tv.foundation.lazy.list.TvLazyRow
-import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.FilterChip
-import androidx.tv.material3.Icon
+import androidx.tv.material3.InputChip
+import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
 import com.edwin.data.model.SearchParams
@@ -40,7 +36,7 @@ import com.edwin.sekai.ui.designsystem.component.SearchTextField
 import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
-import com.edwin.sekai.ui.feature.search.component.FilterSelectionPopup
+import com.edwin.sekai.ui.feature.search.component.FilterPopup
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -58,10 +54,9 @@ fun SearchRoute(
         filterState = filterState,
         palettes = palettes,
         onMediaClick = onMediaClick,
-        onFilterDismiss = viewModel::onFilterOverlayDismiss,
         onSearchQueryChange = viewModel::onQueryChange,
-        onFilterParamChanged = viewModel::onFilterParamChanged,
-        onFilterOptionClick = viewModel::onFilterTypeSelected,
+        onFiltersClick = viewModel::onFiltersClick,
+        onFiltersChanged = viewModel::onFilterParamChanged,
         modifier = modifier
     )
 }
@@ -73,40 +68,32 @@ fun SearchScreen(
     palettes: Map<String, Material3Palette>,
     onSearchQueryChange: (String) -> Unit,
     onMediaClick: (Int) -> Unit,
-    onFilterDismiss: () -> Unit,
-    onFilterOptionClick: (FilterType, Any?) -> Unit,
-    onFilterParamChanged: (FilterType, Any?) -> Unit,
+    onFiltersClick: () -> Unit,
+    onFiltersChanged: (SearchParams) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         SearchContent(
-            modifier = modifier
-                .focusProperties { canFocus = filterState.filterScreenState == null },
+            modifier = modifier,
             filterState = filterState,
             onSearchQueryChange = onSearchQueryChange,
             pagingItems = pagingItems,
             palettes = palettes,
             onMediaClick = onMediaClick,
-            onFilterOptionClick = onFilterOptionClick
+            onFiltersClick = onFiltersClick
         )
 
-        when (filterState.filterScreenState) {
-            is SearchViewModel.FilterScreen.FilterOption -> {
-                BackHandler { onFilterDismiss() }
-
-                FilterSelectionPopup(
-                    modifier = Modifier,
-                    filterType = filterState.filterScreenState.filterType,
-                    selectedValue = filterState.filterScreenState.value,
-                    onFilterParamChanged = onFilterParamChanged
-                )
-            }
-
-            null -> {}
-        }
+        FilterPopup(
+            showDialog = filterState.showFiltersDialog,
+            searchParams = filterState.searchParams,
+            onFiltersChanged = onFiltersChanged,
+            genres = emptyList(),
+            tags = emptyList()
+        )
     }
 }
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun SearchContent(
     modifier: Modifier,
@@ -115,7 +102,7 @@ private fun SearchContent(
     palettes: Map<String, Material3Palette>,
     onSearchQueryChange: (String) -> Unit,
     onMediaClick: (Int) -> Unit,
-    onFilterOptionClick: (FilterType, Any?) -> Unit
+    onFiltersClick: () -> Unit
 ) {
     TvLazyVerticalGrid(
         modifier = modifier,
@@ -125,17 +112,26 @@ private fun SearchContent(
         columns = TvGridCells.Adaptive(minSize = 156.dp)
     ) {
         item(span = { TvGridItemSpan(maxLineSpan) }) {
-            SearchTextField(
-                searchQuery = filterState.searchParams.query,
-                onSearchQueryChange = onSearchQueryChange
-            )
-        }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SearchTextField(
+                    modifier = Modifier.weight(1f),
+                    searchQuery = filterState.searchParams.query,
+                    onSearchQueryChange = onSearchQueryChange
+                )
 
-        item(span = { TvGridItemSpan(maxLineSpan) }) {
-            FilterChipRow(
-                filterState = filterState,
-                onFilterOptionClick = onFilterOptionClick
-            )
+                InputChip(
+                    selected = false,
+                    onClick = onFiltersClick
+                ) {
+                    Text(
+                        text = "Filters",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
+            }
         }
 
         items(
@@ -152,34 +148,6 @@ private fun SearchContent(
             } else {
                 MediaCardPlaceholder(palettes = palettes)
             }
-        }
-    }
-}
-
-@Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
-private fun FilterChipRow(
-    filterState: SearchViewModel.FilterState,
-    onFilterOptionClick: (FilterType, Any?) -> Unit
-) {
-    TvLazyRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(FilterType.entries) { filterType ->
-            val value = filterState.searchParams.getFilterValue(filterType)
-            FilterChip(
-                content = {
-                    Text(value?.toString() ?: filterType.name)
-                },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Select filter option"
-                    )
-                },
-                selected = value != null,
-                onClick = { onFilterOptionClick(filterType, value) }
-            )
         }
     }
 }
@@ -211,9 +179,8 @@ fun PreviewSearchScreen(
             palettes = palettes,
             pagingItems = lazyPagingItems,
             onMediaClick = {},
-            onFilterDismiss = {},
-            onFilterParamChanged = { _, _ -> },
-            onFilterOptionClick = { _, _ -> }
+            onFiltersClick = {},
+            onFiltersChanged = {}
         )
     }
 }

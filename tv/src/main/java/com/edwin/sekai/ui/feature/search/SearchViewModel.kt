@@ -52,37 +52,18 @@ class SearchViewModel @Inject constructor(
         return mediaRepository.getPagedSearchResults(searchParams)
     }
 
-    fun onFilterOverlayDismiss() {
-        _filterState.update { it.copy(filterScreenState = null) }
+    fun onFiltersClick() {
+        _filterState.update { it.copy(showFiltersDialog = true) }
     }
 
-    fun onFilterTypeSelected(filterType: FilterType, value: Any?) {
+    fun onFilterParamChanged(newSearchParams: SearchParams) {
         _filterState.update {
-            it.copy(
-                filterScreenState = FilterScreen.FilterOption(
-                    filterType = filterType,
-                    value = value
-                )
-            )
-        }
-    }
-
-    fun onFilterParamChanged(filterType: FilterType, value: Any?) {
-        _filterState.update {
-            it.copy(searchParams = it.searchParams.updateFilter(filterType, value))
+            it.copy(searchParams = newSearchParams, showFiltersDialog = false)
         }
     }
 
     data class FilterState(
         val searchParams: SearchParams = SearchParams(perPage = 20, page = 1),
-        val filterScreenState: FilterScreen? = null
+        val showFiltersDialog: Boolean = false
     )
-
-    sealed interface FilterScreen {
-
-        data class FilterOption(
-            val filterType: FilterType,
-            val value: Any? = null
-        ) : FilterScreen
-    }
 }
