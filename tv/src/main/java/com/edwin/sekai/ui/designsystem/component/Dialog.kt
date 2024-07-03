@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,12 +17,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -51,16 +56,23 @@ import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.tv.foundation.lazy.list.TvLazyColumn
+import androidx.tv.material3.Button
 import androidx.tv.material3.ColorScheme
 import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Icon
+import androidx.tv.material3.ListItem
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ProvideTextStyle
+import androidx.tv.material3.Text
 import androidx.tv.material3.surfaceColorAtElevation
+import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import kotlin.math.max
 
 /**
@@ -319,6 +331,72 @@ fun FullScreenDialog(
                         dismissButton?.invoke()
                     }
                 }
+            }
+        }
+    }
+}
+
+@ExperimentalFoundationApi
+@ExperimentalComposeUiApi
+@ExperimentalTvMaterial3Api
+@Composable
+fun RightOverlayDialog(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    title: @Composable ((Modifier) -> Unit)? = null,
+    titleActionButton: @Composable (() -> Unit)? = null,
+    content: @Composable ((PaddingValues) -> Unit),
+    backgroundColor: Color = RightOverlayDialogDefaults.backgroundColor,
+    titleContentColor: Color = RightOverlayDialogDefaults.titleContentColor,
+) {
+    Dialog(
+        modifier = Modifier,
+        showDialog = showDialog,
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .dialogFocusable(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Column(
+                modifier = modifier
+                    .fillMaxHeight()
+                    .width(RightOverlayDialogDefaults.OVERLAY_WIDTH.dp)
+                    .drawBehind { drawRect(color = backgroundColor) }
+            ) {
+                if (title != null || titleActionButton != null) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(RightOverlayDialogDefaults.HeaderPadding)
+                    ) {
+                        if (title != null) {
+                            CompositionLocalProvider(
+                                value = LocalContentColor provides titleContentColor,
+                                content = {
+                                    ProvideTextStyle(value = RightOverlayDialogDefaults.titleTextStyle) {
+                                        title(Modifier.padding(RightOverlayDialogDefaults.TitlePadding))
+                                    }
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        if (titleActionButton != null) {
+                            ProvideTextStyle(value = RightOverlayDialogDefaults.titleActionButtonTextStyle) {
+                                titleActionButton()
+                            }
+                        }
+                    }
+                }
+
+                content(RightOverlayDialogDefaults.ContentPadding)
             }
         }
     }
@@ -666,6 +744,38 @@ object FullScreenDialogDefaults {
         )
 }
 
+@ExperimentalTvMaterial3Api
+object RightOverlayDialogDefaults {
+    internal val HeaderPadding =
+        PaddingValues(top = 32.dp, start = 20.dp, end = 20.dp, bottom = 0.dp)
+    internal val TitlePadding = PaddingValues(start = 16.dp)
+    internal val ContentPadding =
+        PaddingValues(top = 24.dp, bottom = 40.dp, start = 20.dp, end = 20.dp)
+    internal const val OVERLAY_WIDTH = 400
+    private const val DESCRIPTION_COLOR_OPACITY = 0.8f
+
+    /** The default background color for FullScreenDialogs */
+    val backgroundColor: Color
+        @ReadOnlyComposable
+        @Composable get() = MaterialTheme.colorScheme.background
+
+    /** The default title color for FullScreenDialogs */
+    val titleContentColor: Color
+        @ReadOnlyComposable
+        @Composable get() = MaterialTheme.colorScheme.onSurface
+
+    /** The default title text style for FullScreenDialogs */
+    val titleTextStyle: TextStyle
+        @ReadOnlyComposable
+        @Composable get() = MaterialTheme.typography.headlineSmall
+            .copy(textAlign = TextAlign.Center)
+
+    /** The default buttons text style for FullScreenDialogs */
+    val titleActionButtonTextStyle: TextStyle
+        @ReadOnlyComposable
+        @Composable get() = MaterialTheme.typography.labelLarge
+}
+
 @Composable
 private fun animateDialogAlpha(
     alphaTransition: Transition<AnimationStage>,
@@ -755,5 +865,86 @@ private fun ColorScheme.applyTonalElevation(backgroundColor: Color, elevation: D
         surfaceColorAtElevation(elevation)
     } else {
         backgroundColor
+    }
+}
+
+@OptIn(
+    ExperimentalTvMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalComposeUiApi::class
+)
+@Preview
+@Composable
+fun FullScreenDialogPreview() {
+    SekaiTheme {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.Green)
+        ) {
+            TvLazyColumn { items(100) { Button(content = { Text("Hello there") }, onClick = {}) } }
+
+            FullScreenDialog(
+                showDialog = true,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = ""
+                    )
+                },
+                title = { Text("Title") },
+                text = { Text("Some text for the text which is really really long") },
+                onDismissRequest = {},
+                confirmButton = { Text("Confirm") },
+            )
+        }
+    }
+}
+
+@OptIn(
+    ExperimentalTvMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalComposeUiApi::class
+)
+@Preview(device = "id:tv_1080p")
+@Composable
+fun RightOverlayDialogPreview() {
+    var showDialog by remember { mutableStateOf(false) }
+    SekaiTheme {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.Green)
+        ) {
+            TvLazyColumn {
+                items(100, key = { it }) {
+                    Button(
+                        content = { Text("Hello there") },
+                        onClick = { showDialog = true }
+                    )
+                }
+            }
+
+            RightOverlayDialog(
+                showDialog = showDialog,
+                onDismissRequest = { showDialog = false },
+                title = { Text(modifier = it, text = "Right overlay dialog") },
+                titleActionButton = {
+                    Button(
+                        content = { Text("Action") },
+                        onClick = {}
+                    )
+                },
+                content = { paddingValues ->
+                    TvLazyColumn(contentPadding = paddingValues) {
+                        items(20, key = { it }) {
+                            ListItem(
+                                selected = false,
+                                onClick = {},
+                                headlineContent = { Text("HeadlineContent") }
+                            )
+                        }
+                    }
+                }
+            )
+        }
     }
 }
