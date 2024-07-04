@@ -10,7 +10,7 @@ fun TvLazyListScope.recommendationsSection(
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit
 ) {
-    if (!mediaDetails.relations.isNullOrEmpty()) {
+    if (!mediaDetails.recommendations.isNullOrEmpty()) {
         sectionHeader("Recommendations")
         item {
             CarouselMediaList(
