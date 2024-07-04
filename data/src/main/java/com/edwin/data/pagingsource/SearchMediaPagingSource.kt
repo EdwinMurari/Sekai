@@ -29,7 +29,7 @@ class SearchMediaPagingSource @Inject constructor(
                 season = searchParams.season?.asNetworkModel(),
                 genres = searchParams.genres,
                 tags = searchParams.tags,
-                minScore = searchParams.minScore,
+                minScore = searchParams.minScore?.times(10),
                 sort = searchParams.getNetworkMediaSort()?.let { listOf(it) }
             )
 
