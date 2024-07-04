@@ -22,9 +22,9 @@ data class JikanEpisodeData(
     @SerialName("title") val title: String?,
     @SerialName("title_japanese") val titleJapanese: String? = null,
     @SerialName("title_romanji") val titleRomanji: String? = null,
-    @SerialName("aired") val aired: String?,
+    @SerialName("aired") val aired: String? = null,
     @SerialName("score") val score: Double? = null,
     @SerialName("filler") val filler: Boolean,
     @SerialName("recap") val recap: Boolean,
-    @SerialName("forum_url") val forumUrl: String
+    @SerialName("forum_url") val forumUrl: String? = null
 )

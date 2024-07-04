@@ -5,26 +5,27 @@ Sekai is a modern Android app designed to provide a seamless experience for disc
 ## Features ✨
 
 - **Discover Trending and Popular Anime:** Explore curated lists of the latest and greatest anime.
-- **(Coming Soon) Search for Anime:** Quickly find your favorites or explore new titles.
-- **(Coming Soon) Get Detailed Information:**  Read synopses, track episodes, and more.
-- **(Coming Soon) Stream Anime:**  Watch your favorite anime directly within the app.
-- **(Coming Soon) Manage Your List:**  Keep track of what you're watching or reading.
+- **Search for Anime:** Quickly find your favorites or explore new titles using powerful search and filtering capabilities.
+- **Get Detailed Information:** Read synopses, track episodes, explore genres, tags, and more.
+- **(Coming Soon) Stream Anime:** Watch your favorite anime directly within the app.
+- **(Coming Soon) Manage Your List:** Keep track of what you're watching.
 
 ## Configurations 📺📱
 
-- **TV:**  In progress! Sekai for TV will bring a big-screen anime experience to your living room.
-- **Mobile:**  Coming soon! The mobile version of Sekai will be your pocket-sized anime companion.
+- **TV:** In progress! Sekai for TV will bring a big-screen anime experience to your living room.
+- **Mobile:** Coming soon! The mobile version of Sekai will be your pocket-sized anime companion.
 
 ## Built With 🛠️
 
 - **Kotlin:** Modern and concise language for Android development.
-- **Jetpack Compose:**  Declarative UI framework for building beautiful and efficient UIs.
+- **Jetpack Compose:** Declarative UI framework for building beautiful and efficient UIs.
 - **Hilt:** Dependency injection framework for simplified and type-safe dependency management.
-- **Coroutines:**  For efficient asynchronous programming.
-- **Apollo GraphQL:**  For querying the AniList API.
-- **Retrofit:** For networking with REST APIs.
+- **Coroutines:** For efficient asynchronous programming.
+- **Apollo GraphQL:** For querying the **AniList** and **Kitsu** APIs.
+- **Retrofit:** For networking with the **Jikan** REST API.
+- **Paging 3:**  For efficient loading and display of large datasets.
 - **MockK:** Powerful mocking framework for Kotlin, used for testing.
-- **JUnit:**  Industry-standard testing framework.
+- **JUnit:** Industry-standard testing framework.
 
 ## Architecture 🏗️
 
@@ -36,26 +37,30 @@ The project follows a modular architecture to improve code organization and main
 
 **Modules:**
 
-- **:app:**  Main application module.
-- **:tv:**  Module containing TV-specific UI components and logic.
+- **:app:** Main application module.
+- **:tv:** Module containing TV-specific UI components and logic.
 - **:mobile:** (Coming soon) Module for the mobile/phone version of the app.
-- **:network:**  Handles all network communication and API interactions.
+- **:network:** Handles all network communication and API interactions.
   - **:network:anilist:** Module for interacting with the AniList API (GraphQL).
-  - **:network:jikan:** Module for interacting with the Jikan API (REST).
-- **:data:**  Contains the data layer, including repositories and data sources.
-- **:design-system:** (Coming soon) Module to house reusable UI components and theming.
+  - **:network:kitsu:** Module for interacting with the **Kitsu API (GraphQL).**
+  - **:network:jikan:** Module for interacting with the **Jikan API (REST).**
+- **:data:** Contains the data layer, including repositories and data sources.
+- **:common:** Contains code shared between modules (like utility functions or base classes).
+- **:design-system:** (Coming Soon) Module to house reusable UI components and theming.
 
 ## Technical Highlights 🏆
 
 - **Modern Android Architecture:** Implemented using the official Android architecture guidelines, ensuring separation of concerns, testability, and maintainability.
-- **Jetpack Compose:**  A beautiful and responsive UI using Jetpack Compose, showcasing expertise in modern Android UI development.
-- **Dependency Injection with Hilt:**  Hilt provides a robust and type-safe dependency injection framework, leading to a more maintainable and testable codebase.
-- **Asynchronous Programming with Coroutines:**  Kotlin Coroutines are used for efficient asynchronous operations, resulting in a smooth and responsive user experience.
-- **Network Communication:**  Retrofit is integrated for type-safe network requests to interact with REST APIs (Jikan).
-- **GraphQL with Apollo:**  Apollo GraphQL is utilized to efficiently query and consume data from the AniList API.
+- **Jetpack Compose:** A beautiful and responsive UI using Jetpack Compose, showcasing expertise in modern Android UI development.
+- **Dependency Injection with Hilt:** Hilt provides a robust and type-safe dependency injection framework, leading to a more maintainable and testable codebase.
+- **Asynchronous Programming with Coroutines:** Kotlin Coroutines are used for efficient asynchronous operations, resulting in a smooth and responsive user experience.
+- **Paging 3:**  Efficiently loads and displays large datasets of anime, providing a seamless user experience.
 - **Rigorous Testing:**
   - JUnit and MockK are employed for comprehensive unit testing of the data and domain layers, ensuring code quality and reliability.
   - (Future) Plan to integrate UI tests using Jetpack Compose's testing framework to guarantee a flawless user interface.
+- **Network Communication:**
+  - Retrofit is integrated for type-safe network requests to interact with the **Jikan REST API.**
+  - Apollo GraphQL is utilized to efficiently query and consume data from the **AniList and Kitsu APIs.**
 
 ## Getting Started 🚀
 

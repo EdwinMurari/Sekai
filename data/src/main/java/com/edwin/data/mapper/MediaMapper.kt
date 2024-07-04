@@ -1,10 +1,22 @@
 package com.edwin.data.mapper
 
 import com.edwin.data.model.Media
+import com.edwin.data.model.MediaFormat
 import com.edwin.data.model.MediaSeason
+import com.edwin.data.model.MediaStatus
 import com.edwin.network.anilist.fragment.MediaFragment
 import com.edwin.network.anilist.type.MediaFormat as NetworkMediaFormat
 import com.edwin.network.anilist.type.MediaSeason as NetworkMediaSeason
+import com.edwin.network.anilist.type.MediaStatus as NetworkMediaStatus
+
+val tvNetworkFormats = listOf(
+    NetworkMediaFormat.TV,
+    NetworkMediaFormat.TV_SHORT,
+    NetworkMediaFormat.OVA,
+    NetworkMediaFormat.ONA,
+    NetworkMediaFormat.SPECIAL
+)
+val movieNetworkFormats = listOf(NetworkMediaFormat.MOVIE)
 
 fun MediaFragment.asExternalTvSeriesModel() = Media.TvSeries(
     id = id,
@@ -13,7 +25,7 @@ fun MediaFragment.asExternalTvSeriesModel() = Media.TvSeries(
     coverImage = getCoverImage(),
     bannerImage = getBannerImage(),
     genres = getGenres(),
-    averageScore = averageScore,
+    rawAverageScore = averageScore,
     popularity = popularity,
     startDate = startDate?.year,
     averageColorHex = getCoverAverageHex(),
@@ -28,7 +40,7 @@ fun MediaFragment.asExternalMovieModel() = Media.Movie(
     coverImage = getCoverImage(),
     bannerImage = getBannerImage(),
     genres = getGenres(),
-    averageScore = averageScore,
+    rawAverageScore = averageScore,
     popularity = popularity,
     startDate = startDate?.year,
     averageColorHex = getCoverAverageHex(),
@@ -41,15 +53,8 @@ fun MediaFragment.asExternalModel() = when {
     else -> null
 }
 
-fun NetworkMediaFormat?.isTvSeries() = this in listOf(
-    NetworkMediaFormat.TV,
-    NetworkMediaFormat.TV_SHORT,
-    NetworkMediaFormat.OVA,
-    NetworkMediaFormat.ONA,
-    NetworkMediaFormat.SPECIAL
-)
-
-fun NetworkMediaFormat?.isMovie() = this in listOf(NetworkMediaFormat.MOVIE)
+fun NetworkMediaFormat?.isTvSeries() = this in tvNetworkFormats
+fun NetworkMediaFormat?.isMovie() = this in movieNetworkFormats
 
 private fun MediaFragment.NextAiringEpisode?.asExternalModel() = this?.let {
     Media.TvSeries.NextAiringEpisode(
@@ -73,4 +78,17 @@ fun MediaSeason.asNetworkModel(): NetworkMediaSeason {
         MediaSeason.SUMMER -> NetworkMediaSeason.SUMMER
         MediaSeason.FALL -> NetworkMediaSeason.FALL
     }
+}
+
+fun MediaFormat.asNetworkModel() = when (this) {
+    MediaFormat.TV -> tvNetworkFormats
+    MediaFormat.MOVIE -> movieNetworkFormats
+}
+
+fun MediaStatus.asNetworkModel() = when (this) {
+    MediaStatus.FINISHED -> NetworkMediaStatus.FINISHED
+    MediaStatus.RELEASING -> NetworkMediaStatus.RELEASING
+    MediaStatus.NOT_YET_RELEASED -> NetworkMediaStatus.NOT_YET_RELEASED
+    MediaStatus.CANCELLED -> NetworkMediaStatus.CANCELLED
+    MediaStatus.HIATUS -> NetworkMediaStatus.HIATUS
 }

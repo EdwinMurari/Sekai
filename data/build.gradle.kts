@@ -56,6 +56,9 @@ dependencies {
 
     // Mockk framework
     testImplementation(libs.mockk)
+
+    // Paging
+    implementation("androidx.paging:paging-runtime:3.3.0")
 }
 
 // Allow references to generated code

@@ -1,6 +1,7 @@
 package com.edwin.network.kitsu.di
 
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.edwin.network.kitsu.BuildConfig
 import dagger.Module
 import dagger.Provides
@@ -21,10 +22,14 @@ object KitsuApolloModule {
     @Provides
     @Singleton
     @KitsuApolloClient
-    internal fun providesKitsuApolloClient(ioDispatcher: CoroutineDispatcher): ApolloClient {
+    internal fun providesKitsuApolloClient(
+        ioDispatcher: CoroutineDispatcher,
+        loggingApolloInterceptor: ApolloInterceptor
+    ): ApolloClient {
         return ApolloClient.Builder()
             .dispatcher(ioDispatcher)
             .serverUrl(BuildConfig.GRAPHQL_URL)
+            .addInterceptor(loggingApolloInterceptor)
             .build()
     }
 }

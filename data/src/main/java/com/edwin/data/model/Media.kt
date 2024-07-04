@@ -7,10 +7,12 @@ sealed class Media {
     abstract val coverImage: String?
     abstract val bannerImage: String?
     abstract val genres: List<String>?
-    abstract val averageScore: Int?
+    abstract val rawAverageScore: Int?
     abstract val popularity: Int?
     abstract val startDate: Int? // Year
     abstract val averageColorHex: String?
+
+    val averageScoreOutOfTen: Float? get() = rawAverageScore?.toFloat()?.let { it / 10 }
 
     data class TvSeries(
         override val id: Int,
@@ -19,7 +21,7 @@ sealed class Media {
         override val coverImage: String?,
         override val bannerImage: String?,
         override val genres: List<String>?,
-        override val averageScore: Int?,
+        override val rawAverageScore: Int?,
         override val popularity: Int?,
         override val startDate: Int?, // Year
         override val averageColorHex: String?,
@@ -40,7 +42,7 @@ sealed class Media {
         override val coverImage: String?,
         override val bannerImage: String?,
         override val genres: List<String>?,
-        override val averageScore: Int?,
+        override val rawAverageScore: Int?,
         override val popularity: Int?,
         override val startDate: Int?, // Year
         override val averageColorHex: String?,

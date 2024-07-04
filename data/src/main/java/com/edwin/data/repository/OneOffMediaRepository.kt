@@ -1,10 +1,16 @@
 package com.edwin.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.edwin.data.mapper.asExternalModel
 import com.edwin.data.mapper.asNetworkModel
+import com.edwin.data.model.Media
 import com.edwin.data.model.MediaCollections
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
+import com.edwin.data.model.SearchParams
+import com.edwin.data.pagingsource.SearchMediaPagingSource
 import com.edwin.network.anilist.AnilistNetworkDataSource
 import com.edwin.network.jikan.JikanNetworkDataSource
 import com.edwin.network.kitsu.KitsuNetworkDataSource
@@ -60,8 +66,22 @@ internal class OneOffMediaRepository @Inject constructor(
                         kitsuEpisodesResponse = kitsuEpisodesResponse
                     )?.let {
                         NetworkResponse.Success(it)
-                    } ?: NetworkResponse.Error(listOf(Error()))
-                } ?: NetworkResponse.Error(listOf(Error()))
+                    } ?: NetworkResponse.Error(listOf(Error("Unsupported format")))
+                } ?: NetworkResponse.Error(listOf(Error("Media details not found")))
             }
         }
+
+    override fun getPagedSearchResults(
+        searchParams: SearchParams
+    ): Flow<PagingData<Media>> {
+        return Pager(
+            config = PagingConfig(pageSize = searchParams.perPage),
+            pagingSourceFactory = {
+                SearchMediaPagingSource(
+                    anilistDataSource,
+                    searchParams
+                )
+            }
+        ).flow
+    }
 }

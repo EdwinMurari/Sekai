@@ -6,11 +6,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -43,7 +42,7 @@ import com.edwin.sekai.ui.utils.MediaTitle
 
 // Constants
 private const val CARD_HEIGHT = 234
-private const val CARD_ASPECT_RATIO = 2f / 3f
+private const val CARD_WIDTH = 156
 private const val GRADIENT_START = 1f
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -79,9 +78,7 @@ fun MediaCard(
 
     Card(
         onClick = { onClick(media.id) },
-        modifier = modifier
-            .heightIn(max = CARD_HEIGHT.dp)
-            .aspectRatio(CARD_ASPECT_RATIO)
+        modifier = modifier.size(width = CARD_WIDTH.dp, height = CARD_HEIGHT.dp)
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             Box {
@@ -109,6 +106,20 @@ fun MediaCard(
                 )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+fun MediaCardPlaceholder(
+    palettes: Map<String, Material3Palette>,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = {},
+        modifier = modifier.size(width = CARD_WIDTH.dp, height = CARD_HEIGHT.dp)
+    ) {
+        Box(modifier = Modifier.background(color = Color.Green))
     }
 }
 

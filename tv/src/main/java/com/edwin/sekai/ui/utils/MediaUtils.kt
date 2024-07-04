@@ -118,12 +118,16 @@ fun MediaContentInfo(media: Media) {
 
 @Composable
 fun MediaMetaData(media: Media) {
+    val contentList = mutableListOf<@Composable () -> Unit>().apply {
+        add {
+            media.averageScoreOutOfTen?.let { StarRating(it) }
+                ?: media.popularity?.let { Popularity(it) }
+        }
+        add { StartYear(media.startDate) }
+    }
+
     DotSeparatedRow(
-        contents = arrayOf(
-            media.averageScore?.let { { StarRating(it) } }
-                ?: { Popularity(media.popularity) },
-            { StartYear(media.startDate) }
-        )
+        contents = contentList.toTypedArray()
     )
 }
 
@@ -131,7 +135,7 @@ fun MediaMetaData(media: Media) {
 fun MediaMetaDataDetailed(media: Media, modifier: Modifier = Modifier) {
     val contentList = mutableListOf<@Composable () -> Unit>().apply {
         media.popularity?.let { add { Popularity(it) } }
-        media.averageScore?.let { add { StarRating(it) } }
+        media.averageScoreOutOfTen?.let { add { StarRating(it) } }
         add { MediaContentInfo(media) }
         add { StartYear(media.startDate) }
     }
@@ -144,9 +148,7 @@ fun MediaMetaDataDetailed(media: Media, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun StarRating(averageScore: Int?) {
-    if (averageScore == null) return
-
+private fun StarRating(averageScore: Float) {
     Icon(
         imageVector = Icons.Filled.Star,
         contentDescription = stringResource(R.string.star_rating_content_description),
@@ -157,16 +159,14 @@ private fun StarRating(averageScore: Int?) {
     Spacer(modifier = Modifier.width(ICON_SPACING.dp))
 
     Text(
-        text = averageScore.toFloat().div(10).toString(),
+        text = averageScore.toString(),
         color = LocalContentColor.current
     )
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun Popularity(popularity: Int?) {
-    if (popularity == null) return
-
+private fun Popularity(popularity: Int) {
     Icon(
         imageVector = Icons.Filled.ThumbUp,
         contentDescription = stringResource(R.string.popularity_content_description),
