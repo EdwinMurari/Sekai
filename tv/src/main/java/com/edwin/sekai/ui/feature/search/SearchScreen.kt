@@ -4,41 +4,37 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.PagingData
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvGridItemSpan
+import androidx.tv.foundation.lazy.grid.TvLazyGridScope
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.InputChip
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
-import com.edwin.data.model.SearchParams
-import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.MediaCard
 import com.edwin.sekai.ui.designsystem.component.MediaCardPlaceholder
 import com.edwin.sekai.ui.designsystem.component.SearchTextField
-import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
-import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
-import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.search.component.Filter
 import com.edwin.sekai.ui.feature.search.component.FilterPopup
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun SearchRoute(
@@ -74,11 +70,11 @@ fun SearchScreen(
     onMediaClick: (Int) -> Unit,
     onFiltersClick: () -> Unit,
     onFiltersChanged: (List<Filter<*>>) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
         SearchContent(
-            modifier = modifier,
+            modifier = Modifier.fillMaxSize(),
             searchQuery = searchQuery,
             onSearchQueryChange = onSearchQueryChange,
             pagingItems = pagingItems,
@@ -113,71 +109,130 @@ private fun SearchContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         columns = TvGridCells.Adaptive(minSize = 156.dp)
     ) {
-        item(span = { TvGridItemSpan(maxLineSpan) }) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+        searchHeader(
+            searchQuery = searchQuery,
+            onSearchQueryChange = onSearchQueryChange,
+            onFiltersClick = onFiltersClick
+        )
+
+        refreshStateItem(pagingItems = pagingItems)
+
+        searchResultItems(
+            pagingItems = pagingItems,
+            palettes = palettes,
+            onMediaClick = onMediaClick
+        )
+
+        appendStateItem(pagingItems = pagingItems)
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun TvLazyGridScope.searchHeader(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onFiltersClick: () -> Unit
+) {
+    item(span = { TvGridItemSpan(maxLineSpan) }) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SearchTextField(
+                modifier = Modifier.weight(1f),
+                searchQuery = searchQuery,
+                onSearchQueryChange = onSearchQueryChange
+            )
+
+            InputChip(
+                selected = false,
+                onClick = onFiltersClick
             ) {
-                SearchTextField(
-                    modifier = Modifier.weight(1f),
-                    searchQuery = searchQuery,
-                    onSearchQueryChange = onSearchQueryChange
+                Text(
+                    text = "Filters",
+                    style = MaterialTheme.typography.labelLarge
                 )
-
-                InputChip(
-                    selected = false,
-                    onClick = onFiltersClick
-                ) {
-                    Text(
-                        text = "Filters",
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
-            }
-        }
-
-        items(
-            count = pagingItems.itemCount,
-            key = pagingItems.itemKey { it.id }
-        ) { index ->
-            val media = pagingItems[index]
-            if (media != null) {
-                MediaCard(
-                    media = media,
-                    palettes = palettes,
-                    onClick = onMediaClick
-                )
-            } else {
-                MediaCardPlaceholder(palettes = palettes)
             }
         }
     }
 }
 
-@TvPreview
-@Composable
-fun PreviewSearchScreen(
-    @PreviewParameter(MediaListPreviewParameterProvider::class) mediaList: List<Media>
+private fun TvLazyGridScope.searchResultItems(
+    pagingItems: LazyPagingItems<Media>,
+    palettes: Map<String, Material3Palette>,
+    onMediaClick: (Int) -> Unit
 ) {
-    val context = LocalContext.current
-    val palettes = loadMaterial3Palettes(context)
-
-    val (searchQuery, setSearchQuery) = remember { mutableStateOf("") }
-    val pagingData = PagingData.from(mediaList)
-    val fakeDataFlow = MutableStateFlow(pagingData)
-    val lazyPagingItems = fakeDataFlow.collectAsLazyPagingItems()
-
-    SekaiTheme {
-        SearchScreen(
-            modifier = Modifier,
-            onSearchQueryChange = setSearchQuery,
-            filterState = SearchViewModel.FilterState(filters = emptyList(), showFiltersDialog = false),
-            searchQuery = searchQuery,
-            pagingItems = lazyPagingItems,
-            palettes = palettes,
-            onMediaClick = {},
-            onFiltersClick = {},
-            onFiltersChanged = {},
-        )
+    items(
+        count = pagingItems.itemCount,
+        key = pagingItems.itemKey { it.id }
+    ) { index ->
+        val media = pagingItems[index]
+        if (media != null) {
+            MediaCard(
+                media = media,
+                palettes = palettes,
+                onClick = onMediaClick
+            )
+        } else {
+            MediaCardPlaceholder(palettes = palettes)
+        }
     }
+}
+
+private fun TvLazyGridScope.refreshStateItem(pagingItems: LazyPagingItems<Media>) {
+    when (pagingItems.loadState.refresh) {
+        is LoadState.Loading -> {
+            item(span = { TvGridItemSpan(maxLineSpan) }) {
+                LoadingItem()
+            }
+        }
+
+        is LoadState.Error -> {
+            val error = pagingItems.loadState.refresh as LoadState.Error
+            item(span = { TvGridItemSpan(maxLineSpan) }) {
+                ErrorItem(errorMessage = error.error.message ?: "Unknown Error")
+            }
+        }
+
+        else -> {} // Do nothing in LoadState.NotLoading for initial load
+    }
+}
+
+private fun TvLazyGridScope.appendStateItem(pagingItems: LazyPagingItems<Media>) {
+    when (pagingItems.loadState.append) {
+        is LoadState.Loading -> {
+            item {
+                LoadingItem()
+            }
+        }
+
+        is LoadState.Error -> {
+            val error = pagingItems.loadState.refresh as LoadState.Error
+            item(span = { TvGridItemSpan(maxCurrentLineSpan) }) {
+                ErrorItem(errorMessage = error.error.message ?: "Unknown Error")
+            }
+        }
+
+        else -> {} // No need to do anything in LoadState.NotLoading for append
+    }
+}
+
+@Composable
+private fun LoadingItem(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentSize(Alignment.Center)
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun ErrorItem(errorMessage: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Error: $errorMessage",
+        modifier = modifier.padding(16.dp)
+    )
 }

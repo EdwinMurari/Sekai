@@ -1,6 +1,5 @@
 package com.edwin.sekai.ui.feature.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -22,13 +21,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,36 +37,43 @@ class SearchViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-    private val _filterState = MutableStateFlow(
-        FilterState(
-            filters = createFiltersFromSearchParams(
-                searchParams = SearchParams(page = 1, perPage = 20),
-                genres = emptyList(), // TODO :: Fetch genres from API
-                tags = emptyList() // TODO :: Fetch tags from API
-            )
-        )
-    )
+    private val _filterState = MutableStateFlow(FilterState(filters = emptyList()))
     val filterState = _filterState.asStateFlow()
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val searchResults: StateFlow<PagingData<Media>> =
-        combine(filterState, searchQuery) { filterState, searchQuery ->
-            createSearchParamsFromFilters(searchQuery, filterState.filters)
-        }
+        filterState
             .debounce(300L)
             .distinctUntilChanged()
-            .flatMapLatest { searchParam ->
-                searchMedia(searchParam)
+            .flatMapLatest { filterState ->
+                searchQuery
+                    .debounce(300L)
+                    .distinctUntilChanged()
+                    .flatMapLatest { searchQuery ->
+                        searchMedia(createSearchParamsFromFilters(searchQuery, filterState.filters))
+                    }
             }
             .cachedIn(viewModelScope)
-            .catch {
-                Log.e("TEST", it.stackTraceToString())
-            }
             .stateIn(
                 scope = viewModelScope,
                 initialValue = PagingData.empty(),
-                started = SharingStarted.WhileSubscribed(5_000),
+                started = SharingStarted.WhileSubscribed(5_000)
             )
+
+    init {
+        viewModelScope.launch {
+            val genres = emptyList<String>()
+            val tags = emptyList<String>()
+
+            _filterState.value = FilterState(
+                filters = createFiltersFromSearchParams(
+                    searchParams = SearchParams(page = 1, perPage = 20),
+                    genres = genres,
+                    tags = tags
+                )
+            )
+        }
+    }
 
     fun onQueryChange(query: String) {
         _searchQuery.value = query
@@ -91,98 +96,69 @@ class SearchViewModel @Inject constructor(
         searchQuery: String,
         filters: List<Filter<*>>
     ): SearchParams {
-        var updatedParams = SearchParams(page = 1, perPage = 20, query = searchQuery)
-
-        filters.forEach { filter ->
+        return filters.fold(
+            initial = SearchParams(
+                page = 1,
+                perPage = 20,
+                query = searchQuery.takeIf { it.isNotBlank() })
+        ) { params, filter ->
             when (filter) {
                 is Filter.SelectableFilter<*> -> {
-                    updatedParams = when (filter.filterType) {
-                        FilterType.FORMAT -> updatedParams.copy(format = filter.selectedValue as? MediaFormat)
-                        FilterType.STATUS -> updatedParams.copy(status = filter.selectedValue as? MediaStatus)
-                        FilterType.SORT_BY -> updatedParams.copy(sortBy = filter.selectedValue as? MediaSort)
-                        FilterType.ORDER -> updatedParams.copy(
+                    when (filter.filterType) {
+                        FilterType.FORMAT -> params.copy(format = filter.selectedValue as? MediaFormat)
+                        FilterType.STATUS -> params.copy(status = filter.selectedValue as? MediaStatus)
+                        FilterType.SORT_BY -> params.copy(sortBy = filter.selectedValue as? MediaSort)
+                        FilterType.ORDER -> params.copy(
                             order = filter.selectedValue as? Order ?: Order.DESCENDING
                         )
 
-                        FilterType.SEASON -> updatedParams.copy(season = filter.selectedValue as? MediaSeason)
-                        FilterType.MIN_SCORE -> updatedParams.copy(minScore = filter.selectedValue as? Int)
-                        FilterType.SEASON_YEAR -> updatedParams.copy(seasonYear = filter.selectedValue as? Int)
-                        FilterType.IS_ADULT -> updatedParams.copy(isAdult = filter.selectedValue as? Boolean)
-                        else -> updatedParams
+                        FilterType.SEASON -> params.copy(season = filter.selectedValue as? MediaSeason)
+                        FilterType.MIN_SCORE -> params.copy(minScore = filter.selectedValue as? Int)
+                        FilterType.SEASON_YEAR -> params.copy(seasonYear = filter.selectedValue as? Int)
+                        FilterType.IS_ADULT -> params.copy(isAdult = filter.selectedValue as? Boolean)
+                        else -> params // Handle the else case appropriately
                     }
                 }
 
                 is Filter.MultiSelectableFilter<*> -> {
-                    updatedParams = when (filter.filterType) {
-                        FilterType.GENRES -> updatedParams.copy(genres = filter.selectedValue as? List<String>)
-                        FilterType.TAGS -> updatedParams.copy(tags = filter.selectedValue as? List<String>)
-                        else -> updatedParams
+                    when (filter.filterType) {
+                        FilterType.GENRES -> params.copy(genres = filter.selectedValue as? List<String>)
+                        FilterType.TAGS -> params.copy(tags = filter.selectedValue as? List<String>)
+                        else -> params // Handle the else case appropriately
                     }
                 }
             }
         }
-
-        return updatedParams
     }
 
     private fun createFiltersFromSearchParams(
         searchParams: SearchParams,
         genres: List<String>,
         tags: List<String>
-    ): List<Filter<*>> {
-        return listOf<Filter<*>>(
-            Filter.SelectableFilter(
-                filterType = FilterType.FORMAT,
-                selectedValue = searchParams.format,
-                options = MediaFormat.entries
-            ),
-            Filter.SelectableFilter(
-                filterType = FilterType.STATUS,
-                selectedValue = searchParams.status,
-                options = MediaStatus.entries
-            ),
-            Filter.SelectableFilter(
-                filterType = FilterType.SORT_BY,
-                selectedValue = searchParams.sortBy,
-                options = MediaSort.entries
-            ),
-            Filter.SelectableFilter(
-                filterType = FilterType.ORDER,
-                selectedValue = searchParams.order,
-                options = Order.entries
-            ),
-            Filter.MultiSelectableFilter(
-                filterType = FilterType.GENRES,
-                selectedValue = searchParams.genres ?: emptyList(),
-                options = genres
-            ),
-            Filter.MultiSelectableFilter(
-                filterType = FilterType.TAGS,
-                selectedValue = searchParams.tags ?: emptyList(),
-                options = tags
-            ),
-            Filter.SelectableFilter(
-                filterType = FilterType.MIN_SCORE,
-                selectedValue = searchParams.minScore,
-                options = (1..10).toList()
-            ),
-            Filter.SelectableFilter(
-                filterType = FilterType.SEASON_YEAR,
-                selectedValue = searchParams.seasonYear,
-                options = (1950..2024).toList()
-            ),
-            Filter.SelectableFilter(
-                filterType = FilterType.SEASON,
-                selectedValue = searchParams.season,
-                options = MediaSeason.entries
-            ),
-            Filter.SelectableFilter(
-                filterType = FilterType.IS_ADULT,
-                selectedValue = searchParams.isAdult,
-                options = listOf(true, false)
-            )
-        )
-    }
+    ): List<Filter<*>> = listOf(
+        Filter.SelectableFilter(FilterType.FORMAT, searchParams.format, MediaFormat.entries),
+        Filter.SelectableFilter(FilterType.STATUS, searchParams.status, MediaStatus.entries),
+        Filter.SelectableFilter(FilterType.SORT_BY, searchParams.sortBy, MediaSort.entries),
+        Filter.SelectableFilter(FilterType.ORDER, searchParams.order, Order.entries),
+        Filter.MultiSelectableFilter(
+            FilterType.GENRES,
+            searchParams.genres.takeUnless { it.isNullOrEmpty() },
+            genres
+        ),
+        Filter.MultiSelectableFilter(
+            FilterType.TAGS,
+            searchParams.tags.takeUnless { it.isNullOrEmpty() },
+            tags
+        ),
+        Filter.SelectableFilter(FilterType.MIN_SCORE, searchParams.minScore, (1..10).toList()),
+        Filter.SelectableFilter(
+            FilterType.SEASON_YEAR,
+            searchParams.seasonYear,
+            (1950..2024).toList()
+        ),
+        Filter.SelectableFilter(FilterType.SEASON, searchParams.season, MediaSeason.entries),
+        Filter.SelectableFilter(FilterType.IS_ADULT, searchParams.isAdult, listOf(true, false))
+    )
 
     data class FilterState(
         val filters: List<Filter<*>>,
