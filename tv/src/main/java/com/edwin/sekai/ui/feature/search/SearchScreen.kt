@@ -33,7 +33,7 @@ import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.MediaCard
 import com.edwin.sekai.ui.designsystem.component.MediaCardPlaceholder
 import com.edwin.sekai.ui.designsystem.component.SearchTextField
-import com.edwin.sekai.ui.feature.search.component.Filter
+import com.edwin.sekai.ui.feature.search.component.FilterOption
 import com.edwin.sekai.ui.feature.search.component.FilterPopup
 
 @Composable
@@ -69,7 +69,7 @@ fun SearchScreen(
     onSearchQueryChange: (String) -> Unit,
     onMediaClick: (Int) -> Unit,
     onFiltersClick: () -> Unit,
-    onFiltersChanged: (List<Filter<*>>) -> Unit,
+    onFiltersChanged: (List<FilterOption<*>>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -91,7 +91,6 @@ fun SearchScreen(
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun SearchContent(
     modifier: Modifier,

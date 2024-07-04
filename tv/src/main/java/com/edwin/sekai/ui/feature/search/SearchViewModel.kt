@@ -13,7 +13,7 @@ import com.edwin.data.model.MediaStatus
 import com.edwin.data.model.Order
 import com.edwin.data.model.SearchParams
 import com.edwin.data.repository.MediaRepository
-import com.edwin.sekai.ui.feature.search.component.Filter
+import com.edwin.sekai.ui.feature.search.component.FilterOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -85,14 +85,14 @@ class SearchViewModel @Inject constructor(
         _filterState.update { it.copy(showFiltersDialog = true) }
     }
 
-    fun onFiltersChanged(updatedFilters: List<Filter<*>>) {
+    fun onFiltersChanged(updatedFilters: List<FilterOption<*>>) {
         _filterState.value =
             filterState.value.copy(filters = updatedFilters, showFiltersDialog = false)
     }
 
     private fun createSearchParamsFromFilters(
         searchQuery: String,
-        filters: List<Filter<*>>
+        filters: List<FilterOption<*>>
     ): SearchParams {
         return filters.fold(
             initial = SearchParams(
@@ -101,7 +101,7 @@ class SearchViewModel @Inject constructor(
                 query = searchQuery.takeIf { it.isNotBlank() })
         ) { params, filter ->
             when (filter) {
-                is Filter.SelectableFilter<*> -> {
+                is FilterOption.SingleSelect<*> -> {
                     when (filter.filterType) {
                         FilterType.FORMAT -> params.copy(format = filter.selectedValue as? MediaFormat)
                         FilterType.STATUS -> params.copy(status = filter.selectedValue as? MediaStatus)
@@ -118,7 +118,7 @@ class SearchViewModel @Inject constructor(
                     }
                 }
 
-                is Filter.MultiSelectableFilter<*> -> {
+                is FilterOption.MultiSelect<*> -> {
                     when (filter.filterType) {
                         FilterType.GENRES -> params.copy(
                             genres = (filter.selectedValue as? List<*>)
@@ -135,28 +135,28 @@ class SearchViewModel @Inject constructor(
 
     private fun createFiltersFromSearchParams(
         searchParams: SearchParams
-    ): List<Filter<*>> = listOf(
-        Filter.SelectableFilter(FilterType.FORMAT, searchParams.format, MediaFormat.entries),
-        Filter.SelectableFilter(FilterType.STATUS, searchParams.status, MediaStatus.entries),
-        Filter.SelectableFilter(FilterType.SORT_BY, searchParams.sortBy, MediaSort.entries),
-        Filter.SelectableFilter(FilterType.ORDER, searchParams.order, Order.entries),
-        Filter.MultiSelectableFilter(
+    ): List<FilterOption<*>> = listOf(
+        FilterOption.SingleSelect(FilterType.FORMAT, searchParams.format, MediaFormat.entries),
+        FilterOption.SingleSelect(FilterType.STATUS, searchParams.status, MediaStatus.entries),
+        FilterOption.SingleSelect(FilterType.SORT_BY, searchParams.sortBy, MediaSort.entries),
+        FilterOption.SingleSelect(FilterType.ORDER, searchParams.order, Order.entries),
+        FilterOption.MultiSelect(
             FilterType.GENRES,
             searchParams.genres.takeUnless { it.isNullOrEmpty() },
             Genre.entries
         ),
-        Filter.SelectableFilter(FilterType.MIN_SCORE, searchParams.minScore, (1..10).toList()),
-        Filter.SelectableFilter(
+        FilterOption.SingleSelect(FilterType.MIN_SCORE, searchParams.minScore, (1..10).toList()),
+        FilterOption.SingleSelect(
             FilterType.SEASON_YEAR,
             searchParams.seasonYear,
             (1950..2024).toList()
         ),
-        Filter.SelectableFilter(FilterType.SEASON, searchParams.season, MediaSeason.entries),
-        Filter.SelectableFilter(FilterType.IS_ADULT, searchParams.isAdult, listOf(true, false))
+        FilterOption.SingleSelect(FilterType.SEASON, searchParams.season, MediaSeason.entries),
+        FilterOption.SingleSelect(FilterType.IS_ADULT, searchParams.isAdult, listOf(true, false))
     )
 
     data class FilterState(
-        val filters: List<Filter<*>>,
+        val filters: List<FilterOption<*>>,
         val showFiltersDialog: Boolean = false
     )
 }
