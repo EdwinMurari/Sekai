@@ -27,7 +27,6 @@ interface AnilistNetworkDataSource {
         seasonYear: Int? = null,
         season: MediaSeason? = null,
         genres: List<String>? = null,
-        tags: List<String>? = null,
         minScore: Int? = null,
         sort: List<MediaSort>? = null,
         isAdult: Boolean? = null

@@ -19,7 +19,6 @@ enum class FilterType(val title: String, val icon: ImageVector) {
     SORT_BY(title = "Sort by", icon = Icons.AutoMirrored.Filled.Sort),
     ORDER(title = "Order", icon = Icons.Default.SwapVert),
     GENRES(title = "Genres", icon = Icons.Default.Category),
-    TAGS(title = "Tags", icon = Icons.Outlined.Tag),
     MIN_SCORE(title = "Min Score", icon = Icons.Default.Star),
     SEASON_YEAR(title = "Season Year", icon = Icons.Default.CalendarToday),
     SEASON(title = "Season", icon = Icons.Outlined.Nature),

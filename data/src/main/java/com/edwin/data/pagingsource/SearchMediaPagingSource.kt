@@ -27,8 +27,7 @@ class SearchMediaPagingSource @Inject constructor(
                 status = searchParams.status?.asNetworkModel(),
                 seasonYear = searchParams.seasonYear,
                 season = searchParams.season?.asNetworkModel(),
-                genres = searchParams.genres,
-                tags = searchParams.tags,
+                genres = searchParams.genres?.map { it.name },
                 minScore = searchParams.minScore?.times(10),
                 sort = searchParams.getNetworkMediaSort()?.let { listOf(it) }
             )

@@ -42,7 +42,6 @@ internal class ApolloAnilistNetworkDataSource @Inject constructor(
         seasonYear: Int?,
         season: MediaSeason?,
         genres: List<String>?,
-        tags: List<String>?,
         minScore: Int?,
         sort: List<MediaSort>?,
         isAdult: Boolean?
@@ -56,7 +55,6 @@ internal class ApolloAnilistNetworkDataSource @Inject constructor(
             seasonYear = Optional.presentIfNotNull(seasonYear),
             season = Optional.presentIfNotNull(season),
             genres = Optional.presentIfNotNull(genres),
-            tags = Optional.presentIfNotNull(tags),
             minimumScore = Optional.presentIfNotNull(minScore),
             sort = Optional.presentIfNotNull(sort),
             isAdult = Optional.presentIfNotNull(isAdult)

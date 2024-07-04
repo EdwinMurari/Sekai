@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.edwin.data.model.Genre
 import com.edwin.data.model.Media
 import com.edwin.data.model.MediaFormat
 import com.edwin.data.model.MediaSeason
@@ -41,35 +42,32 @@ class SearchViewModel @Inject constructor(
     val filterState = _filterState.asStateFlow()
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val searchResults: StateFlow<PagingData<Media>> =
-        filterState
-            .debounce(300L)
-            .distinctUntilChanged()
-            .flatMapLatest { filterState ->
-                searchQuery
-                    .debounce(300L)
-                    .distinctUntilChanged()
-                    .flatMapLatest { searchQuery ->
-                        searchMedia(createSearchParamsFromFilters(searchQuery, filterState.filters))
-                    }
-            }
-            .cachedIn(viewModelScope)
-            .stateIn(
-                scope = viewModelScope,
-                initialValue = PagingData.empty(),
-                started = SharingStarted.WhileSubscribed(5_000)
-            )
+    val searchResults: StateFlow<PagingData<Media>> = filterState
+        .debounce(300L)
+        .distinctUntilChanged()
+        .flatMapLatest { filterState ->
+            searchQuery
+                .debounce(300L)
+                .distinctUntilChanged()
+                .flatMapLatest { searchQuery ->
+                    searchMedia(createSearchParamsFromFilters(searchQuery, filterState.filters))
+                }
+        }
+        .cachedIn(viewModelScope)
+        .stateIn(
+            scope = viewModelScope,
+            initialValue = PagingData.empty(),
+            started = SharingStarted.WhileSubscribed(5_000)
+        )
 
     init {
         viewModelScope.launch {
-            val genres = emptyList<String>()
-            val tags = emptyList<String>()
-
             _filterState.value = FilterState(
                 filters = createFiltersFromSearchParams(
-                    searchParams = SearchParams(page = 1, perPage = 20),
-                    genres = genres,
-                    tags = tags
+                    searchParams = SearchParams(
+                        page = 1,
+                        perPage = 20
+                    )
                 )
             )
         }
@@ -122,8 +120,12 @@ class SearchViewModel @Inject constructor(
 
                 is Filter.MultiSelectableFilter<*> -> {
                     when (filter.filterType) {
-                        FilterType.GENRES -> params.copy(genres = filter.selectedValue as? List<String>)
-                        FilterType.TAGS -> params.copy(tags = filter.selectedValue as? List<String>)
+                        FilterType.GENRES -> params.copy(
+                            genres = (filter.selectedValue as? List<*>)
+                                ?.filterIsInstance<Genre>()
+                                ?.takeIf { it.isNotEmpty() }
+                        )
+
                         else -> params // Handle the else case appropriately
                     }
                 }
@@ -132,9 +134,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun createFiltersFromSearchParams(
-        searchParams: SearchParams,
-        genres: List<String>,
-        tags: List<String>
+        searchParams: SearchParams
     ): List<Filter<*>> = listOf(
         Filter.SelectableFilter(FilterType.FORMAT, searchParams.format, MediaFormat.entries),
         Filter.SelectableFilter(FilterType.STATUS, searchParams.status, MediaStatus.entries),
@@ -143,12 +143,7 @@ class SearchViewModel @Inject constructor(
         Filter.MultiSelectableFilter(
             FilterType.GENRES,
             searchParams.genres.takeUnless { it.isNullOrEmpty() },
-            genres
-        ),
-        Filter.MultiSelectableFilter(
-            FilterType.TAGS,
-            searchParams.tags.takeUnless { it.isNullOrEmpty() },
-            tags
+            Genre.entries
         ),
         Filter.SelectableFilter(FilterType.MIN_SCORE, searchParams.minScore, (1..10).toList()),
         Filter.SelectableFilter(

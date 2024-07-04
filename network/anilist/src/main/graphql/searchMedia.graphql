@@ -7,7 +7,6 @@ query SearchMedia(
     $season: MediaSeason
     $seasonYear: Int
     $genres: [String]
-    $tags: [String]
     $minimumScore: Int
     $sort: [MediaSort],
     $isAdult: Boolean
@@ -27,7 +26,6 @@ query SearchMedia(
             season: $season
             seasonYear: $seasonYear
             genre_in: $genres
-            tag_in: $tags
             averageScore_greater: $minimumScore
             sort: $sort,
             isAdult: $isAdult
