@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.feature.search.component
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,12 +18,6 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
-import com.edwin.data.model.MediaFormat
-import com.edwin.data.model.MediaSeason
-import com.edwin.data.model.MediaSort
-import com.edwin.data.model.MediaStatus
-import com.edwin.data.model.Order
-import com.edwin.data.model.SearchParams
 import com.edwin.sekai.ui.designsystem.component.RightOverlayDialog
 import com.edwin.sekai.ui.feature.search.FilterType
 
@@ -33,32 +28,23 @@ import com.edwin.sekai.ui.feature.search.FilterType
 @Composable
 fun FilterPopup(
     showDialog: Boolean,
-    searchParams: SearchParams,
-    genres: List<String>,
-    tags: List<String>,
-    onFiltersChanged: (SearchParams) -> Unit
+    initialFilters: List<Filter<*>>,
+    onFiltersChanged: (List<Filter<*>>) -> Unit
 ) {
-    val (filters, updateFilters) = remember(searchParams) {
-        mutableStateOf(
-            createFilterCategories(
-                searchParams = searchParams,
-                genres = genres,
-                tags = tags
-            )
-        )
-    }
-    val (screenState, setScreenState) = remember {
-        mutableStateOf<FilterScreenState>(
-            FilterScreenState.Filters
-        )
-    }
+    val (filters, updateFilters) = remember { mutableStateOf(initialFilters) }
 
     RightOverlayDialog(
         showDialog = showDialog,
-        onDismissRequest = { onFiltersChanged(createSearchParamsFromFilters(filters)) },
+        onDismissRequest = { onFiltersChanged(filters) },
         title = {},
         titleActionButton = {},
         content = { paddingValues ->
+            val (screenState, setScreenState) = remember {
+                mutableStateOf<FilterScreenState>(
+                    FilterScreenState.Filters
+                )
+            }
+
             AnimatedContent(screenState, label = "") { state ->
                 when (state) {
                     FilterScreenState.Filters -> {
@@ -81,6 +67,8 @@ fun FilterPopup(
                     }
 
                     is FilterScreenState.MultiFilterOption<*> -> {
+                        BackHandler { setScreenState(FilterScreenState.Filters) }
+
                         MultiSelectFilterOptionContent(
                             filter = state.filter,
                             onFilterOptionSelected = { updatedFilter ->
@@ -89,14 +77,24 @@ fun FilterPopup(
                                         if (it.filterType == state.filter.filterType) updatedFilter else it
                                     }
                                 )
+                                setScreenState(FilterScreenState.Filters)
                             }
                         )
                     }
 
                     is FilterScreenState.SelectFilterOption<*> -> {
+                        BackHandler { setScreenState(FilterScreenState.Filters) }
+
                         SingleSelectFilterOptionContent(
                             filter = state.filter,
-                            onFilterOptionSelected = {}
+                            onFilterOptionSelected = { updatedFilter ->
+                                updateFilters(
+                                    filters.map {
+                                        if (it.filterType == state.filter.filterType) updatedFilter else it
+                                    }
+                                )
+                                setScreenState(FilterScreenState.Filters)
+                            }
                         )
                     }
                 }
@@ -251,100 +249,4 @@ sealed interface FilterScreenState {
     data object Filters : FilterScreenState
     data class SelectFilterOption<T>(val filter: Filter.SelectableFilter<T>) : FilterScreenState
     data class MultiFilterOption<T>(val filter: Filter.MultiSelectableFilter<T>) : FilterScreenState
-}
-
-private fun createSearchParamsFromFilters(
-    filters: List<Filter<*>>
-): SearchParams {
-    var updatedParams = SearchParams(page = 1, perPage = 20)
-
-    filters.forEach { filter ->
-        when (filter) {
-            is Filter.SelectableFilter<*> -> {
-                updatedParams = when (filter.filterType) {
-                    FilterType.FORMAT -> updatedParams.copy(format = filter.selectedValue as? MediaFormat)
-                    FilterType.STATUS -> updatedParams.copy(status = filter.selectedValue as? MediaStatus)
-                    FilterType.SORT_BY -> updatedParams.copy(sortBy = filter.selectedValue as? MediaSort)
-                    FilterType.ORDER -> updatedParams.copy(
-                        order = filter.selectedValue as? Order ?: Order.DESCENDING
-                    )
-
-                    FilterType.SEASON -> updatedParams.copy(season = filter.selectedValue as? MediaSeason)
-                    FilterType.MIN_SCORE -> updatedParams.copy(minScore = filter.selectedValue as? Int)
-                    FilterType.SEASON_YEAR -> updatedParams.copy(seasonYear = filter.selectedValue as? Int)
-                    FilterType.IS_ADULT -> updatedParams.copy(isAdult = filter.selectedValue as? Boolean)
-                    else -> updatedParams
-                }
-            }
-
-            is Filter.MultiSelectableFilter<*> -> {
-                updatedParams = when (filter.filterType) {
-                    FilterType.GENRES -> updatedParams.copy(genres = filter.selectedValue as? List<String>)
-                    FilterType.TAGS -> updatedParams.copy(tags = filter.selectedValue as? List<String>)
-                    else -> updatedParams // Ignore other MultiSelectableFilters
-                }
-            }
-        }
-    }
-
-    return updatedParams
-}
-
-fun createFilterCategories(
-    searchParams: SearchParams,
-    genres: List<String>,
-    tags: List<String>
-): List<Filter<*>> {
-    return listOf<Filter<*>>(
-        Filter.SelectableFilter(
-            filterType = FilterType.FORMAT,
-            selectedValue = searchParams.format,
-            options = MediaFormat.entries
-        ),
-        Filter.SelectableFilter(
-            filterType = FilterType.STATUS,
-            selectedValue = searchParams.status,
-            options = MediaStatus.entries
-        ),
-        Filter.SelectableFilter(
-            filterType = FilterType.SORT_BY,
-            selectedValue = searchParams.sortBy,
-            options = MediaSort.entries
-        ),
-        Filter.SelectableFilter(
-            filterType = FilterType.ORDER,
-            selectedValue = searchParams.order,
-            options = Order.entries
-        ),
-        Filter.MultiSelectableFilter(
-            filterType = FilterType.GENRES,
-            selectedValue = searchParams.genres ?: emptyList(),
-            options = genres
-        ),
-        Filter.MultiSelectableFilter(
-            filterType = FilterType.TAGS,
-            selectedValue = searchParams.tags ?: emptyList(),
-            options = tags
-        ),
-        Filter.SelectableFilter(
-            filterType = FilterType.MIN_SCORE,
-            selectedValue = searchParams.minScore,
-            options = (1..10).toList()
-        ),
-        Filter.SelectableFilter(
-            filterType = FilterType.SEASON_YEAR,
-            selectedValue = searchParams.seasonYear,
-            options = (1950..2024).toList()
-        ),
-        Filter.SelectableFilter(
-            filterType = FilterType.SEASON,
-            selectedValue = searchParams.season,
-            options = MediaSeason.entries
-        ),
-        Filter.SelectableFilter(
-            filterType = FilterType.IS_ADULT,
-            selectedValue = searchParams.isAdult,
-            options = listOf(true, false)
-        )
-    )
 }

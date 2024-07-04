@@ -36,6 +36,7 @@ import com.edwin.sekai.ui.designsystem.component.SearchTextField
 import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
 import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
+import com.edwin.sekai.ui.feature.search.component.Filter
 import com.edwin.sekai.ui.feature.search.component.FilterPopup
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -46,17 +47,19 @@ fun SearchRoute(
     viewModel: SearchViewModel = hiltViewModel(),
     palettes: Map<String, Material3Palette>
 ) {
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val filterState by viewModel.filterState.collectAsStateWithLifecycle()
     val lazyPagingItems = viewModel.searchResults.collectAsLazyPagingItems()
 
     SearchScreen(
         pagingItems = lazyPagingItems,
+        searchQuery = searchQuery,
         filterState = filterState,
         palettes = palettes,
         onMediaClick = onMediaClick,
         onSearchQueryChange = viewModel::onQueryChange,
         onFiltersClick = viewModel::onFiltersClick,
-        onFiltersChanged = viewModel::onFilterParamChanged,
+        onFiltersChanged = viewModel::onFiltersChanged,
         modifier = modifier
     )
 }
@@ -64,18 +67,19 @@ fun SearchRoute(
 @Composable
 fun SearchScreen(
     pagingItems: LazyPagingItems<Media>,
+    searchQuery: String,
     filterState: SearchViewModel.FilterState,
     palettes: Map<String, Material3Palette>,
     onSearchQueryChange: (String) -> Unit,
     onMediaClick: (Int) -> Unit,
     onFiltersClick: () -> Unit,
-    onFiltersChanged: (SearchParams) -> Unit,
+    onFiltersChanged: (List<Filter<*>>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         SearchContent(
             modifier = modifier,
-            filterState = filterState,
+            searchQuery = searchQuery,
             onSearchQueryChange = onSearchQueryChange,
             pagingItems = pagingItems,
             palettes = palettes,
@@ -85,10 +89,8 @@ fun SearchScreen(
 
         FilterPopup(
             showDialog = filterState.showFiltersDialog,
-            searchParams = filterState.searchParams,
-            onFiltersChanged = onFiltersChanged,
-            genres = emptyList(),
-            tags = emptyList()
+            initialFilters = filterState.filters,
+            onFiltersChanged = onFiltersChanged
         )
     }
 }
@@ -97,7 +99,7 @@ fun SearchScreen(
 @Composable
 private fun SearchContent(
     modifier: Modifier,
-    filterState: SearchViewModel.FilterState,
+    searchQuery: String,
     pagingItems: LazyPagingItems<Media>,
     palettes: Map<String, Material3Palette>,
     onSearchQueryChange: (String) -> Unit,
@@ -118,7 +120,7 @@ private fun SearchContent(
             ) {
                 SearchTextField(
                     modifier = Modifier.weight(1f),
-                    searchQuery = filterState.searchParams.query,
+                    searchQuery = searchQuery,
                     onSearchQueryChange = onSearchQueryChange
                 )
 
@@ -167,20 +169,15 @@ fun PreviewSearchScreen(
 
     SekaiTheme {
         SearchScreen(
+            modifier = Modifier,
             onSearchQueryChange = setSearchQuery,
-            filterState = SearchViewModel.FilterState(
-                searchParams = SearchParams(
-                    page = 1,
-                    perPage = 20,
-                    query = searchQuery,
-                    isAdult = false
-                )
-            ),
-            palettes = palettes,
+            filterState = SearchViewModel.FilterState(filters = emptyList(), showFiltersDialog = false),
+            searchQuery = searchQuery,
             pagingItems = lazyPagingItems,
+            palettes = palettes,
             onMediaClick = {},
             onFiltersClick = {},
-            onFiltersChanged = {}
+            onFiltersChanged = {},
         )
     }
 }
