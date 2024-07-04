@@ -32,6 +32,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -46,6 +50,9 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+
+    // Apollo GraphQL
+    api(libs.apollo.runtime)
 }
 
 // Allow references to generated code
