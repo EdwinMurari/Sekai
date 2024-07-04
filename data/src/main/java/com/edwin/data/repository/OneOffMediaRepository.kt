@@ -66,8 +66,8 @@ internal class OneOffMediaRepository @Inject constructor(
                         kitsuEpisodesResponse = kitsuEpisodesResponse
                     )?.let {
                         NetworkResponse.Success(it)
-                    } ?: NetworkResponse.Error(listOf(Error()))
-                } ?: NetworkResponse.Error(listOf(Error()))
+                    } ?: NetworkResponse.Error(listOf(Error("Unsupported format")))
+                } ?: NetworkResponse.Error(listOf(Error("Media details not found")))
             }
         }
 
