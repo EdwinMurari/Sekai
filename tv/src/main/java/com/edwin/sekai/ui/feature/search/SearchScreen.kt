@@ -36,6 +36,12 @@ import com.edwin.sekai.ui.designsystem.component.SearchTextField
 import com.edwin.sekai.ui.feature.search.component.FilterOption
 import com.edwin.sekai.ui.feature.search.component.FilterPopup
 
+// Constants
+private const val LOADING_CONTENT_TYPE = "LoadingContentType"
+private const val ERROR_CONTENT_TYPE = "ErrorContentType"
+private const val SEARCH_RESULT_ITEM_CONTENT_TYPE = "SearchResultItemContentType"
+private const val SEARCH_HEADER_CONTENT_TYPE = "SearchHeaderContentType"
+
 @Composable
 fun SearchRoute(
     onMediaClick: (Int) -> Unit,
@@ -132,7 +138,7 @@ private fun TvLazyGridScope.searchHeader(
     onSearchQueryChange: (String) -> Unit,
     onFiltersClick: () -> Unit
 ) {
-    item(span = { TvGridItemSpan(maxLineSpan) }) {
+    item(span = { TvGridItemSpan(maxLineSpan) }, contentType = { SEARCH_HEADER_CONTENT_TYPE }) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -163,7 +169,8 @@ private fun TvLazyGridScope.searchResultItems(
 ) {
     items(
         count = pagingItems.itemCount,
-        key = pagingItems.itemKey { it.id }
+        key = pagingItems.itemKey { it.id },
+        contentType = { SEARCH_RESULT_ITEM_CONTENT_TYPE }
     ) { index ->
         val media = pagingItems[index]
         if (media != null) {
@@ -173,7 +180,7 @@ private fun TvLazyGridScope.searchResultItems(
                 onClick = onMediaClick
             )
         } else {
-            MediaCardPlaceholder(palettes = palettes)
+            MediaCardPlaceholder()
         }
     }
 }
@@ -181,14 +188,14 @@ private fun TvLazyGridScope.searchResultItems(
 private fun TvLazyGridScope.refreshStateItem(pagingItems: LazyPagingItems<Media>) {
     when (pagingItems.loadState.refresh) {
         is LoadState.Loading -> {
-            item(span = { TvGridItemSpan(maxLineSpan) }) {
+            item(span = { TvGridItemSpan(maxLineSpan) }, contentType = LOADING_CONTENT_TYPE) {
                 LoadingItem()
             }
         }
 
         is LoadState.Error -> {
             val error = pagingItems.loadState.refresh as LoadState.Error
-            item(span = { TvGridItemSpan(maxLineSpan) }) {
+            item(span = { TvGridItemSpan(maxLineSpan) }, contentType = ERROR_CONTENT_TYPE) {
                 ErrorItem(errorMessage = error.error.message ?: "Unknown Error")
             }
         }
@@ -200,14 +207,14 @@ private fun TvLazyGridScope.refreshStateItem(pagingItems: LazyPagingItems<Media>
 private fun TvLazyGridScope.appendStateItem(pagingItems: LazyPagingItems<Media>) {
     when (pagingItems.loadState.append) {
         is LoadState.Loading -> {
-            item {
+            item(contentType = LOADING_CONTENT_TYPE) {
                 LoadingItem()
             }
         }
 
         is LoadState.Error -> {
             val error = pagingItems.loadState.refresh as LoadState.Error
-            item(span = { TvGridItemSpan(maxCurrentLineSpan) }) {
+            item(span = { TvGridItemSpan(maxCurrentLineSpan) }, contentType = ERROR_CONTENT_TYPE) {
                 ErrorItem(errorMessage = error.error.message ?: "Unknown Error")
             }
         }
