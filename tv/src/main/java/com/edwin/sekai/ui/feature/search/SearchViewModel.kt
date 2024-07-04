@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -42,22 +43,19 @@ class SearchViewModel @Inject constructor(
     val filterState = _filterState.asStateFlow()
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val searchResults: StateFlow<PagingData<Media>> = filterState
+    val searchResults: StateFlow<PagingData<Media>> = combine(
+        flow = searchQuery,
+        flow2 = filterState,
+        transform = ::buildSearchParams
+    )
         .debounce(300L)
         .distinctUntilChanged()
-        .flatMapLatest { filterState ->
-            searchQuery
-                .debounce(300L)
-                .distinctUntilChanged()
-                .flatMapLatest { searchQuery ->
-                    searchMedia(createSearchParamsFromFilters(searchQuery, filterState.filters))
-                }
-        }
+        .flatMapLatest(transform = ::searchMedia)
         .cachedIn(viewModelScope)
         .stateIn(
             scope = viewModelScope,
-            initialValue = PagingData.empty(),
-            started = SharingStarted.WhileSubscribed(5_000)
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = PagingData.empty()
         )
 
     init {
@@ -90,15 +88,16 @@ class SearchViewModel @Inject constructor(
             filterState.value.copy(filters = updatedFilters, showFiltersDialog = false)
     }
 
-    private fun createSearchParamsFromFilters(
+    private fun buildSearchParams(
         searchQuery: String,
-        filters: List<FilterOption<*>>
+        filterState: FilterState
     ): SearchParams {
-        return filters.fold(
+        return filterState.filters.fold(
             initial = SearchParams(
                 page = 1,
                 perPage = 20,
-                query = searchQuery.takeIf { it.isNotBlank() })
+                query = searchQuery.takeIf { it.isNotBlank() }
+            )
         ) { params, filter ->
             when (filter) {
                 is FilterOption.SingleSelect<*> -> {
