@@ -54,8 +54,6 @@ The project follows a modular architecture to improve code organization and main
 - **Jetpack Compose:** A beautiful and responsive UI using Jetpack Compose, showcasing expertise in modern Android UI development.
 - **Dependency Injection with Hilt:** Hilt provides a robust and type-safe dependency injection framework, leading to a more maintainable and testable codebase.
 - **Asynchronous Programming with Coroutines:** Kotlin Coroutines are used for efficient asynchronous operations, resulting in a smooth and responsive user experience.
-- **Network Communication:**  Retrofit is integrated for type-safe network requests to interact with REST APIs (Kitsu & Jikan).
-- **GraphQL with Apollo:** Apollo GraphQL is utilized to efficiently query and consume data from the AniList and Kitsu(Episodes) API.
 - **Paging 3:**  Efficiently loads and displays large datasets of anime, providing a seamless user experience.
 - **Rigorous Testing:**
   - JUnit and MockK are employed for comprehensive unit testing of the data and domain layers, ensuring code quality and reliability.
