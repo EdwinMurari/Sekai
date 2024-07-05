@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -133,25 +134,63 @@ class SearchViewModel @Inject constructor(
 
     private fun createFiltersFromSearchParams(
         searchParams: SearchParams
-    ): List<FilterOption<*>> = listOf(
-        FilterOption.SingleSelect(FilterType.FORMAT, searchParams.format, MediaFormat.entries),
-        FilterOption.SingleSelect(FilterType.STATUS, searchParams.status, MediaStatus.entries),
-        FilterOption.SingleSelect(FilterType.SORT_BY, searchParams.sortBy, MediaSort.entries),
-        FilterOption.SingleSelect(FilterType.ORDER, searchParams.order, Order.entries),
-        FilterOption.MultiSelect(
-            FilterType.GENRES,
-            searchParams.genres.takeUnless { it.isNullOrEmpty() },
-            Genre.entries
-        ),
-        FilterOption.SingleSelect(FilterType.MIN_SCORE, searchParams.minScore, (1..10).toList()),
-        FilterOption.SingleSelect(
-            FilterType.SEASON_YEAR,
-            searchParams.seasonYear,
-            (1950..2024).toList()
-        ),
-        FilterOption.SingleSelect(FilterType.SEASON, searchParams.season, MediaSeason.entries),
-        FilterOption.SingleSelect(FilterType.IS_ADULT, searchParams.isAdult, listOf(true, false))
-    )
+    ): List<FilterOption<*>> = FilterType.entries.map { filterType ->
+        when (filterType) {
+            FilterType.FORMAT -> FilterOption.SingleSelect(
+                filterType = FilterType.FORMAT,
+                selectedValue = searchParams.format,
+                options = MediaFormat.entries
+            )
+
+            FilterType.STATUS -> FilterOption.SingleSelect(
+                filterType = FilterType.STATUS,
+                selectedValue = searchParams.status,
+                options = MediaStatus.entries
+            )
+
+            FilterType.SORT_BY -> FilterOption.SingleSelect(
+                filterType = FilterType.SORT_BY,
+                selectedValue = searchParams.sortBy,
+                options = MediaSort.entries
+            )
+
+            FilterType.ORDER -> FilterOption.SingleSelect(
+                filterType = FilterType.ORDER,
+                selectedValue = searchParams.order,
+                options = Order.entries
+            )
+
+            FilterType.GENRES -> FilterOption.MultiSelect(
+                filterType = FilterType.GENRES,
+                selectedValue = searchParams.genres.takeUnless { it.isNullOrEmpty() },
+                options = Genre.entries
+            )
+
+            FilterType.MIN_SCORE -> FilterOption.SingleSelect(
+                filterType = FilterType.MIN_SCORE,
+                selectedValue = searchParams.minScore,
+                options = (1..10).toList()
+            )
+
+            FilterType.SEASON_YEAR -> FilterOption.SingleSelect(
+                filterType = FilterType.SEASON_YEAR,
+                selectedValue = searchParams.seasonYear,
+                options = (LocalDate.now().year downTo 1940).toList()
+            )
+
+            FilterType.SEASON -> FilterOption.SingleSelect(
+                filterType = FilterType.SEASON,
+                selectedValue = searchParams.season,
+                options = MediaSeason.entries
+            )
+
+            FilterType.IS_ADULT -> FilterOption.SingleSelect(
+                filterType = FilterType.IS_ADULT,
+                selectedValue = searchParams.isAdult,
+                options = listOf(true, false)
+            )
+        }
+    }
 
     data class FilterState(
         val filters: List<FilterOption<*>>,

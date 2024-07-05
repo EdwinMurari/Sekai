@@ -13,10 +13,10 @@ import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class FilterType(val title: String, val icon: ImageVector) {
-    FORMAT(title = "Format", icon = Icons.Rounded.Movie),
-    STATUS(title = "Status", icon = Icons.Rounded.PlayCircleOutline),
     SORT_BY(title = "Sort by", icon = Icons.AutoMirrored.Rounded.Sort),
     ORDER(title = "Order", icon = Icons.Rounded.SwapVert),
+    FORMAT(title = "Format", icon = Icons.Rounded.Movie),
+    STATUS(title = "Status", icon = Icons.Rounded.PlayCircleOutline),
     GENRES(title = "Genres", icon = Icons.Rounded.Category),
     MIN_SCORE(title = "Min Score", icon = Icons.Rounded.Star),
     SEASON_YEAR(title = "Season Year", icon = Icons.Rounded.CalendarToday),
