@@ -44,15 +44,23 @@ fun FilterPopup(
     RightOverlayDialog(
         showDialog = showDialog,
         onDismissRequest = { onFiltersChanged(filters) },
-        title = { Text(stringResource(R.string.sort_and_filter)) },
+        title = { modifier ->
+            Text(
+                text = stringResource(R.string.filter_popup_title),
+                modifier = modifier
+            )
+        },
         titleActionButton = {
             Button(
-                content = { Text(stringResource(R.string.reset)) },
+                content = { Text(stringResource(R.string.clear)) },
                 onClick = onResetFiltersClick
             )
         },
         content = { paddingValues ->
-            AnimatedContent(currentFilterScreen, label = "") { screen ->
+            AnimatedContent(
+                targetState = currentFilterScreen,
+                label = "Filter popup content"
+            ) { screen ->
                 when (screen) {
                     FilterScreen.FilterList -> {
                         FilterListContent(
@@ -75,8 +83,9 @@ fun FilterPopup(
                             contentPaddingValues = paddingValues,
                             filter = screen.filter,
                             onFilterOptionSelected = { updatedFilter ->
-                                val index =
-                                    filters.indexOfFirst { it.filterType == updatedFilter.filterType }
+                                val index = filters.indexOfFirst {
+                                    it.filterType == updatedFilter.filterType
+                                }
                                 if (index != -1) {
                                     filters[index] = updatedFilter
                                 }
@@ -90,8 +99,9 @@ fun FilterPopup(
                             contentPaddingValues = paddingValues,
                             filter = screen.filter,
                             onFilterOptionSelected = { updatedFilter ->
-                                val index =
-                                    filters.indexOfFirst { it.filterType == updatedFilter.filterType }
+                                val index = filters.indexOfFirst {
+                                    it.filterType == updatedFilter.filterType
+                                }
                                 if (index != -1) {
                                     filters[index] = updatedFilter
                                 }

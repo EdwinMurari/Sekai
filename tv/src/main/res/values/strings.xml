@@ -27,6 +27,6 @@
     <string name="search_field_placeholder">Search…</string>
 
     <!-- Search -->
-    <string name="sort_and_filter">Sort &amp; Filter</string>
-    <string name="reset">Reset</string>
+    <string name="filter_popup_title">Refine</string>
+    <string name="clear">Clear</string>
 </resources>

@@ -159,7 +159,7 @@ private fun TvLazyGridScope.searchHeader(
                 onClick = onFiltersClick
             ) {
                 Text(
-                    text = stringResource(R.string.sort_and_filter),
+                    text = stringResource(R.string.filter_popup_title),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
