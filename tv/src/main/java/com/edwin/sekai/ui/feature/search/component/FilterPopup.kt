@@ -1,11 +1,10 @@
 package com.edwin.sekai.ui.feature.search.component
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -13,16 +12,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.res.stringResource
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.items
-import androidx.tv.material3.Checkbox
+import androidx.tv.material3.Button
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
-import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
+import com.edwin.sekai.R
 import com.edwin.sekai.ui.designsystem.component.RightOverlayDialog
-import com.edwin.sekai.ui.feature.search.FilterType
+import com.edwin.sekai.ui.feature.search.model.FilterOption
+import com.edwin.sekai.ui.feature.search.model.FilterScreen
 
 @OptIn(
     ExperimentalTvMaterial3Api::class,
@@ -33,7 +34,8 @@ import com.edwin.sekai.ui.feature.search.FilterType
 fun FilterPopup(
     showDialog: Boolean,
     initialFilters: List<FilterOption<*>>,
-    onFiltersChanged: (List<FilterOption<*>>) -> Unit
+    onFiltersChanged: (List<FilterOption<*>>) -> Unit,
+    onResetFiltersClick: () -> Unit
 ) {
     val filters =
         remember { mutableStateListOf<FilterOption<*>>().apply { addAll(initialFilters) } }
@@ -42,8 +44,13 @@ fun FilterPopup(
     RightOverlayDialog(
         showDialog = showDialog,
         onDismissRequest = { onFiltersChanged(filters) },
-        title = {},
-        titleActionButton = {},
+        title = { Text(stringResource(R.string.sort_and_filter)) },
+        titleActionButton = {
+            Button(
+                content = { Text(stringResource(R.string.reset)) },
+                onClick = onResetFiltersClick
+            )
+        },
         content = { paddingValues ->
             AnimatedContent(currentFilterScreen, label = "") { screen ->
                 when (screen) {
@@ -65,6 +72,7 @@ fun FilterPopup(
 
                     is FilterScreen.MultiSelectOptions<*> -> {
                         MultiSelectFilterOptionContent(
+                            contentPaddingValues = paddingValues,
                             filter = screen.filter,
                             onFilterOptionSelected = { updatedFilter ->
                                 val index =
@@ -79,6 +87,7 @@ fun FilterPopup(
 
                     is FilterScreen.SingleSelectOptions<*> -> {
                         SingleSelectFilterOptionContent(
+                            contentPaddingValues = paddingValues,
                             filter = screen.filter,
                             onFilterOptionSelected = { updatedFilter ->
                                 val index =
@@ -94,70 +103,6 @@ fun FilterPopup(
             }
         }
     )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-fun <T> SingleSelectFilterOptionContent(
-    filter: FilterOption.SingleSelect<T>,
-    onFilterOptionSelected: (FilterOption.SingleSelect<T>) -> Unit,
-) {
-    BackHandler { onFilterOptionSelected(filter) }
-
-    TvLazyColumn {
-        items(filter.options) { option ->
-            ListItem(
-                headlineContent = { Text(option.toString()) },
-                trailingContent = {
-                    RadioButton(
-                        selected = filter.selectedValue == option,
-                        enabled = true,
-                        onClick = null
-                    )
-                },
-                onClick = { onFilterOptionSelected(filter.copy(selectedValue = option)) },
-                selected = false
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-fun <T> MultiSelectFilterOptionContent(
-    filter: FilterOption.MultiSelect<T>,
-    onFilterOptionSelected: (FilterOption.MultiSelect<T>) -> Unit,
-) {
-    val currentSelection = remember {
-        mutableStateListOf<T>().apply {
-            filter.selectedValue?.let { addAll(it) }
-        }
-    }
-
-    BackHandler { onFilterOptionSelected(filter.copy(selectedValue = currentSelection.toList())) }
-
-    TvLazyColumn {
-        items(filter.options) { option ->
-            ListItem(
-                headlineContent = { Text(option.toString()) },
-                onClick = {
-                    if (currentSelection.contains(option)) {
-                        currentSelection.remove(option)
-                    } else {
-                        currentSelection.add(option)
-                    }
-                },
-                trailingContent = {
-                    Checkbox(
-                        checked = currentSelection.contains(option),
-                        enabled = true,
-                        onCheckedChange = null
-                    )
-                },
-                selected = false
-            )
-        }
-    }
 }
 
 @Composable
@@ -187,9 +132,10 @@ private fun FilterListContent(
     }
 }
 
+
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun <T> SingleSelectFilterRow(
+private fun <T> SingleSelectFilterRow(
     filter: FilterOption.SingleSelect<T>,
     onFilterSelected: () -> Unit
 ) {
@@ -198,7 +144,7 @@ fun <T> SingleSelectFilterRow(
         supportingContent = { Text(filter.selectedValue?.toString() ?: "") },
         trailingContent = {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
                 contentDescription = "Select Filter"
             )
         },
@@ -215,7 +161,7 @@ fun <T> SingleSelectFilterRow(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun <T> MultiSelectFilterRow(
+private fun <T> MultiSelectFilterRow(
     filter: FilterOption.MultiSelect<T>,
     onFilterSelected: () -> Unit
 ) {
@@ -227,7 +173,7 @@ fun <T> MultiSelectFilterRow(
         },
         trailingContent = {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
                 contentDescription = "Select Filter"
             )
         },
@@ -240,27 +186,4 @@ fun <T> MultiSelectFilterRow(
         onClick = onFilterSelected,
         selected = false
     )
-}
-
-sealed interface FilterOption<T> {
-    val filterType: FilterType
-    val selectedValue: T?
-
-    data class SingleSelect<T>(
-        override val filterType: FilterType,
-        override val selectedValue: T?,
-        val options: List<T>
-    ) : FilterOption<T>
-
-    data class MultiSelect<T>(
-        override val filterType: FilterType,
-        override val selectedValue: List<T>?,
-        val options: List<T>
-    ) : FilterOption<List<T>>
-}
-
-sealed interface FilterScreen {
-    data object FilterList : FilterScreen
-    data class SingleSelectOptions<T>(val filter: FilterOption.SingleSelect<T>) : FilterScreen
-    data class MultiSelectOptions<T>(val filter: FilterOption.MultiSelect<T>) : FilterScreen
 }

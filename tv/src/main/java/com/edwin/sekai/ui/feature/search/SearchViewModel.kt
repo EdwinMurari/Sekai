@@ -13,7 +13,8 @@ import com.edwin.data.model.MediaStatus
 import com.edwin.data.model.Order
 import com.edwin.data.model.SearchParams
 import com.edwin.data.repository.MediaRepository
-import com.edwin.sekai.ui.feature.search.component.FilterOption
+import com.edwin.sekai.ui.feature.search.model.FilterOption
+import com.edwin.sekai.ui.feature.search.model.FilterType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,10 +36,17 @@ class SearchViewModel @Inject constructor(
     private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
+    private val initialFilterState = createFiltersFromSearchParams(
+        searchParams = SearchParams(
+            page = 1,
+            perPage = 20
+        )
+    )
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-    private val _filterState = MutableStateFlow(FilterState(filters = emptyList()))
+    private val _filterState = MutableStateFlow(FilterState(filters = initialFilterState))
     val filterState = _filterState.asStateFlow()
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -58,19 +65,6 @@ class SearchViewModel @Inject constructor(
             initialValue = PagingData.empty()
         )
 
-    init {
-        viewModelScope.launch {
-            _filterState.value = FilterState(
-                filters = createFiltersFromSearchParams(
-                    searchParams = SearchParams(
-                        page = 1,
-                        perPage = 20
-                    )
-                )
-            )
-        }
-    }
-
     fun onQueryChange(query: String) {
         _searchQuery.value = query
     }
@@ -86,6 +80,11 @@ class SearchViewModel @Inject constructor(
     fun onFiltersChanged(updatedFilters: List<FilterOption<*>>) {
         _filterState.value =
             filterState.value.copy(filters = updatedFilters, showFiltersDialog = false)
+    }
+
+    fun resetFilters() {
+        _filterState.value =
+            filterState.value.copy(filters = initialFilterState, showFiltersDialog = false)
     }
 
     private fun buildSearchParams(

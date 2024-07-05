@@ -25,4 +25,8 @@
     <!-- Details -->
     <string name="watch_now">Watch now</string>
     <string name="search_field_placeholder">Search…</string>
+
+    <!-- Search -->
+    <string name="sort_and_filter">Sort &amp; Filter</string>
+    <string name="reset">Reset</string>
 </resources>

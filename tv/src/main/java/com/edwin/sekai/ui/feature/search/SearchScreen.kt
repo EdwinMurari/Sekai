@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,12 +30,13 @@ import androidx.tv.material3.InputChip
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
+import com.edwin.sekai.R
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.MediaCard
 import com.edwin.sekai.ui.designsystem.component.MediaCardPlaceholder
 import com.edwin.sekai.ui.designsystem.component.SearchTextField
-import com.edwin.sekai.ui.feature.search.component.FilterOption
 import com.edwin.sekai.ui.feature.search.component.FilterPopup
+import com.edwin.sekai.ui.feature.search.model.FilterOption
 
 // Constants
 private const val LOADING_CONTENT_TYPE = "LoadingContentType"
@@ -54,6 +56,7 @@ fun SearchRoute(
     val lazyPagingItems = viewModel.searchResults.collectAsLazyPagingItems()
 
     SearchScreen(
+        modifier = modifier,
         pagingItems = lazyPagingItems,
         searchQuery = searchQuery,
         filterState = filterState,
@@ -62,7 +65,7 @@ fun SearchRoute(
         onSearchQueryChange = viewModel::onQueryChange,
         onFiltersClick = viewModel::onFiltersClick,
         onFiltersChanged = viewModel::onFiltersChanged,
-        modifier = modifier
+        onResetFiltersClick = viewModel::resetFilters
     )
 }
 
@@ -72,11 +75,12 @@ fun SearchScreen(
     searchQuery: String,
     filterState: SearchViewModel.FilterState,
     palettes: Map<String, Material3Palette>,
-    onSearchQueryChange: (String) -> Unit,
-    onMediaClick: (Int) -> Unit,
-    onFiltersClick: () -> Unit,
-    onFiltersChanged: (List<FilterOption<*>>) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSearchQueryChange: (String) -> Unit = {},
+    onMediaClick: (Int) -> Unit = {},
+    onFiltersClick: () -> Unit = {},
+    onFiltersChanged: (List<FilterOption<*>>) -> Unit = {},
+    onResetFiltersClick: () -> Unit = {}
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         SearchContent(
@@ -92,7 +96,8 @@ fun SearchScreen(
         FilterPopup(
             showDialog = filterState.showFiltersDialog,
             initialFilters = filterState.filters,
-            onFiltersChanged = onFiltersChanged
+            onFiltersChanged = onFiltersChanged,
+            onResetFiltersClick = onResetFiltersClick
         )
     }
 }
@@ -154,7 +159,7 @@ private fun TvLazyGridScope.searchHeader(
                 onClick = onFiltersClick
             ) {
                 Text(
-                    text = "Filters",
+                    text = stringResource(R.string.sort_and_filter),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
