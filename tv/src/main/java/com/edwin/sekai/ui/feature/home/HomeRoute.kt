@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.feature.home
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.rounded.AddCircleOutline
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -27,6 +29,7 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.NavigationDrawer
 import androidx.tv.material3.NavigationDrawerItem
 import androidx.tv.material3.Text
+import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
@@ -142,7 +145,7 @@ fun ModalNavDrawer(
                                 )
                             }
                         ) {
-                            Text(tab.label)
+                            Text(stringResource(tab.labelResId))
                         }
                     }
                 }
@@ -152,11 +155,11 @@ fun ModalNavDrawer(
     )
 }
 
-enum class TabNavOption(val icon: ImageVector, val label: String) {
-    Home(Icons.Filled.Home, "Home"),
-    Categories(Icons.Outlined.Menu, "Categories"),
-    Search(Icons.Filled.Search, "Search"),
-    Extensions(Icons.Filled.AddCircleOutline, "Extensions")
+enum class TabNavOption(val icon: ImageVector, @StringRes val labelResId: Int) {
+    Home(Icons.Rounded.Home, R.string.nav_option_home_label),
+    Categories(Icons.Rounded.Menu, R.string.nav_option_categories_label),
+    Search(Icons.Rounded.Search, R.string.nav_option_search_label),
+    Extensions(Icons.Rounded.AddCircleOutline, R.string.nav_option_extensions_label)
 }
 
 @TvPreview
