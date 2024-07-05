@@ -21,5 +21,5 @@ enum class FilterType(val title: String, val icon: ImageVector) {
     MIN_SCORE(title = "Min Score", icon = Icons.Rounded.Star),
     SEASON_YEAR(title = "Season Year", icon = Icons.Rounded.CalendarToday),
     SEASON(title = "Season", icon = Icons.Rounded.Nature),
-    IS_ADULT(title = "Is Adult", icon = Icons.Rounded.Lock)
+    IS_ADULT(title = "Adult Content", icon = Icons.Rounded.Lock)
 }

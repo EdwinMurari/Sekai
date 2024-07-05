@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.Button
@@ -115,6 +116,7 @@ fun FilterPopup(
     )
 }
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun FilterListContent(
     contentPaddingValues: PaddingValues,
@@ -122,65 +124,40 @@ private fun FilterListContent(
     onFilterSelected: (FilterOption<*>) -> Unit
 ) {
     TvLazyColumn(contentPadding = contentPaddingValues) {
-        items(filters) { filter ->
-            when (filter) {
-                is FilterOption.SingleSelect<*> -> {
-                    SingleSelectFilterRow(
-                        filter = filter,
-                        onFilterSelected = { onFilterSelected(filter) }
-                    )
-                }
+        items(filters, key = { it.filterType.ordinal }) { filter ->
+            FilterTypeRow(
+                filter = filter,
+                onFilterSelected = { onFilterSelected(filter) },
+                supportingContent = {
+                    Text(
+                        text = when (filter) {
+                            is FilterOption.MultiSelect<*> -> filter.selectedValue
+                                ?.joinToString(stringResource(R.string.comma_separator))
+                                ?: ""
 
-                is FilterOption.MultiSelect<*> -> {
-                    MultiSelectFilterRow(
-                        filter = filter,
-                        onFilterSelected = { onFilterSelected(filter) }
+                            is FilterOption.SingleSelect -> filter.selectedValue
+                                ?.toString()
+                                ?: ""
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-            }
+            )
         }
     }
 }
 
-
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun <T> SingleSelectFilterRow(
-    filter: FilterOption.SingleSelect<T>,
+private fun <T> FilterTypeRow(
+    filter: FilterOption<T>,
+    supportingContent: @Composable () -> Unit,
     onFilterSelected: () -> Unit
 ) {
     ListItem(
         headlineContent = { Text(filter.filterType.title) },
-        supportingContent = { Text(filter.selectedValue?.toString() ?: "") },
-        trailingContent = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
-                contentDescription = "Select Filter"
-            )
-        },
-        leadingContent = {
-            Icon(
-                imageVector = filter.filterType.icon,
-                contentDescription = "${filter.filterType.title} Icon"
-            )
-        },
-        onClick = onFilterSelected,
-        selected = false
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-private fun <T> MultiSelectFilterRow(
-    filter: FilterOption.MultiSelect<T>,
-    onFilterSelected: () -> Unit
-) {
-    ListItem(
-        headlineContent = { Text(filter.filterType.title) },
-        supportingContent = {
-            val selectedCount = filter.selectedValue?.size ?: 0
-            Text(if (selectedCount > 0) "$selectedCount selected" else "")
-        },
+        supportingContent = supportingContent,
         trailingContent = {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
