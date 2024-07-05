@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.designsystem.component
 
+import android.content.res.Configuration
 import android.view.KeyEvent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
@@ -13,7 +14,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -24,6 +24,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Border
 import androidx.tv.material3.ClickableSurfaceDefaults
@@ -33,8 +34,9 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import com.edwin.sekai.R
+import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 
-@OptIn(ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
@@ -47,7 +49,6 @@ fun SearchTextField(
 
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    // Use a descriptive name for the color animation label
     val borderColor by animateColorAsState(
         targetValue = if (isFocused) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.border,
@@ -71,10 +72,23 @@ fun SearchTextField(
             )
         ),
         tonalElevation = 2.dp,
-        modifier = modifier.padding(top = 8.dp),
+        modifier = modifier,
         onClick = { focusRequester.requestFocus() }
     ) {
         BasicTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .onKeyEvent {
+                    if (it.nativeKeyEvent.action == KeyEvent.ACTION_UP) {
+                        when (it.nativeKeyEvent.keyCode) {
+                            KeyEvent.KEYCODE_DPAD_DOWN -> focusManager.moveFocus(FocusDirection.Down)
+                            KeyEvent.KEYCODE_DPAD_UP -> focusManager.moveFocus(FocusDirection.Up)
+                            KeyEvent.KEYCODE_BACK -> focusManager.clearFocus()
+                        }
+                    }
+                    true
+                },
             value = searchQuery ?: "",
             onValueChange = onSearchQueryChange,
             decorationBox = { innerTextField ->
@@ -93,24 +107,7 @@ fun SearchTextField(
                     }
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = 4.dp,
-                    horizontal = 8.dp
-                )
-                .focusRequester(focusRequester)
-                .onKeyEvent {
-                    if (it.nativeKeyEvent.action == KeyEvent.ACTION_UP) {
-                        when (it.nativeKeyEvent.keyCode) {
-                            KeyEvent.KEYCODE_DPAD_DOWN -> focusManager.moveFocus(FocusDirection.Down)
-                            KeyEvent.KEYCODE_DPAD_UP -> focusManager.moveFocus(FocusDirection.Up)
-                            KeyEvent.KEYCODE_BACK -> focusManager.clearFocus() // Use clearFocus for back key
-                        }
-                    }
-                    true
-                },
-            cursorBrush = SolidColor(LocalContentColor.current), // Simplify cursor brush
+            cursorBrush = SolidColor(LocalContentColor.current),
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
                 imeAction = ImeAction.Search
@@ -121,5 +118,16 @@ fun SearchTextField(
                 color = MaterialTheme.colorScheme.onSurface
             )
         )
+    }
+}
+
+@Preview(
+    device = "id:tv_1080p",
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_TELEVISION
+)
+@Composable
+fun SearchTextFieldPreview() {
+    SekaiTheme {
+        SearchTextField(searchQuery = "Hello", onSearchQueryChange = {})
     }
 }

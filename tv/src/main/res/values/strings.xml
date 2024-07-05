@@ -2,8 +2,15 @@
     <string name="app_name">Sekai</string>
 
     <!-- Common -->
+    <string name="comma_separator">\u0020,\u0020</string>
     <string name="dot_separator">\u0020•\u0020</string>
     <string name="slash_separator">\u0020/\u0020</string>
+
+    <!-- Home -->
+    <string name="nav_option_home_label">Home</string>
+    <string name="nav_option_categories_label">Categories</string>
+    <string name="nav_option_search_label">Search</string>
+    <string name="nav_option_extensions_label">Extensions</string>
 
     <!-- Media card -->
     <string name="minutes">%1$d min</string>
@@ -18,5 +25,10 @@
 
     <!-- Details -->
     <string name="watch_now">Watch now</string>
-    <string name="search_field_placeholder">Search...</string>
+    <string name="search_field_placeholder">Search…</string>
+
+    <!-- Search -->
+    <string name="filter_popup_title">Refine</string>
+    <string name="clear">Clear</string>
+    <string name="reset">Reset</string>
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,12 +30,19 @@ import androidx.tv.material3.InputChip
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
+import com.edwin.sekai.R
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.MediaCard
 import com.edwin.sekai.ui.designsystem.component.MediaCardPlaceholder
 import com.edwin.sekai.ui.designsystem.component.SearchTextField
-import com.edwin.sekai.ui.feature.search.component.FilterOption
 import com.edwin.sekai.ui.feature.search.component.FilterPopup
+import com.edwin.sekai.ui.feature.search.model.FilterOption
+
+// Constants
+private const val LOADING_CONTENT_TYPE = "LoadingContentType"
+private const val ERROR_CONTENT_TYPE = "ErrorContentType"
+private const val SEARCH_RESULT_ITEM_CONTENT_TYPE = "SearchResultItemContentType"
+private const val SEARCH_HEADER_CONTENT_TYPE = "SearchHeaderContentType"
 
 @Composable
 fun SearchRoute(
@@ -48,6 +56,7 @@ fun SearchRoute(
     val lazyPagingItems = viewModel.searchResults.collectAsLazyPagingItems()
 
     SearchScreen(
+        modifier = modifier,
         pagingItems = lazyPagingItems,
         searchQuery = searchQuery,
         filterState = filterState,
@@ -56,7 +65,7 @@ fun SearchRoute(
         onSearchQueryChange = viewModel::onQueryChange,
         onFiltersClick = viewModel::onFiltersClick,
         onFiltersChanged = viewModel::onFiltersChanged,
-        modifier = modifier
+        onResetFiltersClick = viewModel::resetFilters
     )
 }
 
@@ -66,11 +75,12 @@ fun SearchScreen(
     searchQuery: String,
     filterState: SearchViewModel.FilterState,
     palettes: Map<String, Material3Palette>,
-    onSearchQueryChange: (String) -> Unit,
-    onMediaClick: (Int) -> Unit,
-    onFiltersClick: () -> Unit,
-    onFiltersChanged: (List<FilterOption<*>>) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSearchQueryChange: (String) -> Unit = {},
+    onMediaClick: (Int) -> Unit = {},
+    onFiltersClick: () -> Unit = {},
+    onFiltersChanged: (List<FilterOption<*>>) -> Unit = {},
+    onResetFiltersClick: () -> Unit = {}
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         SearchContent(
@@ -86,7 +96,8 @@ fun SearchScreen(
         FilterPopup(
             showDialog = filterState.showFiltersDialog,
             initialFilters = filterState.filters,
-            onFiltersChanged = onFiltersChanged
+            onFiltersChanged = onFiltersChanged,
+            onResetFiltersClick = onResetFiltersClick
         )
     }
 }
@@ -132,7 +143,7 @@ private fun TvLazyGridScope.searchHeader(
     onSearchQueryChange: (String) -> Unit,
     onFiltersClick: () -> Unit
 ) {
-    item(span = { TvGridItemSpan(maxLineSpan) }) {
+    item(span = { TvGridItemSpan(maxLineSpan) }, contentType = { SEARCH_HEADER_CONTENT_TYPE }) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -148,7 +159,7 @@ private fun TvLazyGridScope.searchHeader(
                 onClick = onFiltersClick
             ) {
                 Text(
-                    text = "Filters",
+                    text = stringResource(R.string.filter_popup_title),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -163,7 +174,8 @@ private fun TvLazyGridScope.searchResultItems(
 ) {
     items(
         count = pagingItems.itemCount,
-        key = pagingItems.itemKey { it.id }
+        key = pagingItems.itemKey { it.id },
+        contentType = { SEARCH_RESULT_ITEM_CONTENT_TYPE }
     ) { index ->
         val media = pagingItems[index]
         if (media != null) {
@@ -173,7 +185,7 @@ private fun TvLazyGridScope.searchResultItems(
                 onClick = onMediaClick
             )
         } else {
-            MediaCardPlaceholder(palettes = palettes)
+            MediaCardPlaceholder()
         }
     }
 }
@@ -181,14 +193,14 @@ private fun TvLazyGridScope.searchResultItems(
 private fun TvLazyGridScope.refreshStateItem(pagingItems: LazyPagingItems<Media>) {
     when (pagingItems.loadState.refresh) {
         is LoadState.Loading -> {
-            item(span = { TvGridItemSpan(maxLineSpan) }) {
+            item(span = { TvGridItemSpan(maxLineSpan) }, contentType = LOADING_CONTENT_TYPE) {
                 LoadingItem()
             }
         }
 
         is LoadState.Error -> {
             val error = pagingItems.loadState.refresh as LoadState.Error
-            item(span = { TvGridItemSpan(maxLineSpan) }) {
+            item(span = { TvGridItemSpan(maxLineSpan) }, contentType = ERROR_CONTENT_TYPE) {
                 ErrorItem(errorMessage = error.error.message ?: "Unknown Error")
             }
         }
@@ -200,14 +212,14 @@ private fun TvLazyGridScope.refreshStateItem(pagingItems: LazyPagingItems<Media>
 private fun TvLazyGridScope.appendStateItem(pagingItems: LazyPagingItems<Media>) {
     when (pagingItems.loadState.append) {
         is LoadState.Loading -> {
-            item {
+            item(contentType = LOADING_CONTENT_TYPE) {
                 LoadingItem()
             }
         }
 
         is LoadState.Error -> {
             val error = pagingItems.loadState.refresh as LoadState.Error
-            item(span = { TvGridItemSpan(maxCurrentLineSpan) }) {
+            item(span = { TvGridItemSpan(maxCurrentLineSpan) }, contentType = ERROR_CONTENT_TYPE) {
                 ErrorItem(errorMessage = error.error.message ?: "Unknown Error")
             }
         }

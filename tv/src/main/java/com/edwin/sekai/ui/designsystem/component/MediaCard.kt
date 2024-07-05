@@ -112,7 +112,6 @@ fun MediaCard(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaCardPlaceholder(
-    palettes: Map<String, Material3Palette>,
     modifier: Modifier = Modifier
 ) {
     Card(
