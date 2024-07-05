@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.edwin.sekai.ui.feature.search.model.FilterOption
 import com.edwin.sekai.ui.feature.search.model.FilterPopupScreen
+import com.edwin.sekai.ui.feature.search.model.FilterType
 
 @Composable
 fun rememberFilterPopupState(
@@ -30,6 +31,17 @@ class FilterPopupState(initialFilters: List<FilterOption<*>>) {
         val index = filters.indexOfFirst { it.filterType == updatedFilter.filterType }
         if (index != -1) {
             filters[index] = updatedFilter
+        }
+        currentScreen = FilterPopupScreen.FilterList
+    }
+
+    fun resetFilterOption(filterType: FilterType) {
+        val index = filters.indexOfFirst { it.filterType == filterType }
+        if (index != -1) {
+            filters[index] = when (val filter = filters[index]) {
+                is FilterOption.MultiSelect<*> -> filter.copy(selectedValue = null)
+                is FilterOption.SingleSelect -> filter.copy(selectedValue = null)
+            }
         }
         currentScreen = FilterPopupScreen.FilterList
     }

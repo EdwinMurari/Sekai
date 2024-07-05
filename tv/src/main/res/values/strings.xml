@@ -30,4 +30,5 @@
     <!-- Search -->
     <string name="filter_popup_title">Refine</string>
     <string name="clear">Clear</string>
+    <string name="reset">Reset</string>
 </resources>

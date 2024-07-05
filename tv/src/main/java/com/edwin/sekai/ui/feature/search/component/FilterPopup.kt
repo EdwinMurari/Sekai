@@ -39,16 +39,45 @@ fun FilterPopup(
         showDialog = showDialog,
         onDismissRequest = { onFiltersChanged(state.filters) },
         title = { modifier ->
-            Text(
-                text = stringResource(R.string.filter_popup_title),
-                modifier = modifier
-            )
+            AnimatedContent(
+                modifier = modifier,
+                targetState = state.currentScreen,
+                label = "Filter popup content"
+            ) { screen ->
+                when (screen) {
+                    FilterPopupScreen.FilterList -> {
+                        Text(text = stringResource(R.string.filter_popup_title))
+                    }
+
+                    is FilterPopupScreen.FilterOptions -> {
+                        Text(text = screen.filter.filterType.title)
+                    }
+                }
+            }
         },
         titleActionButton = {
-            Button(
-                content = { Text(stringResource(R.string.clear)) },
-                onClick = onResetFiltersClick
-            )
+            AnimatedContent(
+                targetState = state.currentScreen,
+                label = "Filter popup content"
+            ) { screen ->
+                when (screen) {
+                    FilterPopupScreen.FilterList -> {
+                        Button(
+                            content = { Text(stringResource(R.string.clear)) },
+                            onClick = onResetFiltersClick
+                        )
+                    }
+
+                    is FilterPopupScreen.FilterOptions -> {
+                        Button(
+                            content = { Text(stringResource(R.string.reset)) },
+                            onClick = {
+                                state.resetFilterOption(screen.filter.filterType)
+                            }
+                        )
+                    }
+                }
+            }
         },
         content = { paddingValues ->
             AnimatedContent(
