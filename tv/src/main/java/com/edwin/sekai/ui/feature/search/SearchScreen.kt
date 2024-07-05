@@ -243,7 +243,7 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
 @Composable
 private fun ErrorItem(errorMessage: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Error: $errorMessage",
+        text = stringResource(R.string.search_results_error, errorMessage),
         modifier = modifier.padding(16.dp)
     )
 }
