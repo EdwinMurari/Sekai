@@ -6,11 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,7 +19,7 @@ import androidx.tv.material3.Text
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.designsystem.component.RightOverlayDialog
 import com.edwin.sekai.ui.feature.search.model.FilterOption
-import com.edwin.sekai.ui.feature.search.model.FilterScreen
+import com.edwin.sekai.ui.feature.search.model.FilterPopupScreen
 
 @OptIn(
     ExperimentalTvMaterial3Api::class,
@@ -38,13 +33,11 @@ fun FilterPopup(
     onFiltersChanged: (List<FilterOption<*>>) -> Unit,
     onResetFiltersClick: () -> Unit
 ) {
-    val filters =
-        remember { mutableStateListOf<FilterOption<*>>().apply { addAll(initialFilters) } }
-    var currentFilterScreen by remember { mutableStateOf<FilterScreen>(FilterScreen.FilterList) }
+    val state = rememberFilterPopupState(initialFilters)
 
     RightOverlayDialog(
         showDialog = showDialog,
-        onDismissRequest = { onFiltersChanged(filters) },
+        onDismissRequest = { onFiltersChanged(state.filters) },
         title = { modifier ->
             Text(
                 text = stringResource(R.string.filter_popup_title),
@@ -59,54 +52,24 @@ fun FilterPopup(
         },
         content = { paddingValues ->
             AnimatedContent(
-                targetState = currentFilterScreen,
+                targetState = state.currentScreen,
                 label = "Filter popup content"
             ) { screen ->
                 when (screen) {
-                    FilterScreen.FilterList -> {
+                    FilterPopupScreen.FilterList -> {
                         FilterListContent(
                             contentPaddingValues = paddingValues,
-                            filters = filters,
-                            onFilterSelected = { filter ->
-                                currentFilterScreen = when (filter) {
-                                    is FilterOption.MultiSelect<*> ->
-                                        FilterScreen.MultiSelectOptions(filter)
-
-                                    is FilterOption.SingleSelect ->
-                                        FilterScreen.SingleSelectOptions(filter)
-                                }
-                            }
+                            filters = state.filters,
+                            onFilterSelected = state::onFilterSelected
                         )
                     }
 
-                    is FilterScreen.MultiSelectOptions<*> -> {
-                        MultiSelectFilterOptionContent(
+                    is FilterPopupScreen.FilterOptions -> {
+                        FilterOptionContent(
                             contentPaddingValues = paddingValues,
                             filter = screen.filter,
-                            onFilterOptionSelected = { updatedFilter ->
-                                val index = filters.indexOfFirst {
-                                    it.filterType == updatedFilter.filterType
-                                }
-                                if (index != -1) {
-                                    filters[index] = updatedFilter
-                                }
-                                currentFilterScreen = FilterScreen.FilterList
-                            }
-                        )
-                    }
-
-                    is FilterScreen.SingleSelectOptions<*> -> {
-                        SingleSelectFilterOptionContent(
-                            contentPaddingValues = paddingValues,
-                            filter = screen.filter,
-                            onFilterOptionSelected = { updatedFilter ->
-                                val index = filters.indexOfFirst {
-                                    it.filterType == updatedFilter.filterType
-                                }
-                                if (index != -1) {
-                                    filters[index] = updatedFilter
-                                }
-                                currentFilterScreen = FilterScreen.FilterList
+                            onFilterOptionUpdated = { updatedFilter ->
+                                state.updateFilter(updatedFilter)
                             }
                         )
                     }
@@ -173,4 +136,29 @@ private fun <T> FilterTypeRow(
         onClick = onFilterSelected,
         selected = false
     )
+}
+
+@Composable
+private fun FilterOptionContent(
+    contentPaddingValues: PaddingValues,
+    filter: FilterOption<*>,
+    onFilterOptionUpdated: (FilterOption<*>) -> Unit
+) {
+    when (filter) {
+        is FilterOption.MultiSelect<*> -> {
+            MultiSelectFilterOptionContent(
+                contentPaddingValues = contentPaddingValues,
+                filter = filter,
+                onFilterOptionSelected = onFilterOptionUpdated
+            )
+        }
+
+        is FilterOption.SingleSelect -> {
+            SingleSelectFilterOptionContent(
+                contentPaddingValues = contentPaddingValues,
+                filter = filter,
+                onFilterOptionSelected = onFilterOptionUpdated
+            )
+        }
+    }
 }
