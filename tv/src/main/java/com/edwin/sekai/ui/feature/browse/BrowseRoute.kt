@@ -1,6 +1,7 @@
 package com.edwin.sekai.ui.feature.browse
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,8 +28,7 @@ import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 
 // Constants
 private const val IMMERSIVE_LIST_CONTENT_TYPE = "ImmersiveList"
-private const val SECTION_HEADER_CONTENT_TYPE = "SectionHeader"
-private const val CAROUSEL_CONTENT_TYPE = "Carousel"
+private const val CAROUSEL_LIST_CONTENT_TYPE = "CarouselList"
 
 @Composable
 fun BrowseRoute(
@@ -87,7 +87,7 @@ fun MediaCollections(
 ) {
     TvLazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+        verticalArrangement = Arrangement.spacedBy(40.dp),
         contentPadding = PaddingValues(bottom = 56.dp)
     ) {
         immersiveListSection(
@@ -200,15 +200,15 @@ private fun TvLazyListScope.carouselSection(
     onMediaClick: (Int) -> Unit
 ) {
     mediaList?.let {
-        item(contentType = SECTION_HEADER_CONTENT_TYPE, key = sectionHeader) {
-            CategoryHeader(text = sectionHeader)
-        }
-        item(contentType = CAROUSEL_CONTENT_TYPE, key = "List${sectionHeader}") {
-            CarouselMediaList(
-                mediaList = mediaList,
-                palettes = palettes,
-                onMediaClick = onMediaClick
-            )
+        item(contentType = CAROUSEL_LIST_CONTENT_TYPE, key = sectionHeader) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                CategoryHeader(text = sectionHeader)
+                CarouselMediaList(
+                    mediaList = mediaList,
+                    palettes = palettes,
+                    onMediaClick = onMediaClick
+                )
+            }
         }
     }
 }

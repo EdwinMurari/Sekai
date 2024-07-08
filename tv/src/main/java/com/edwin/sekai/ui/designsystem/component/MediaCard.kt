@@ -87,6 +87,7 @@ fun MediaCard(
     )
 
     Surface(
+        modifier = modifier,
         interactionSource = interactionSource,
         shape = ClickableSurfaceDefaults.shape(
             shape = RoundedCornerShape(0.dp),
@@ -105,7 +106,7 @@ fun MediaCard(
         content = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = modifier.width(IntrinsicSize.Min)
+                modifier = Modifier.width(IntrinsicSize.Min)
             ) {
                 CompositionLocalProvider(LocalContentColor provides contentColor) {
                     Box(
