@@ -3,6 +3,8 @@ package com.edwin.sekai.ui.feature.browse
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -18,7 +20,7 @@ import com.edwin.data.model.MediaCollections
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.CarouselMediaList
 import com.edwin.sekai.ui.designsystem.component.CategoryHeader
-import com.edwin.sekai.ui.designsystem.component.ImmersiveMediaList
+import com.edwin.sekai.ui.designsystem.component.FeaturedCarouselMediaList
 import com.edwin.sekai.ui.designsystem.component.Loading
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.SomethingWentWrong
@@ -29,6 +31,7 @@ import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 // Constants
 private const val IMMERSIVE_LIST_CONTENT_TYPE = "ImmersiveList"
 private const val CAROUSEL_LIST_CONTENT_TYPE = "CarouselList"
+private const val FEATURED_LIST_CONTENT_TYPE = "FeaturedList"
 
 @Composable
 fun BrowseRoute(
@@ -85,14 +88,16 @@ fun MediaCollections(
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit
 ) {
+
     TvLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(40.dp),
-        contentPadding = PaddingValues(bottom = 56.dp)
+        contentPadding = PaddingValues(vertical = 56.dp)
     ) {
-        immersiveListSection(
+        featuredCarouselSection(
             mediaList = collection.trendingTvSeries,
             palettes = palettes,
+            childPadding = PaddingValues(horizontal = 58.dp),
             onMediaClick = onMediaClick
         )
 
@@ -175,19 +180,22 @@ fun MediaCollections(
     }
 }
 
-private fun TvLazyListScope.immersiveListSection(
-    mediaList: List<Media.TvSeries>?,
+private fun TvLazyListScope.featuredCarouselSection(
+    mediaList: List<Media>?,
     palettes: Map<String, Material3Palette>,
+    childPadding: PaddingValues,
     onMediaClick: (Int) -> Unit
 ) {
     mediaList?.let {
-        item(
-            contentType = IMMERSIVE_LIST_CONTENT_TYPE
-        ) {
-            ImmersiveMediaList(
-                mediaList = it,
+        item(contentType = FEATURED_LIST_CONTENT_TYPE) {
+            FeaturedCarouselMediaList(
+                mediaList = mediaList,
                 palettes = palettes,
-                onMediaClick = onMediaClick
+                padding = childPadding,
+                onMediaClick = onMediaClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(340.dp)
             )
         }
     }
