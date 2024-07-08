@@ -221,7 +221,7 @@ private fun formatMovieDuration(durationMinutes: Int?): String {
         val minutes = it % 60
         if (hours > 0) stringResource(id = R.string.hours_minutes, hours, minutes)
         else stringResource(id = R.string.minutes, minutes)
-    } ?: ""
+    } ?: stringResource(id = R.string.tbd).uppercase(Locale.getDefault())
 }
 
 private fun getAnnotatedString(htmlString: String): AnnotatedString {

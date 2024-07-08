@@ -21,6 +21,7 @@
     <string name="episodes_format">%1$d/%2$d Episodes</string>
     <string name="episodes_ongoing">%1$d Episodes (Ongoing)</string>
     <string name="ongoing">ONGOING</string>
+    <string name="tbd">TBD</string>
     <string name="title_missing">Title missing</string>
 
     <!-- Details -->
