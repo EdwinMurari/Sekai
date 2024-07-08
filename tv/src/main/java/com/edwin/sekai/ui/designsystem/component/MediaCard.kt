@@ -2,23 +2,30 @@
 
 package com.edwin.sekai.ui.designsystem.component
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -26,10 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
+import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ProvideTextStyle
+import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
 import com.edwin.sekai.R
@@ -43,7 +52,6 @@ import com.edwin.sekai.ui.utils.MediaTitle
 // Constants
 private const val CARD_HEIGHT = 234
 private const val CARD_WIDTH = 156
-private const val GRADIENT_START = 1f
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -52,61 +60,87 @@ fun MediaCard(
     palettes: Map<String, Material3Palette>,
     modifier: Modifier = Modifier,
     relationType: String? = null,
-    onClick: (Int) -> Unit = {}
+    onClick: () -> Unit = {}
 ) {
-    val averageColor = remember {
-        media.averageColorHex?.let { Color(android.graphics.Color.parseColor(it)) } ?: Color.Black
+    val averageColor = remember(media) {
+        parseColor(media.averageColorHex) ?: Color.Black
     }
     val closestPalette = remember(averageColor, palettes) {
         findClosestPalette(averageColor, palettes)
     }
     val contentColor = remember(closestPalette) {
-        closestPalette?.let {
-            Color(android.graphics.Color.parseColor(it.onPrimary))
-        } ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White
+        parseColor(closestPalette?.onPrimary)
+            ?: if (averageColor.luminance() > 0.5f) Color.Black else Color.White
     }
     val primaryColor = remember(closestPalette) {
-        (closestPalette?.primary?.let { Color(android.graphics.Color.parseColor(it)) }
-            ?: averageColor)
-    }
-    val gradientColors = remember(averageColor) {
-        arrayOf(
-            0.5f to Color.Transparent,
-            GRADIENT_START to primaryColor
-        )
+        parseColor(closestPalette?.primary) ?: averageColor
     }
 
-    Card(
-        onClick = { onClick(media.id) },
-        modifier = modifier.size(width = CARD_WIDTH.dp, height = CARD_HEIGHT.dp)
-    ) {
-        CompositionLocalProvider(LocalContentColor provides contentColor) {
-            Box {
-                MediaCoverImage(
-                    imageUrl = media.coverImage,
-                    contentDescription = "${media.title} cover image"
-                )
+    val interactionSource = remember { MutableInteractionSource() }
 
-                GradientOverlay(gradientColors)
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val borderColor by animateColorAsState(
+        targetValue = if (isFocused) MaterialTheme.colorScheme.border
+        else Color.Transparent,
+        label = "Media Card Border Color"
+    )
+
+    Surface(
+        interactionSource = interactionSource,
+        shape = ClickableSurfaceDefaults.shape(
+            shape = RoundedCornerShape(0.dp),
+            focusedShape = RoundedCornerShape(0.dp),
+            pressedShape = RoundedCornerShape(0.dp),
+        ),
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            focusedContainerColor = Color.Transparent,
+            focusedContentColor = MaterialTheme.colorScheme.onSurface,
+            pressedContainerColor = Color.Transparent,
+            pressedContentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        onClick = onClick,
+        content = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = modifier.width(IntrinsicSize.Min)
+            ) {
+                CompositionLocalProvider(LocalContentColor provides contentColor) {
+                    Box(
+                        modifier = Modifier
+                            .border(
+                                color = borderColor,
+                                shape = MaterialTheme.shapes.large,
+                                width = 3.dp
+                            )
+                            .size(width = CARD_WIDTH.dp, height = CARD_HEIGHT.dp)
+                            .clip(MaterialTheme.shapes.large)
+                    ) {
+                        MediaCoverImage(
+                            imageUrl = media.coverImage,
+                            contentDescription = "${media.title} cover image"
+                        )
+
+                        RelationTypeTag(
+                            relationType = relationType,
+                            backgroundColor = primaryColor,
+                            textColor = contentColor,
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .padding(4.dp)
+                        )
+                    }
+                }
 
                 MediaInfo(
                     media = media,
                     modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(16.dp)
-                )
-
-                RelationTypeTag(
-                    relationType = relationType,
-                    backgroundColor = primaryColor,
-                    textColor = contentColor,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(4.dp)
                 )
             }
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -123,15 +157,6 @@ fun MediaCardPlaceholder(
 }
 
 @Composable
-private fun GradientOverlay(gradientColors: Array<Pair<Float, Color>>) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(colorStops = gradientColors))
-    )
-}
-
-@Composable
 private fun MediaCoverImage(imageUrl: String?, contentDescription: String) {
     PreviewAbleSubComposeImage(
         imageUrl = imageUrl,
@@ -139,7 +164,6 @@ private fun MediaCoverImage(imageUrl: String?, contentDescription: String) {
         contentDescription = contentDescription,
         contentScale = ContentScale.Crop,
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
             .fillMaxSize()
     )
 }
@@ -178,6 +202,10 @@ private fun RelationTypeTag(
             .background(backgroundColor)
             .padding(2.dp)
     )
+}
+
+fun parseColor(colorString: String?): Color? {
+    return colorString?.let { Color(android.graphics.Color.parseColor(it)) }
 }
 
 @TvPreview

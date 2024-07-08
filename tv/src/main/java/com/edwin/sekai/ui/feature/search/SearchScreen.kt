@@ -182,7 +182,7 @@ private fun TvLazyGridScope.searchResultItems(
             MediaCard(
                 media = media,
                 palettes = palettes,
-                onClick = onMediaClick
+                onClick = { onMediaClick(media.id) }
             )
         } else {
             MediaCardPlaceholder()

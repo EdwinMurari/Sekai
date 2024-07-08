@@ -31,8 +31,12 @@ fun CarouselMediaList(
             .padding(top = 16.dp),
         contentPadding = PaddingValues(horizontal = 58.dp)
     ) {
-        items(mediaList, key = { it.id }) { anime ->
-            MediaCard(media = anime, palettes = palettes, onClick = onMediaClick)
+        items(mediaList, key = { it.id }) { media ->
+            MediaCard(
+                media = media,
+                palettes = palettes,
+                onClick = { onMediaClick(media.id) }
+            )
         }
     }
 }
@@ -56,7 +60,7 @@ fun CarouselMediaRelationsList(
                 media = relation.media,
                 relationType = relation.relationType,
                 palettes = palettes,
-                onClick = onMediaClick
+                onClick = { onMediaClick(relation.media.id) }
             )
         }
     }

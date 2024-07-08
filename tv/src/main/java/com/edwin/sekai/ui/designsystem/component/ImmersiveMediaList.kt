@@ -57,7 +57,7 @@ fun ImmersiveMediaList(
 ) {
     val immersiveListHeight = 426.dp
     val immersiveListWidth = 758.dp
-    val cardHeight = 234.dp
+    val cardHeight = 284.dp
     val gradientEndPadding = 40.dp
     val horizontalPadding = 58.dp
 
@@ -93,12 +93,12 @@ fun ImmersiveMediaList(
             modifier = Modifier.wrapContentHeight(),
             contentPadding = PaddingValues(horizontal = horizontalPadding)
         ) {
-            itemsIndexed(mediaList) { index, anime ->
+            itemsIndexed(mediaList) { index, media ->
                 MediaCard(
-                    media = anime,
+                    media = media,
                     modifier = Modifier.immersiveListItem(index),
                     palettes = palettes,
-                    onClick = onMediaClick
+                    onClick = { onMediaClick(media.id) }
                 )
             }
         }
