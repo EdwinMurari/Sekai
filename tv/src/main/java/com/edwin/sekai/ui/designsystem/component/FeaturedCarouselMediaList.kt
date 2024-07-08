@@ -82,35 +82,38 @@ fun FeaturedCarouselMediaList(
             .handleDPadKeyEvents(onSelect = {
                 onMediaClick(mediaList[carouselState.activeItemIndex].id)
             })
-            .drawBehind {
-                val canvasSize = size
-                val cornerRadius = shape.topEnd.toPx(
-                    shapeSize = Size(canvasSize.width, canvasSize.height),
-                    density = density
-                )
-                drawContext.canvas.nativeCanvas.apply {
-                    drawRoundRect(
-                        0f,
-                        0f,
-                        canvasSize.width,
-                        canvasSize.height,
-                        cornerRadius,
-                        cornerRadius,
-                        Paint().apply {
-                            color = android.graphics.Color.TRANSPARENT
-                            isAntiAlias = true
-                            setShadowLayer(
-                                40.dp.toPx(),
-                                0f,
-                                0f,
-                                glowColor
-                                    .copy(alpha = 0.60f)
-                                    .toArgb()
-                            )
-                        }
+            .ifElse(
+                condition = carouselFocused,
+                ifTrueModifier = Modifier.drawBehind {
+                    val canvasSize = size
+                    val cornerRadius = shape.topEnd.toPx(
+                        shapeSize = Size(canvasSize.width, canvasSize.height),
+                        density = density
                     )
+                    drawContext.canvas.nativeCanvas.apply {
+                        drawRoundRect(
+                            0f,
+                            0f,
+                            canvasSize.width,
+                            canvasSize.height,
+                            cornerRadius,
+                            cornerRadius,
+                            Paint().apply {
+                                color = android.graphics.Color.TRANSPARENT
+                                isAntiAlias = true
+                                setShadowLayer(
+                                    40.dp.toPx(),
+                                    0f,
+                                    0f,
+                                    glowColor
+                                        .copy(alpha = 0.60f)
+                                        .toArgb()
+                                )
+                            }
+                        )
+                    }
                 }
-            }
+            )
             .clip(shape),
         contentTransformStartToEnd = (slideInHorizontally { it / 2 } + fadeIn())
             .togetherWith((slideOutHorizontally { -it / 2 }) + fadeOut()),
