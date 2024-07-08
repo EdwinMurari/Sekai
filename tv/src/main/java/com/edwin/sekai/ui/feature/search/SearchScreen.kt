@@ -13,11 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -31,12 +34,17 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
 import com.edwin.sekai.R
+import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.MediaCard
 import com.edwin.sekai.ui.designsystem.component.MediaCardPlaceholder
 import com.edwin.sekai.ui.designsystem.component.SearchTextField
+import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
+import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
+import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.search.component.FilterPopup
 import com.edwin.sekai.ui.feature.search.model.FilterOption
+import kotlinx.coroutines.flow.MutableStateFlow
 
 // Constants
 private const val LOADING_CONTENT_TYPE = "LoadingContentType"
@@ -246,4 +254,31 @@ private fun ErrorItem(errorMessage: String, modifier: Modifier = Modifier) {
         text = stringResource(R.string.search_results_error, errorMessage),
         modifier = modifier.padding(16.dp)
     )
+}
+
+@TvPreview
+@Composable
+fun SearchScreenPreview(
+    @PreviewParameter(MediaListPreviewParameterProvider::class) mediaList: List<Media>
+) {
+    val context = LocalContext.current
+    val palettes = loadMaterial3Palettes(context)
+
+    val pagingData = PagingData.from(mediaList)
+    val fakeDataFlow = MutableStateFlow(pagingData)
+    val lazyPagingItems = fakeDataFlow.collectAsLazyPagingItems()
+
+    SekaiTheme {
+        SearchScreen(
+            pagingItems = lazyPagingItems,
+            searchQuery = "",
+            filterState = SearchViewModel.FilterState(),
+            palettes = palettes,
+            onMediaClick = { },
+            onSearchQueryChange = {},
+            onFiltersClick = {},
+            onFiltersChanged = {},
+            onResetFiltersClick = {}
+        )
+    }
 }
