@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -15,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyListScope
+import androidx.tv.foundation.lazy.list.rememberTvLazyListState
 import com.edwin.data.model.Media
 import com.edwin.data.model.MediaCollections
 import com.edwin.sekai.ui.TvPreview
@@ -35,26 +39,32 @@ private const val FEATURED_LIST_CONTENT_TYPE = "FeaturedList"
 
 @Composable
 fun BrowseRoute(
-    onMediaClick: (Int) -> Unit,
-    palettes: Map<String, Material3Palette>,
     modifier: Modifier = Modifier,
+    isTopBarVisible: Boolean = true,
+    palettes: Map<String, Material3Palette>,
+    onMediaClick: (Int) -> Unit,
+    updateTopBarVisibility: (Boolean) -> Unit,
     viewModel: BrowseViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     BrowseScreen(
         uiState = uiState,
         palettes = palettes,
+        isTopBarVisible = isTopBarVisible,
         onMediaClick = onMediaClick,
+        updateTopBarVisibility = updateTopBarVisibility,
         modifier = modifier
     )
 }
 
 @Composable
 fun BrowseScreen(
+    modifier: Modifier = Modifier,
     uiState: BrowseViewModel.BrowseScreenUiState,
     palettes: Map<String, Material3Palette>,
+    isTopBarVisible: Boolean = true,
     onMediaClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    updateTopBarVisibility: (Boolean) -> Unit
 ) {
     when (uiState) {
         is BrowseViewModel.BrowseScreenUiState.Success -> {
@@ -62,14 +72,18 @@ fun BrowseScreen(
                 modifier = modifier,
                 collection = uiState.collection,
                 palettes = palettes,
-                onMediaClick = onMediaClick
+                isTopBarVisible = isTopBarVisible,
+                onMediaClick = onMediaClick,
+                updateTopBarVisibility = updateTopBarVisibility
             )
         }
 
-        BrowseViewModel.BrowseScreenUiState.Error -> {
+        is BrowseViewModel.BrowseScreenUiState.Error -> {
             SomethingWentWrong(
                 modifier = modifier,
-                text = "Something went wrong",
+                text = "Something went wrong: ${
+                    uiState.errors.map { it.message }.joinToString(", ")
+                }",
                 buttonText = "Retry",
                 onAction = {}
             )
@@ -86,13 +100,32 @@ fun MediaCollections(
     modifier: Modifier,
     collection: MediaCollections,
     palettes: Map<String, Material3Palette>,
-    onMediaClick: (Int) -> Unit
+    isTopBarVisible: Boolean = true,
+    onMediaClick: (Int) -> Unit,
+    updateTopBarVisibility: (Boolean) -> Unit
 ) {
+    val lazyListState = rememberTvLazyListState()
+
+    val shouldShowTopBar by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex == 0 &&
+                    lazyListState.firstVisibleItemScrollOffset < 300
+        }
+    }
+
+    LaunchedEffect(shouldShowTopBar) {
+        updateTopBarVisibility(shouldShowTopBar)
+    }
+
+    LaunchedEffect(isTopBarVisible) {
+        if (isTopBarVisible) lazyListState.animateScrollToItem(0)
+    }
 
     TvLazyColumn(
         modifier = modifier,
+        state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(40.dp),
-        contentPadding = PaddingValues(vertical = 56.dp)
+        contentPadding = PaddingValues(top = 40.dp, bottom = 56.dp)
     ) {
         featuredCarouselSection(
             mediaList = collection.trendingTvSeries,
@@ -195,7 +228,7 @@ private fun TvLazyListScope.featuredCarouselSection(
                 onMediaClick = onMediaClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(340.dp)
+                    .height(240.dp)
             )
         }
     }
@@ -230,7 +263,9 @@ fun PreviewBrowse(@PreviewParameter(MediaCollectionPreviewParameterProvider::cla
     SekaiTheme {
         BrowseScreen(
             uiState = BrowseViewModel.BrowseScreenUiState.Success(mediaCollections),
+            isTopBarVisible = true,
             onMediaClick = {},
+            updateTopBarVisibility = {},
             palettes = palettes
         )
     }

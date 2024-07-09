@@ -28,7 +28,7 @@ import com.edwin.sekai.ui.feature.home.model.TabNavOption
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun DashboardTopBar(
+fun TopBar(
     modifier: Modifier = Modifier,
     selectedTabIndex: Int,
     options: List<TabNavOption>,
@@ -39,7 +39,6 @@ fun DashboardTopBar(
 
     TabRow(
         modifier = modifier
-            .padding(8.dp)
             .focusRestorer(),
         selectedTabIndex = selectedTabIndex
     ) {
@@ -75,7 +74,7 @@ fun DashboardTopBarPreview() {
         val focusRequesters = remember { List(TabNavOption.entries.size) { FocusRequester() } }
 
         Box(Modifier.fillMaxSize()) {
-            DashboardTopBar(
+            TopBar(
                 options = TabNavOption.entries,
                 selectedTabIndex = currentIndex,
                 focusRequesters = focusRequesters,
