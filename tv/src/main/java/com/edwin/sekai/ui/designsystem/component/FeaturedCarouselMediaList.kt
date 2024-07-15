@@ -11,7 +11,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -58,7 +57,6 @@ import com.edwin.sekai.ui.utils.MediaTitle
 fun FeaturedCarouselMediaList(
     modifier: Modifier = Modifier,
     mediaList: List<Media>,
-    padding: PaddingValues = PaddingValues(),
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit = {}
 ) {
@@ -72,7 +70,6 @@ fun FeaturedCarouselMediaList(
         itemCount = mediaList.size,
         carouselState = carouselState,
         modifier = modifier
-            .padding(padding)
             .border(
                 width = 3.dp,
                 color = if (carouselFocused) MaterialTheme.colorScheme.border else Color.Transparent,

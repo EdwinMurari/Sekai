@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.feature.browse.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -14,12 +15,14 @@ fun NavController.navigateToBrowse(navOptions: NavOptions? = null) =
 
 fun NavGraphBuilder.browseRoute(
     palettes: Map<String, Material3Palette>,
+    contentPaddingValues: PaddingValues,
     onMediaClick: (Int) -> Unit,
     isTopBarVisible: Boolean = true,
     updateTopBarVisibility: (Boolean) -> Unit
 ) {
     composable(route = BROWSE_ROUTE) {
         BrowseRoute(
+            contentPaddingValues = contentPaddingValues,
             onMediaClick = onMediaClick,
             palettes = palettes,
             isTopBarVisible = isTopBarVisible,

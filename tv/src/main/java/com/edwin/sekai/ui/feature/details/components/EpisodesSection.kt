@@ -27,7 +27,6 @@ import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyHorizontalGrid
 import androidx.tv.foundation.lazy.grid.items
 import androidx.tv.foundation.lazy.list.TvLazyListScope
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Tab
 import androidx.tv.material3.TabRow
@@ -41,11 +40,19 @@ import com.edwin.sekai.ui.designsystem.previewprovider.EpisodePreviewParameterPr
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import java.util.Locale
 
-fun TvLazyListScope.episodesSection(mediaDetails: MediaDetails, onClickWatch: (Int) -> Unit) {
+fun TvLazyListScope.episodesSection(
+    contentPaddingValues: PaddingValues,
+    mediaDetails: MediaDetails,
+    onClickWatch: (Int) -> Unit
+) {
     if (mediaDetails is MediaDetails.TvSeries && !mediaDetails.episodes.isNullOrEmpty()) {
-        sectionHeader("Episodes")
+        sectionHeader(
+            "Episodes",
+            modifier = Modifier.padding(contentPaddingValues)
+        )
         item {
             EpisodesSection(
+                contentPaddingValues = contentPaddingValues,
                 episodesList = mediaDetails.episodes!!,
                 fallbackBanner = mediaDetails.media.bannerImage,
                 onEpisodeSelected = onClickWatch
@@ -54,9 +61,9 @@ fun TvLazyListScope.episodesSection(mediaDetails: MediaDetails, onClickWatch: (I
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun EpisodesSection(
+    contentPaddingValues: PaddingValues,
     episodesList: List<MediaDetails.Episode>,
     fallbackBanner: String?,
     onEpisodeSelected: (Int) -> Unit,
@@ -68,7 +75,9 @@ fun EpisodesSection(
             val chunkedEpisodes = episodesList.chunked(chunkSize)
             var selectedTabIndex by remember { mutableIntStateOf(0) }
             TabRow(
-                modifier = Modifier.padding(horizontal = 58.dp, vertical = 12.dp),
+                modifier = Modifier
+                    .padding(contentPaddingValues)
+                    .padding(vertical = 12.dp),
                 selectedTabIndex = selectedTabIndex
             ) {
                 chunkedEpisodes.forEachIndexed { index, _ ->
@@ -85,6 +94,7 @@ fun EpisodesSection(
             }
 
             EpisodeListGrid(
+                contentPaddingValues = contentPaddingValues,
                 episodesList = chunkedEpisodes[selectedTabIndex].toList(),
                 fallbackBanner = fallbackBanner,
                 onEpisodeSelected = onEpisodeSelected
@@ -92,6 +102,7 @@ fun EpisodesSection(
         }
     } else {
         EpisodeListGrid(
+            contentPaddingValues = contentPaddingValues,
             episodesList = episodesList,
             fallbackBanner = fallbackBanner,
             onEpisodeSelected = onEpisodeSelected
@@ -101,6 +112,7 @@ fun EpisodesSection(
 
 @Composable
 private fun EpisodeListGrid(
+    contentPaddingValues: PaddingValues,
     episodesList: List<MediaDetails.Episode>,
     fallbackBanner: String?,
     onEpisodeSelected: (Int) -> Unit
@@ -109,7 +121,7 @@ private fun EpisodeListGrid(
         rows = TvGridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 58.dp, vertical = 12.dp),
+        contentPadding = contentPaddingValues,
         modifier = Modifier.height((83 * 2 + 8).dp)
     ) {
         items(episodesList, key = { it.number }) { episode ->
@@ -122,7 +134,6 @@ private fun EpisodeListGrid(
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun EpisodeCard(
     episode: MediaDetails.Episode,

@@ -52,11 +52,13 @@ import kotlinx.coroutines.launch
 const val COVER_IMAGE_HEIGHT = 358
 
 fun TvLazyListScope.mediaDetailsSection(
+    modifier: Modifier = Modifier,
     mediaDetails: MediaDetails,
     onClickWatch: (Int, Int) -> Unit
 ) {
     item {
         MediaDetailsSection(
+            modifier = modifier,
             mediaDetails = mediaDetails,
             onClickWatch = onClickWatch
         )
@@ -64,7 +66,7 @@ fun TvLazyListScope.mediaDetailsSection(
 }
 
 
-@OptIn(ExperimentalTvMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MediaDetailsSection(
     mediaDetails: MediaDetails,

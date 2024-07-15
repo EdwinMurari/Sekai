@@ -4,8 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,8 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -43,20 +39,6 @@ import com.edwin.sekai.ui.feature.extensions.navigation.navigateToExtensions
 import com.edwin.sekai.ui.feature.home.model.TabNavOption
 import com.edwin.sekai.ui.feature.search.navigation.navigateToSearch
 import com.edwin.sekai.ui.feature.search.navigation.searchRoute
-
-val ParentPadding = PaddingValues(vertical = 16.dp, horizontal = 58.dp)
-
-@Composable
-fun rememberChildPadding(direction: LayoutDirection = LocalLayoutDirection.current): PaddingValues {
-    return remember {
-        PaddingValues(
-            start = ParentPadding.calculateStartPadding(direction) + 8.dp,
-            top = ParentPadding.calculateTopPadding(),
-            end = ParentPadding.calculateEndPadding(direction) + 8.dp,
-            bottom = ParentPadding.calculateBottomPadding()
-        )
-    }
-}
 
 @Composable
 fun HomeRoute(
@@ -130,20 +112,15 @@ fun HomeScreen(
         }
     }
 
+    val contentPadding = PaddingValues(vertical = 40.dp, horizontal = 58.dp)
+
     Column(modifier = modifier) {
         AnimatedVisibility(isTopBarVisible) {
             TopBar(
                 modifier = Modifier
-                    .onFocusChanged { isTopBarFocused = it.hasFocus }
-                    .padding(
-                        horizontal = ParentPadding.calculateStartPadding(
-                            LocalLayoutDirection.current
-                        ) + 8.dp
-                    )
-                    .padding(
-                        top = ParentPadding.calculateTopPadding(),
-                        bottom = ParentPadding.calculateBottomPadding()
-                    ),
+                    .padding(horizontal = 58.dp)
+                    .padding(top = 32.dp)
+                    .onFocusChanged { isTopBarFocused = it.hasFocus },
                 options = options,
                 focusRequesters = focusRequesters,
                 selectedTabIndex = currentTopBarSelectedTabIndex,
@@ -174,6 +151,7 @@ fun HomeScreen(
         }
 
         Body(
+            contentPaddingValues = contentPadding,
             palettes = palettes,
             onMediaClick = onMediaClick,
             updateTopBarVisibility = { isTopBarVisible = it },
@@ -186,6 +164,7 @@ fun HomeScreen(
 
 @Composable
 private fun Body(
+    contentPaddingValues: PaddingValues,
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -201,13 +180,20 @@ private fun Body(
         browseRoute(
             palettes = palettes,
             isTopBarVisible = isTopBarVisible,
+            contentPaddingValues = contentPaddingValues,
             onMediaClick = onMediaClick,
             updateTopBarVisibility = updateTopBarVisibility
         )
 
         categoriesRoute()
 
-        searchRoute(onMediaClick, palettes)
+        searchRoute(
+            contentPaddingValues = contentPaddingValues,
+            isTopBarVisible = isTopBarVisible,
+            onMediaClick = onMediaClick,
+            palettes = palettes,
+            updateTopBarVisibility = updateTopBarVisibility
+        )
 
         extensionsRoute()
     }
