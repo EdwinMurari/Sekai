@@ -31,6 +31,6 @@ fun SekaiApp() {
             onMediaClick = navController::navigateToDetails
         )
 
-        streamRoute(palettes = palettes)
+        streamRoute()
     }
 }

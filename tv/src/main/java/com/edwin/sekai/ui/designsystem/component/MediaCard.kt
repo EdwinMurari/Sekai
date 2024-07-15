@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTvMaterial3Api::class)
-
 package com.edwin.sekai.ui.designsystem.component
 
 import androidx.compose.animation.animateColorAsState
@@ -34,7 +32,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
 import androidx.tv.material3.ClickableSurfaceDefaults
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ProvideTextStyle
@@ -53,7 +50,6 @@ import com.edwin.sekai.ui.utils.MediaTitle
 private const val CARD_HEIGHT = 234
 private const val CARD_WIDTH = 156
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaCard(
     media: Media,
@@ -144,7 +140,6 @@ fun MediaCard(
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaCardPlaceholder(
     modifier: Modifier = Modifier

@@ -8,13 +8,11 @@ import androidx.compose.runtime.remember
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.Checkbox
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
 import com.edwin.sekai.ui.feature.search.model.FilterOption
 import com.edwin.sekai.ui.utils.formatEnumName
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun <T> MultiSelectFilterOptionContent(
     filter: FilterOption.MultiSelect<T>,

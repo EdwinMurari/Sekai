@@ -150,7 +150,6 @@ fun MediaCollections(
         featuredCarouselSection(
             modifier = Modifier.padding(itemContentPaddingValues),
             mediaList = collection.trendingTvSeries,
-            palettes = palettes,
             onMediaClick = onMediaClick
         )
 
@@ -246,7 +245,6 @@ fun MediaCollections(
 
 private fun TvLazyListScope.featuredCarouselSection(
     mediaList: List<Media>?,
-    palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -254,7 +252,6 @@ private fun TvLazyListScope.featuredCarouselSection(
         item(contentType = FEATURED_LIST_CONTENT_TYPE) {
             FeaturedCarouselMediaList(
                 mediaList = mediaList,
-                palettes = palettes,
                 onMediaClick = onMediaClick,
                 modifier = modifier
                     .fillMaxWidth()

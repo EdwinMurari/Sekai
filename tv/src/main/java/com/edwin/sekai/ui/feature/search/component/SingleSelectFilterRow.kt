@@ -5,14 +5,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.items
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
 import com.edwin.sekai.ui.feature.search.model.FilterOption
 import com.edwin.sekai.ui.utils.formatEnumName
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun <T> SingleSelectFilterOptionContent(
     filter: FilterOption.SingleSelect<T>,

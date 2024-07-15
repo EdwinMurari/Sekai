@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -50,14 +49,11 @@ import com.edwin.sekai.ui.utils.MediaDescription
 import com.edwin.sekai.ui.utils.MediaMetaDataDetailed
 import com.edwin.sekai.ui.utils.MediaTitle
 
-@OptIn(
-    ExperimentalTvMaterial3Api::class
-)
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun FeaturedCarouselMediaList(
     modifier: Modifier = Modifier,
     mediaList: List<Media>,
-    palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit = {}
 ) {
     var carouselFocused by remember { mutableStateOf(false) }
@@ -196,12 +192,9 @@ private fun CarouselItemBackground(media: Media, modifier: Modifier = Modifier) 
 fun FeaturedCarouselPreview(
     @PreviewParameter(MediaListPreviewParameterProvider::class) mediaList: List<Media>
 ) {
-    val context = LocalContext.current
-    val palettes = loadMaterial3Palettes(context)
     SekaiTheme {
         FeaturedCarouselMediaList(
             mediaList = mediaList,
-            palettes = palettes,
             modifier = Modifier.padding(50.dp)
         )
     }

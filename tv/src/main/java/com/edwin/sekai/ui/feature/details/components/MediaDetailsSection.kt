@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyListScope
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
@@ -89,7 +88,7 @@ fun MediaDetailsSection(
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
                 MediaDetailsColumn(
                     mediaDetails = mediaDetails,
-                    episodeNumber = episodeNumber,
+                    lastWatchedEpisode = episodeNumber,
                     onClickWatch = onClickWatch,
                     bringIntoViewRequester = bringIntoViewRequester
                 )
@@ -119,7 +118,7 @@ private fun MediaCoverImage(
 @Composable
 private fun MediaDetailsColumn(
     mediaDetails: MediaDetails,
-    episodeNumber: Int,
+    lastWatchedEpisode: Int,
     onClickWatch: (Int, Int) -> Unit,
     bringIntoViewRequester: BringIntoViewRequester
 ) {
@@ -147,13 +146,12 @@ private fun MediaDetailsColumn(
                 }
                 false
             },
-            episodeNumber = episodeNumber,
+            episodeNumber = lastWatchedEpisode,
             onClickWatch = { onClickWatch(media.id, it) }
         )
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun WatchButton(
     modifier: Modifier = Modifier,
