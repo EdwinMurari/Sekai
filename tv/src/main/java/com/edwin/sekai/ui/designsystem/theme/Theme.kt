@@ -2,12 +2,10 @@ package com.edwin.sekai.ui.designsystem.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun SekaiTheme(
     isInDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -24,7 +22,6 @@ fun SekaiTheme(
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
@@ -55,7 +52,6 @@ private val LightColors = lightColorScheme(
     scrim = md_theme_light_scrim,
 )
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,

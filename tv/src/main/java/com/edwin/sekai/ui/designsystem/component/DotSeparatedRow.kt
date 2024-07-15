@@ -11,10 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun DotSeparatedRow(
     modifier: Modifier = Modifier,

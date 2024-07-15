@@ -16,7 +16,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.LocalTextStyle
@@ -33,7 +32,6 @@ import java.util.Locale
 private const val STAR_ICON_SIZE = 16
 private const val ICON_SPACING = 4
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaTitle(
     modifier: Modifier = Modifier,
@@ -49,7 +47,6 @@ fun MediaTitle(
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaTitles(mainTitle: String?, mediaTitle: MediaDetails.Title?) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -67,7 +64,6 @@ fun MediaTitles(mainTitle: String?, mediaTitle: MediaDetails.Title?) {
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaDescription(description: String?, maxLines: Int, modifier: Modifier = Modifier) {
     if (description == null) return
@@ -81,7 +77,6 @@ fun MediaDescription(description: String?, maxLines: Int, modifier: Modifier = M
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun GenreList(
     genres: List<String>?,
@@ -103,7 +98,6 @@ fun GenreList(
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaContentInfo(media: Media) {
     Text(
@@ -146,7 +140,6 @@ fun MediaMetaDataDetailed(media: Media, modifier: Modifier = Modifier) {
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun StarRating(averageScore: Float) {
     Icon(
@@ -164,7 +157,6 @@ private fun StarRating(averageScore: Float) {
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun Popularity(popularity: Int) {
     Icon(
@@ -182,7 +174,6 @@ private fun Popularity(popularity: Int) {
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun StartYear(startDate: Int?) {
     if (startDate == null) return
@@ -221,7 +212,7 @@ private fun formatMovieDuration(durationMinutes: Int?): String {
         val minutes = it % 60
         if (hours > 0) stringResource(id = R.string.hours_minutes, hours, minutes)
         else stringResource(id = R.string.minutes, minutes)
-    } ?: ""
+    } ?: stringResource(id = R.string.tbd).uppercase(Locale.getDefault())
 }
 
 private fun getAnnotatedString(htmlString: String): AnnotatedString {

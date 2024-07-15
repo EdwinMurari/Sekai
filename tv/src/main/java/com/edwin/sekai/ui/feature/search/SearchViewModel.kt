@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.feature.search
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -34,6 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
@@ -193,7 +195,7 @@ class SearchViewModel @Inject constructor(
     }
 
     data class FilterState(
-        val filters: List<FilterOption<*>>,
+        val filters: List<FilterOption<*>> = emptyList(),
         val showFiltersDialog: Boolean = false
     )
 }

@@ -64,7 +64,7 @@ private fun MediaFragment.NextAiringEpisode?.asExternalModel() = this?.let {
 }
 
 private fun MediaFragment.getTitle() = title?.english ?: title?.romaji ?: title?.native
-private fun MediaFragment.getCoverImage() = coverImage?.large?.takeIf { it.isNotBlank() }
+private fun MediaFragment.getCoverImage() = coverImage?.extraLarge?.takeIf { it.isNotBlank() }
 private fun MediaFragment.getBannerImage() = bannerImage?.takeIf { it.isNotBlank() }
 private fun MediaFragment.getGenres() = genres?.filterNotNull()?.takeIf { it.isNotEmpty() }
 private fun MediaFragment.getCoverAverageHex(): String? {

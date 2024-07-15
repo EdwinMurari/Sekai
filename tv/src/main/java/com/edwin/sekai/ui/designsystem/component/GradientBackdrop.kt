@@ -14,13 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun BoxScope.GradientBackdrop(
     modifier: Modifier = Modifier,

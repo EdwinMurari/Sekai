@@ -10,14 +10,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -25,18 +31,24 @@ import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvGridItemSpan
 import androidx.tv.foundation.lazy.grid.TvLazyGridScope
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
+import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.InputChip
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.edwin.data.model.Media
 import com.edwin.sekai.R
+import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.MediaCard
 import com.edwin.sekai.ui.designsystem.component.MediaCardPlaceholder
 import com.edwin.sekai.ui.designsystem.component.SearchTextField
+import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
+import com.edwin.sekai.ui.designsystem.previewprovider.MediaListPreviewParameterProvider
+import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.search.component.FilterPopup
 import com.edwin.sekai.ui.feature.search.model.FilterOption
+import kotlinx.coroutines.flow.MutableStateFlow
 
 // Constants
 private const val LOADING_CONTENT_TYPE = "LoadingContentType"
@@ -46,8 +58,11 @@ private const val SEARCH_HEADER_CONTENT_TYPE = "SearchHeaderContentType"
 
 @Composable
 fun SearchRoute(
-    onMediaClick: (Int) -> Unit,
+    contentPaddingValues: PaddingValues,
     modifier: Modifier = Modifier,
+    isTopBarVisible: Boolean = true,
+    onMediaClick: (Int) -> Unit,
+    updateTopBarVisibility: (Boolean) -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
     palettes: Map<String, Material3Palette>
 ) {
@@ -57,11 +72,14 @@ fun SearchRoute(
 
     SearchScreen(
         modifier = modifier,
+        contentPaddingValues = contentPaddingValues,
         pagingItems = lazyPagingItems,
         searchQuery = searchQuery,
         filterState = filterState,
         palettes = palettes,
+        isTopBarVisible = isTopBarVisible,
         onMediaClick = onMediaClick,
+        updateTopBarVisibility = updateTopBarVisibility,
         onSearchQueryChange = viewModel::onQueryChange,
         onFiltersClick = viewModel::onFiltersClick,
         onFiltersChanged = viewModel::onFiltersChanged,
@@ -75,22 +93,28 @@ fun SearchScreen(
     searchQuery: String,
     filterState: SearchViewModel.FilterState,
     palettes: Map<String, Material3Palette>,
+    contentPaddingValues: PaddingValues,
     modifier: Modifier = Modifier,
+    isTopBarVisible: Boolean = true,
     onSearchQueryChange: (String) -> Unit = {},
     onMediaClick: (Int) -> Unit = {},
     onFiltersClick: () -> Unit = {},
     onFiltersChanged: (List<FilterOption<*>>) -> Unit = {},
-    onResetFiltersClick: () -> Unit = {}
+    onResetFiltersClick: () -> Unit = {},
+    updateTopBarVisibility: (Boolean) -> Unit
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         SearchContent(
             modifier = Modifier.fillMaxSize(),
+            contentPaddingValues = contentPaddingValues,
             searchQuery = searchQuery,
+            isTopBarVisible = isTopBarVisible,
             onSearchQueryChange = onSearchQueryChange,
             pagingItems = pagingItems,
             palettes = palettes,
             onMediaClick = onMediaClick,
-            onFiltersClick = onFiltersClick
+            onFiltersClick = onFiltersClick,
+            updateTopBarVisibility = updateTopBarVisibility
         )
 
         FilterPopup(
@@ -105,16 +129,37 @@ fun SearchScreen(
 @Composable
 private fun SearchContent(
     modifier: Modifier,
+    contentPaddingValues: PaddingValues,
     searchQuery: String,
     pagingItems: LazyPagingItems<Media>,
     palettes: Map<String, Material3Palette>,
+    isTopBarVisible: Boolean = true,
     onSearchQueryChange: (String) -> Unit,
     onMediaClick: (Int) -> Unit,
-    onFiltersClick: () -> Unit
+    onFiltersClick: () -> Unit,
+    updateTopBarVisibility: (Boolean) -> Unit
 ) {
+    val lazyGridState = rememberTvLazyGridState()
+
+    val shouldShowTopBar by remember {
+        derivedStateOf {
+            lazyGridState.firstVisibleItemIndex == 0 &&
+                    lazyGridState.firstVisibleItemScrollOffset < 300
+        }
+    }
+
+    LaunchedEffect(shouldShowTopBar) {
+        updateTopBarVisibility(shouldShowTopBar)
+    }
+
+    LaunchedEffect(isTopBarVisible) {
+        if (isTopBarVisible) lazyGridState.animateScrollToItem(0)
+    }
+
     TvLazyVerticalGrid(
         modifier = modifier,
-        contentPadding = PaddingValues(56.dp),
+        state = lazyGridState,
+        contentPadding = contentPaddingValues,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         columns = TvGridCells.Adaptive(minSize = 156.dp)
@@ -182,7 +227,7 @@ private fun TvLazyGridScope.searchResultItems(
             MediaCard(
                 media = media,
                 palettes = palettes,
-                onClick = onMediaClick
+                onClick = { onMediaClick(media.id) }
             )
         } else {
             MediaCardPlaceholder()
@@ -239,11 +284,41 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun ErrorItem(errorMessage: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Error: $errorMessage",
+        text = stringResource(R.string.search_results_error, errorMessage),
         modifier = modifier.padding(16.dp)
     )
+}
+
+@TvPreview
+@Composable
+fun SearchScreenPreview(
+    @PreviewParameter(MediaListPreviewParameterProvider::class) mediaList: List<Media>
+) {
+    val context = LocalContext.current
+    val palettes = loadMaterial3Palettes(context)
+
+    val pagingData = PagingData.from(mediaList)
+    val fakeDataFlow = MutableStateFlow(pagingData)
+    val lazyPagingItems = fakeDataFlow.collectAsLazyPagingItems()
+
+    SekaiTheme {
+        SearchScreen(
+            modifier = Modifier.fillMaxSize(),
+            isTopBarVisible = true,
+            contentPaddingValues = PaddingValues(56.dp),
+            pagingItems = lazyPagingItems,
+            searchQuery = "",
+            filterState = SearchViewModel.FilterState(),
+            palettes = palettes,
+            onMediaClick = { },
+            onSearchQueryChange = {},
+            onFiltersClick = {},
+            onFiltersChanged = {},
+            onResetFiltersClick = {},
+            updateTopBarVisibility = {},
+        )
+    }
 }

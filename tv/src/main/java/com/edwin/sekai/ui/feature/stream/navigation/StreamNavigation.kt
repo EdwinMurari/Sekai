@@ -7,7 +7,6 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.feature.stream.StreamRoute
 import java.net.URLDecoder
 import kotlin.text.Charsets.UTF_8
@@ -44,7 +43,7 @@ fun NavHostController.navigateToStream(
     navigate(route, navOptions)
 }
 
-fun NavGraphBuilder.streamRoute(palettes: Map<String, Material3Palette>) {
+fun NavGraphBuilder.streamRoute() {
     composable(
         route = STREAM_ROUTE,
         arguments = listOf(

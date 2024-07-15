@@ -20,6 +20,7 @@ import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 @Composable
 fun CarouselMediaList(
     modifier: Modifier = Modifier,
+    contentPaddingValues: PaddingValues,
     mediaList: List<Media>,
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit = {}
@@ -29,10 +30,14 @@ fun CarouselMediaList(
         modifier = modifier
             .wrapContentHeight()
             .padding(top = 16.dp),
-        contentPadding = PaddingValues(horizontal = 58.dp)
+        contentPadding = contentPaddingValues
     ) {
-        items(mediaList, key = { it.id }) { anime ->
-            MediaCard(media = anime, palettes = palettes, onClick = onMediaClick)
+        items(mediaList, key = { it.id }) { media ->
+            MediaCard(
+                media = media,
+                palettes = palettes,
+                onClick = { onMediaClick(media.id) }
+            )
         }
     }
 }
@@ -40,6 +45,7 @@ fun CarouselMediaList(
 @Composable
 fun CarouselMediaRelationsList(
     modifier: Modifier = Modifier,
+    contentPaddingValues: PaddingValues,
     relations: List<MediaDetails.MediaRelation>,
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit = {}
@@ -49,14 +55,14 @@ fun CarouselMediaRelationsList(
         modifier = modifier
             .wrapContentHeight()
             .padding(top = 16.dp),
-        contentPadding = PaddingValues(horizontal = 58.dp)
+        contentPadding = contentPaddingValues
     ) {
         items(relations, key = { it.media.id }) { relation ->
             MediaCard(
                 media = relation.media,
                 relationType = relation.relationType,
                 palettes = palettes,
-                onClick = onMediaClick
+                onClick = { onMediaClick(relation.media.id) }
             )
         }
     }
@@ -71,6 +77,7 @@ fun PreviewCarousel(
     val palettes = loadMaterial3Palettes(context)
     SekaiTheme {
         CarouselMediaList(
+            contentPaddingValues = PaddingValues(horizontal = 58.dp),
             mediaList = mediaList,
             palettes = palettes
         )

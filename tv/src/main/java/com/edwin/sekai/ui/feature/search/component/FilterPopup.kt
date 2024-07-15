@@ -108,7 +108,6 @@ fun FilterPopup(
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun FilterListContent(
     contentPaddingValues: PaddingValues,
@@ -140,7 +139,6 @@ private fun FilterListContent(
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun <T> FilterTypeRow(
     filter: FilterOption<T>,
