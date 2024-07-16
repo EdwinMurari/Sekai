@@ -17,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.edwin.sekai.ui.TvPreview
@@ -33,11 +35,8 @@ import com.edwin.sekai.ui.feature.browse.navigation.BROWSE_ROUTE
 import com.edwin.sekai.ui.feature.browse.navigation.browseRoute
 import com.edwin.sekai.ui.feature.browse.navigation.navigateToBrowse
 import com.edwin.sekai.ui.feature.categories.navigation.categoriesRoute
-import com.edwin.sekai.ui.feature.categories.navigation.navigateToCategories
 import com.edwin.sekai.ui.feature.extensions.navigation.extensionsRoute
-import com.edwin.sekai.ui.feature.extensions.navigation.navigateToExtensions
 import com.edwin.sekai.ui.feature.home.model.TabNavOption
-import com.edwin.sekai.ui.feature.search.navigation.navigateToSearch
 import com.edwin.sekai.ui.feature.search.navigation.searchRoute
 
 @Composable
@@ -48,9 +47,7 @@ fun HomeRoute(
     palettes: Map<String, Material3Palette>
 ) {
     HomeScreen(
-        selectedTab = viewModel.selectedTab,
         palettes = palettes,
-        onTabSelectionChange = viewModel::setTab,
         onMediaClick = onMediaClick,
         modifier = modifier
     )
@@ -58,73 +55,39 @@ fun HomeRoute(
 
 @Composable
 fun HomeScreen(
-    selectedTab: TabNavOption,
     palettes: Map<String, Material3Palette>,
-    onTabSelectionChange: (TabNavOption) -> Unit,
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val navController = rememberNavController()
-
-    var isTopBarVisible by remember { mutableStateOf(true) }
-    var isTopBarFocused by remember { mutableStateOf(false) }
-
     val options = TabNavOption.entries
-    val focusRequesters = remember { List(options.size) { FocusRequester() } }
+    val focusRequesters = remember { options.associateWith { FocusRequester() } }
 
-    val currentTopBarSelectedTabIndex by remember(selectedTab) {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentTabOption by remember {
         derivedStateOf {
-            TabNavOption.entries.indexOf(selectedTab)
+            options.find { it.route == navBackStackEntry?.destination?.route }
         }
     }
 
-    if (currentTopBarSelectedTabIndex != 0) {
+    var isTopBarVisible by remember { mutableStateOf(true) }
+
+    val contentPadding = PaddingValues(vertical = 40.dp, horizontal = 58.dp)
+    val focusManager = LocalFocusManager.current
+
+    BackHandler {
         // 1. On user's first back press, bring focus to the current selected tab, if TopBar is not
         //    visible, first make it visible, then focus the selected tab
         // 2. On second back press, bring focus back to the first displayed tab
         // 3. On third back press, exit the app
-        BackHandler {
-            when {
-                !isTopBarVisible -> {
-                    isTopBarVisible = true
-                    focusRequesters[currentTopBarSelectedTabIndex].requestFocus()
-                }
 
-                !isTopBarFocused -> {
-                    focusRequesters[currentTopBarSelectedTabIndex].requestFocus()
-                }
-
-                else -> {
-                    focusRequesters[1].requestFocus()
-                }
+        when {
+            !isTopBarVisible -> {
+                isTopBarVisible = true
+                focusRequesters[currentTabOption]?.requestFocus()
             }
-        }
-    }
 
-    // We do not want to focus the TopBar everytime we come back from another screen e.g.
-    // MovieDetails, CategoryMovieList or VideoPlayer screen
-    var wasTopBarFocusRequestedBefore by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (!wasTopBarFocusRequestedBefore) {
-            focusRequesters[currentTopBarSelectedTabIndex].requestFocus()
-            wasTopBarFocusRequestedBefore = true
-        }
-    }
-
-    val contentPadding = PaddingValues(vertical = 40.dp, horizontal = 58.dp)
-
-    Column(modifier = modifier) {
-        AnimatedVisibility(isTopBarVisible) {
-            TopBar(
-                modifier = Modifier
-                    .padding(horizontal = 58.dp)
-                    .padding(top = 32.dp)
-                    .onFocusChanged { isTopBarFocused = it.hasFocus },
-                options = options,
-                focusRequesters = focusRequesters,
-                selectedTabIndex = currentTopBarSelectedTabIndex,
-            ) { screen ->
+            currentTabOption != TabNavOption.Home -> {
                 val topLevelNavOption = navOptions {
                     // Pop up to the start destination of the graph to
                     // avoid building up a large stack of destinations
@@ -139,14 +102,58 @@ fun HomeScreen(
                     restoreState = true
                 }
 
-                when (screen) {
-                    TabNavOption.Home -> navController.navigateToBrowse(topLevelNavOption)
-                    TabNavOption.Categories -> navController.navigateToCategories(topLevelNavOption)
-                    TabNavOption.Search -> navController.navigateToSearch(topLevelNavOption)
-                    TabNavOption.Extensions -> navController.navigateToExtensions(topLevelNavOption)
-                }
+                navController.navigateToBrowse(topLevelNavOption)
+            }
 
-                onTabSelectionChange(screen)
+            else -> {
+                navController.navigateUp()
+            }
+        }
+    }
+
+    // We do not want to focus the TopBar everytime we come back from another screen e.g.
+    // MovieDetails, CategoryMovieList or VideoPlayer screen
+    var wasTopBarFocusRequestedBefore by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (!wasTopBarFocusRequestedBefore) {
+            focusRequesters[currentTabOption]?.requestFocus()
+            wasTopBarFocusRequestedBefore = true
+        }
+    }
+
+    Column(modifier = modifier) {
+        AnimatedVisibility(isTopBarVisible) {
+            TopBar(
+                modifier = Modifier
+                    .padding(horizontal = 58.dp)
+                    .padding(top = 32.dp),
+                selectedTabIndex = options.indexOf(currentTabOption)
+            ) {
+                options.forEachIndexed { index, option ->
+                    TextItem(
+                        key = index,
+                        labelResId = option.labelResId,
+                        focusRequester = focusRequesters[option]!!,
+                        selected = currentTabOption == option,
+                        focusManager = focusManager,
+                        onSelectOption = {
+                            navController.navigate(option.route) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
             }
         }
 
@@ -205,13 +212,10 @@ fun HomeScreenPreview() {
     SekaiTheme {
         val context = LocalContext.current
         val palettes = loadMaterial3Palettes(context)
-        val (selectedTab, setTab) = remember { mutableStateOf(TabNavOption.Home) }
 
         HomeScreen(
-            selectedTab = selectedTab,
             palettes = palettes,
             onMediaClick = {},
-            onTabSelectionChange = setTab,
             modifier = Modifier
         )
     }
