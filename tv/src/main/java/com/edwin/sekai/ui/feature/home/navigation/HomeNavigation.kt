@@ -8,12 +8,17 @@ import com.edwin.sekai.ui.feature.home.HomeRoute
 const val HOME_ROUTE = "home_route"
 
 fun NavGraphBuilder.homeRoute(
+    onBackPressed: () -> Unit,
     onMediaClick: (Int) -> Unit,
     palettes: Map<String, Material3Palette>,
 ) {
     composable(
         route = HOME_ROUTE
     ) {
-        HomeRoute(onMediaClick = onMediaClick, palettes = palettes)
+        HomeRoute(
+            onMediaClick = onMediaClick,
+            onBackPressed = onBackPressed,
+            palettes = palettes
+        )
     }
 }
