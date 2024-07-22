@@ -1,8 +1,8 @@
 package com.edwin.sekai.ui.feature.home
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -16,14 +16,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 import com.edwin.sekai.ui.TvPreview
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
 import com.edwin.sekai.ui.designsystem.component.TopBar
@@ -31,122 +36,125 @@ import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.browse.navigation.BROWSE_ROUTE
 import com.edwin.sekai.ui.feature.browse.navigation.browseRoute
-import com.edwin.sekai.ui.feature.browse.navigation.navigateToBrowse
 import com.edwin.sekai.ui.feature.categories.navigation.categoriesRoute
-import com.edwin.sekai.ui.feature.categories.navigation.navigateToCategories
 import com.edwin.sekai.ui.feature.extensions.navigation.extensionsRoute
-import com.edwin.sekai.ui.feature.extensions.navigation.navigateToExtensions
 import com.edwin.sekai.ui.feature.home.model.TabNavOption
-import com.edwin.sekai.ui.feature.search.navigation.navigateToSearch
 import com.edwin.sekai.ui.feature.search.navigation.searchRoute
 
 @Composable
 fun HomeRoute(
     onMediaClick: (Int) -> Unit,
+    onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
     palettes: Map<String, Material3Palette>
 ) {
     HomeScreen(
-        selectedTab = viewModel.selectedTab,
         palettes = palettes,
-        onTabSelectionChange = viewModel::setTab,
         onMediaClick = onMediaClick,
+        onBackPressed = onBackPressed,
         modifier = modifier
     )
 }
 
 @Composable
 fun HomeScreen(
-    selectedTab: TabNavOption,
     palettes: Map<String, Material3Palette>,
-    onTabSelectionChange: (TabNavOption) -> Unit,
     onMediaClick: (Int) -> Unit,
+    onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val options = TabNavOption.entries
+    val focusRequesters = remember { options.associateWith { FocusRequester() } }
+
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentTabOption by remember {
+        derivedStateOf {
+            options.find { it.route == navBackStackEntry?.destination?.route }
+        }
+    }
 
     var isTopBarVisible by remember { mutableStateOf(true) }
     var isTopBarFocused by remember { mutableStateOf(false) }
 
-    val options = TabNavOption.entries
-    val focusRequesters = remember { List(options.size) { FocusRequester() } }
+    val contentPadding = PaddingValues(vertical = 40.dp, horizontal = 58.dp)
+    val focusManager = LocalFocusManager.current
 
-    val currentTopBarSelectedTabIndex by remember(selectedTab) {
-        derivedStateOf {
-            TabNavOption.entries.indexOf(selectedTab)
-        }
-    }
-
-    if (currentTopBarSelectedTabIndex != 0) {
-        // 1. On user's first back press, bring focus to the current selected tab, if TopBar is not
-        //    visible, first make it visible, then focus the selected tab
-        // 2. On second back press, bring focus back to the first displayed tab
-        // 3. On third back press, exit the app
-        BackHandler {
+    BackPressHandledArea(
+        modifier = modifier,
+        onBackPressed = {
+            // 1. On user's first back press, bring focus to the current selected tab, if TopBar is not
+            //    visible, first make it visible, then focus the selected tab
+            // 2. On second back press, bring focus back to the first displayed tab
+            // 3. On third back press, exit the app
             when {
                 !isTopBarVisible -> {
                     isTopBarVisible = true
-                    focusRequesters[currentTopBarSelectedTabIndex].requestFocus()
+                }
+
+                currentTabOption == TabNavOption.Home -> {
+                    onBackPressed()
                 }
 
                 !isTopBarFocused -> {
-                    focusRequesters[currentTopBarSelectedTabIndex].requestFocus()
+                    focusRequesters[currentTabOption]?.requestFocus()
                 }
 
                 else -> {
-                    focusRequesters[1].requestFocus()
+                    focusRequesters[TabNavOption.Home]?.requestFocus()
                 }
             }
         }
-    }
+    ) {
+        // We do not want to focus the TopBar everytime we come back from another screen
+        var wasTopBarFocusRequestedBefore by rememberSaveable { mutableStateOf(false) }
 
-    // We do not want to focus the TopBar everytime we come back from another screen e.g.
-    // MovieDetails, CategoryMovieList or VideoPlayer screen
-    var wasTopBarFocusRequestedBefore by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (!wasTopBarFocusRequestedBefore) {
-            focusRequesters[currentTopBarSelectedTabIndex].requestFocus()
-            wasTopBarFocusRequestedBefore = true
+        LaunchedEffect(Unit) {
+            if (!wasTopBarFocusRequestedBefore) {
+                focusRequesters[currentTabOption]?.requestFocus()
+                wasTopBarFocusRequestedBefore = true
+            }
         }
-    }
 
-    val contentPadding = PaddingValues(vertical = 40.dp, horizontal = 58.dp)
+        LaunchedEffect(isTopBarVisible) {
+            if (isTopBarVisible) {
+                focusRequesters[currentTabOption]?.requestFocus()
+            }
+        }
 
-    Column(modifier = modifier) {
         AnimatedVisibility(isTopBarVisible) {
             TopBar(
                 modifier = Modifier
+                    .onFocusChanged { isTopBarFocused = it.hasFocus }
                     .padding(horizontal = 58.dp)
-                    .padding(top = 32.dp)
-                    .onFocusChanged { isTopBarFocused = it.hasFocus },
-                options = options,
-                focusRequesters = focusRequesters,
-                selectedTabIndex = currentTopBarSelectedTabIndex,
-            ) { screen ->
-                val topLevelNavOption = navOptions {
-                    // Pop up to the start destination of the graph to
-                    // avoid building up a large stack of destinations
-                    // on the back stack as users select items
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
-                    }
-                    // Avoid multiple copies of the same destination when
-                    // reselecting the same item
-                    launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
-                    restoreState = true
+                    .padding(top = 32.dp),
+                selectedTabIndex = options.indexOf(currentTabOption)
+            ) {
+                options.forEachIndexed { index, option ->
+                    TextItem(
+                        key = index,
+                        labelResId = option.labelResId,
+                        focusRequester = focusRequesters[option]!!,
+                        selected = currentTabOption == option,
+                        focusManager = focusManager,
+                        onSelectOption = {
+                            navController.navigate(option.route) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
+                        }
+                    )
                 }
-
-                when (screen) {
-                    TabNavOption.Home -> navController.navigateToBrowse(topLevelNavOption)
-                    TabNavOption.Categories -> navController.navigateToCategories(topLevelNavOption)
-                    TabNavOption.Search -> navController.navigateToSearch(topLevelNavOption)
-                    TabNavOption.Extensions -> navController.navigateToExtensions(topLevelNavOption)
-                }
-
-                onTabSelectionChange(screen)
             }
         }
 
@@ -160,6 +168,25 @@ fun HomeScreen(
             modifier = Modifier.weight(1f)
         )
     }
+}
+
+@Composable
+private fun BackPressHandledArea(
+    onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(
+        modifier = modifier.onPreviewKeyEvent {
+            if (it.key == Key.Back && it.type == KeyEventType.KeyUp) {
+                onBackPressed()
+                true
+            } else {
+                false
+            }
+        },
+        content = content
+    )
 }
 
 @Composable
@@ -205,13 +232,11 @@ fun HomeScreenPreview() {
     SekaiTheme {
         val context = LocalContext.current
         val palettes = loadMaterial3Palettes(context)
-        val (selectedTab, setTab) = remember { mutableStateOf(TabNavOption.Home) }
 
         HomeScreen(
-            selectedTab = selectedTab,
             palettes = palettes,
             onMediaClick = {},
-            onTabSelectionChange = setTab,
+            onBackPressed = {},
             modifier = Modifier
         )
     }

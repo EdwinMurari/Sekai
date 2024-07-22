@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     shape = RectangleShape
                 ) {
-                    SekaiApp()
+                    SekaiApp(onBackPressed = onBackPressedDispatcher::onBackPressed)
                 }
             }
         }

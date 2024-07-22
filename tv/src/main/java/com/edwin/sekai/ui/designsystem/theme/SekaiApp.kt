@@ -13,7 +13,7 @@ import com.edwin.sekai.ui.feature.stream.navigation.navigateToStream
 import com.edwin.sekai.ui.feature.stream.navigation.streamRoute
 
 @Composable
-fun SekaiApp() {
+fun SekaiApp(onBackPressed: () -> Unit) {
     val navController = rememberNavController()
 
     val context = LocalContext.current
@@ -22,6 +22,7 @@ fun SekaiApp() {
     NavHost(navController = navController, startDestination = HOME_ROUTE) {
         homeRoute(
             onMediaClick = navController::navigateToDetails,
+            onBackPressed = onBackPressed,
             palettes = palettes
         )
 
