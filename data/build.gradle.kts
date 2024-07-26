@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":network:anilist"))
     implementation(project(":network:jikan"))
     implementation(project(":network:kitsu"))
+    implementation(project(":network:extensions"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
