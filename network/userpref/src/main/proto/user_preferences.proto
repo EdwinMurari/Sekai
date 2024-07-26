@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option java_package = "com.edwin.network.userpref";
+option java_multiple_files = true;
+
+message UserPreferences {
+  repeated string extension_repository_urls = 1;
+}
