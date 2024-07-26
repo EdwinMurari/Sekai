@@ -33,4 +33,6 @@
     <string name="clear">Clear</string>
     <string name="reset">Reset</string>
     <string name="search_results_error">Error: %1$s</string>
+    <string name="nav_option_settings_label">Settings</string>
+    <string name="extension_repositories_settings_screen_title">Repositories</string>
 </resources>

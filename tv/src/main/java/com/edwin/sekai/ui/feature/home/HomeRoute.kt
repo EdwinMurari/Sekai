@@ -40,6 +40,7 @@ import com.edwin.sekai.ui.feature.categories.navigation.categoriesRoute
 import com.edwin.sekai.ui.feature.extensions.navigation.extensionsRoute
 import com.edwin.sekai.ui.feature.home.model.TabNavOption
 import com.edwin.sekai.ui.feature.search.navigation.searchRoute
+import com.edwin.sekai.ui.feature.settings.navigation.settingsRoute
 
 @Composable
 fun HomeRoute(
@@ -223,6 +224,12 @@ private fun Body(
         )
 
         extensionsRoute()
+
+        settingsRoute(
+            contentPaddingValues = contentPaddingValues,
+            isTopBarVisible = isTopBarVisible,
+            updateTopBarVisibility = updateTopBarVisibility
+        )
     }
 }
 

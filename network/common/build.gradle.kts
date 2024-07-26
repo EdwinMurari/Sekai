@@ -55,6 +55,10 @@ dependencies {
 
     // Apollo GraphQL
     api(libs.apollo.runtime)
+
+    api(libs.kotlinx.serialization.json)
+
+    api(libs.okhttp.logging)
 }
 
 // Allow references to generated code
