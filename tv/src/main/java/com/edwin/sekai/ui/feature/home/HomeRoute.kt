@@ -223,7 +223,11 @@ private fun Body(
             updateTopBarVisibility = updateTopBarVisibility
         )
 
-        extensionsRoute()
+        extensionsRoute(
+            contentPaddingValues = contentPaddingValues,
+            isTopBarVisible = isTopBarVisible,
+            updateTopBarVisibility = updateTopBarVisibility
+        )
 
         settingsRoute(
             contentPaddingValues = contentPaddingValues,

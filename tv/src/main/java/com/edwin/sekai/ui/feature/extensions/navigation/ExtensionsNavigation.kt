@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.feature.extensions.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -11,10 +12,18 @@ const val EXTENSIONS_ROUTE = "extensions_route"
 fun NavController.navigateToExtensions(navOptions: NavOptions? = null) =
     navigate(EXTENSIONS_ROUTE, navOptions)
 
-fun NavGraphBuilder.extensionsRoute() {
+fun NavGraphBuilder.extensionsRoute(
+    contentPaddingValues: PaddingValues,
+    isTopBarVisible: Boolean = true,
+    updateTopBarVisibility: (Boolean) -> Unit
+) {
     composable(
         route = EXTENSIONS_ROUTE
     ) {
-        ExtensionsRoute()
+        ExtensionsRoute(
+            contentPaddingValues = contentPaddingValues,
+            isTopBarVisible = isTopBarVisible,
+            updateTopBarVisibility = updateTopBarVisibility
+        )
     }
 }

@@ -1,14 +1,14 @@
 package com.edwin.data.model
 
-sealed class Extension {
+sealed interface Extension {
 
-    abstract val name: String
-    abstract val pkgName: String
-    abstract val versionName: String
-    abstract val versionCode: Long
-    abstract val libVersion: Double
-    abstract val lang: String?
-    abstract val isNsfw: Boolean
+    val name: String
+    val pkgName: String
+    val versionName: String
+    val versionCode: Long
+    val libVersion: Double
+    val lang: String?
+    val isNsfw: Boolean
 
     data class Available(
         override val name: String,
@@ -22,7 +22,7 @@ sealed class Extension {
         val apkName: String,
         val iconUrl: String,
         val repoUrl: String,
-    ) : Extension() {
+    ) : Extension {
 
         data class AnimeSource(
             val id: Long,
