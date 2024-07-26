@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":network:jikan"))
     implementation(project(":network:kitsu"))
     implementation(project(":network:extensions"))
+    implementation(project(":network:userpref"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -54,6 +55,7 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     api(libs.apollo.runtime)
+    api(libs.protobuf.kotlin.lite)
 
     // Mockk framework
     testImplementation(libs.mockk)
