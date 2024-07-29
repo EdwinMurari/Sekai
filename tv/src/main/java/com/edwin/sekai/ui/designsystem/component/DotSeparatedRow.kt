@@ -16,7 +16,8 @@ import androidx.tv.material3.LocalContentColor
 @Composable
 fun DotSeparatedRow(
     modifier: Modifier = Modifier,
-    vararg contents: @Composable () -> Unit
+    vararg contents: @Composable () -> Unit,
+    spacing: Int = 8
 ) {
     Row(
         modifier = modifier,
@@ -28,7 +29,7 @@ fun DotSeparatedRow(
             if (index != contents.lastIndex) {
                 Box(
                     modifier = Modifier
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = spacing.dp)
                         .clip(CircleShape)
                         .background(LocalContentColor.current.copy(alpha = 1f))
                         .size(4.dp)
