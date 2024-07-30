@@ -117,7 +117,7 @@ private fun ExtensionsContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         columns = TvGridCells.Adaptive(minSize = ExtensionItemCardDefault.CARD_WIDTH.dp)
     ) {
-        items(uiState.extensions) { extension ->
+        items(uiState.extensions, key = { it.id }) { extension ->
             ExtensionItemCard(
                 modifier = modifier,
                 extension = extension,

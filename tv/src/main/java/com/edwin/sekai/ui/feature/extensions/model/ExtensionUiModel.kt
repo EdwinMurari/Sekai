@@ -1,6 +1,9 @@
 package com.edwin.sekai.ui.feature.extensions.model
 
+import java.util.UUID
+
 sealed interface ExtensionUiModel {
+    val id: String
     val iconUrl: String
     val title: String
     val language: String
@@ -8,6 +11,7 @@ sealed interface ExtensionUiModel {
     val isNsfw: Boolean
 
     data class Available(
+        override val id: String = UUID.randomUUID().toString(),
         override val iconUrl: String,
         override val title: String,
         override val language: String,
