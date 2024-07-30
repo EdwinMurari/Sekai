@@ -99,7 +99,9 @@ fun ExtensionItemPreview() {
                 title = "Some title",
                 language = "English",
                 version = "14.10",
-                isNsfw = false
+                isNsfw = false,
+                apkUrl = "",
+                pkgName = ""
             ),
             onClickExtension = {}
         )

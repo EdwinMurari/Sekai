@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.edwin.data.model.Extension
 import com.edwin.data.repository.ExtensionsRepository
+import com.edwin.extension_manager.ExtensionInstallManager
 import com.edwin.sekai.ui.feature.extensions.mapper.toUiModel
 import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExtensionsViewModel @Inject constructor(
-    private val repository: ExtensionsRepository
+    private val repository: ExtensionsRepository,
+    private val extensionInstallManager: ExtensionInstallManager,
 ) : ViewModel() {
 
     val uiState: StateFlow<ExtensionsUiState> = repository.getAvailableExtensions()
@@ -35,6 +37,19 @@ class ExtensionsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = ExtensionsUiState.Loading,
         )
+
+    fun onExtensionClick(extensionUiModel: ExtensionUiModel) {
+        when (extensionUiModel) {
+            is ExtensionUiModel.Available -> installExtension(extensionUiModel)
+        }
+    }
+
+    private fun installExtension(extensionUiModel: ExtensionUiModel.Available) {
+        extensionInstallManager.downloadAndInstallExtension(
+            apkUrl = extensionUiModel.apkUrl,
+            name = extensionUiModel.title
+        )
+    }
 }
 
 sealed interface ExtensionsUiState {

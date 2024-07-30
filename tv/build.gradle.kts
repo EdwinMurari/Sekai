@@ -52,6 +52,7 @@ android {
 dependencies {
 
     implementation(project(":data"))
+    implementation(project(":extension-manager"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -81,6 +82,8 @@ dependencies {
 
     // Paging
     implementation(libs.androidx.paging.compose)
+
+    implementation(libs.hilt.ext.work)
 }
 
 // Allow references to generated code

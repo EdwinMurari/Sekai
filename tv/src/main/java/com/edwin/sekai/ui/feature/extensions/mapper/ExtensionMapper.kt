@@ -10,7 +10,9 @@ fun Extension.toUiModel() = when (this) {
         title = name,
         language = getLanguageNameFromCode(lang),
         version = versionName,
-        isNsfw = isNsfw
+        isNsfw = isNsfw,
+        apkUrl = apkUrl,
+        pkgName = pkgName
     )
 }
 

@@ -18,6 +18,7 @@ fun ExtensionApiModel.asExternalModel(repoUrl: String) = Extension.Available(
     apkName = apk,
     iconUrl = "${repoUrl.removeSuffix("/index.min.json")}/icon/${pkg}.png",
     repoUrl = repoUrl,
+    apkUrl = "${repoUrl.removeSuffix("/index.min.json")}/apk/${apk}"
 )
 
 fun ExtensionApiModel.extractLibVersion(): Double {

@@ -22,6 +22,7 @@ sealed interface Extension {
         val apkName: String,
         val iconUrl: String,
         val repoUrl: String,
+        val apkUrl: String,
     ) : Extension {
 
         data class AnimeSource(

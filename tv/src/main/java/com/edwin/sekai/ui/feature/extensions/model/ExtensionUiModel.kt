@@ -12,6 +12,8 @@ sealed interface ExtensionUiModel {
         override val title: String,
         override val language: String,
         override val version: String,
-        override val isNsfw: Boolean
+        override val isNsfw: Boolean,
+        val apkUrl: String,
+        val pkgName: String
     ) : ExtensionUiModel
 }

@@ -8,6 +8,7 @@ import com.edwin.network.userpref.UserPreferences
 import com.edwin.network.userpref.UserPreferencesDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import okhttp3.ResponseBody
 import javax.inject.Inject
 
 internal class OneOffExtensionsRepository @Inject constructor(
@@ -35,9 +36,12 @@ internal class OneOffExtensionsRepository @Inject constructor(
         }
     }
 
+    override suspend fun downloadExtensionApk(apkUrl: String): ResponseBody {
+        return extensionsDataSource.downloadExtensionApk(apkUrl)
+    }
+
     companion object {
         private const val REPO_REGEX = """^https://.*/index\.min\.json$"""
-
 
         private const val LIB_VERSION_MIN = 12.0
         private const val LIB_VERSION_MAX = 15.0

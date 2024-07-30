@@ -8,6 +8,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +20,9 @@ import com.edwin.sekai.ui.designsystem.component.Loading
 import com.edwin.sekai.ui.designsystem.component.SomethingWentWrong
 import com.edwin.sekai.ui.feature.extensions.component.ExtensionItemCard
 import com.edwin.sekai.ui.feature.extensions.component.ExtensionItemCardDefault
+import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
+import com.edwin.sekai.ui.utils.launchRequestPackageInstallsPermission
+import com.edwin.sekai.ui.utils.rememberRequestPackageInstallsPermissionState
 
 @Composable
 fun ExtensionsRoute(
@@ -35,7 +39,8 @@ fun ExtensionsRoute(
         uiState = uiState,
         contentPaddingValues = contentPaddingValues,
         isTopBarVisible = isTopBarVisible,
-        updateTopBarVisibility = updateTopBarVisibility
+        updateTopBarVisibility = updateTopBarVisibility,
+        onExtensionClick = viewModel::onExtensionClick
     )
 }
 
@@ -46,6 +51,7 @@ fun ExtensionsScreen(
     contentPaddingValues: PaddingValues,
     isTopBarVisible: Boolean = true,
     updateTopBarVisibility: (Boolean) -> Unit,
+    onExtensionClick: (ExtensionUiModel) -> Unit
 ) {
     when (uiState) {
         ExtensionsUiState.Error -> {
@@ -67,7 +73,8 @@ fun ExtensionsScreen(
                 modifier = modifier,
                 contentPaddingValues = contentPaddingValues,
                 isTopBarVisible = isTopBarVisible,
-                updateTopBarVisibility = updateTopBarVisibility
+                updateTopBarVisibility = updateTopBarVisibility,
+                onExtensionClick = onExtensionClick
             )
         }
     }
@@ -80,7 +87,11 @@ private fun ExtensionsContent(
     contentPaddingValues: PaddingValues,
     isTopBarVisible: Boolean = true,
     updateTopBarVisibility: (Boolean) -> Unit,
+    onExtensionClick: (ExtensionUiModel) -> Unit
 ) {
+    val context = LocalContext.current
+    val installPermissionGranted = rememberRequestPackageInstallsPermissionState()
+
     val lazyGridState = rememberTvLazyGridState()
 
     val shouldShowTopBar by remember {
@@ -110,7 +121,13 @@ private fun ExtensionsContent(
             ExtensionItemCard(
                 modifier = modifier,
                 extension = extension,
-                onClickExtension = {}
+                onClickExtension = {
+                    if (installPermissionGranted) {
+                        onExtensionClick(extension)
+                    } else {
+                        context.launchRequestPackageInstallsPermission()
+                    }
+                }
             )
         }
     }
