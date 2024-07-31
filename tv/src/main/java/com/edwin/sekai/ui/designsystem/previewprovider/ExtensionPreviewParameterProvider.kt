@@ -15,7 +15,8 @@ class ExtensionPreviewParameterProvider  : PreviewParameterProvider<ExtensionUiM
             icon = null,
             hasUpdate = false,
             isObsolete = false,
-            iconUrl = ""
+            iconUrl = "",
+            apkUrl = ""
         ),
         ExtensionUiModel.Available(
             title = "Example Available Extension",
@@ -44,7 +45,8 @@ class ExtensionPreviewParameterProvider  : PreviewParameterProvider<ExtensionUiM
             icon = null,
             hasUpdate = false,
             isObsolete = false,
-            iconUrl = ""
+            iconUrl = "",
+            apkUrl = ""
         ),
         ExtensionUiModel.Installed(
             title = "Example Installed Extension NSFW",
@@ -55,7 +57,8 @@ class ExtensionPreviewParameterProvider  : PreviewParameterProvider<ExtensionUiM
             icon = null,
             hasUpdate = true,
             isObsolete = false,
-            iconUrl = ""
+            iconUrl = "",
+            apkUrl = ""
         ),
         ExtensionUiModel.Installed(
             title = "Example Installed Extension NSFW",
@@ -66,7 +69,8 @@ class ExtensionPreviewParameterProvider  : PreviewParameterProvider<ExtensionUiM
             icon = null,
             hasUpdate = false,
             isObsolete = true,
-            iconUrl = ""
+            iconUrl = "",
+            apkUrl = ""
         ),
     )
 }

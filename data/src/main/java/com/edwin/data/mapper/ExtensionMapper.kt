@@ -1,6 +1,7 @@
 package com.edwin.data.mapper
 
 import android.content.Context
+import androidx.core.content.pm.PackageInfoCompat
 import com.edwin.data.model.Extension
 import com.edwin.network.extensions.model.ExtensionApiModel
 import com.edwin.network.extensions.model.InstalledExtensionApiModel
@@ -47,6 +48,7 @@ fun installedExtensionExternalModel(
     libVersion = availableExtension.extractLibVersion(),
     lang = availableExtension.lang,
     isNsfw = availableExtension.nsfw == 1,
+    apkUrl = "${repoUrl.removeSuffix("/index.min.json")}/apk/${availableExtension.apk}",
     pkgFactory = installedExtensionApiModel.packageInfo.applicationInfo.metaData.getString(
         METADATA_SOURCE_FACTORY
     ),
@@ -65,7 +67,7 @@ private fun updateExists(
     installedExtensionApiModel: InstalledExtensionApiModel,
     availableExtension: ExtensionApiModel,
 ): Boolean {
-    return (availableExtension.code > installedExtensionApiModel.packageInfo.longVersionCode)
+    return availableExtension.code > PackageInfoCompat.getLongVersionCode(installedExtensionApiModel.packageInfo)
 }
 
 fun InstalledExtensionApiModel.asExternalModel(
@@ -77,7 +79,8 @@ fun InstalledExtensionApiModel.asExternalModel(
         .substringAfter("Aniyomi: "),
     pkgName = packageInfo.packageName,
     versionName = packageInfo.versionName,
-    versionCode = packageInfo.longVersionCode,
+    versionCode = PackageInfoCompat.getLongVersionCode(packageInfo),
+    apkUrl = null,
     libVersion = packageInfo.versionName.substringBeforeLast('.').toDoubleOrNull() ?: 0.0,
     lang = "en",
     isNsfw = packageInfo.applicationInfo.metaData.getInt(METADATA_NSFW) == 1,

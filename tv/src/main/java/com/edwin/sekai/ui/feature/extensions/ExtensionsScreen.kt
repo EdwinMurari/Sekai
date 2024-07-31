@@ -1,7 +1,9 @@
 package com.edwin.sekai.ui.feature.extensions
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -20,6 +22,7 @@ import com.edwin.sekai.ui.designsystem.component.Loading
 import com.edwin.sekai.ui.designsystem.component.SomethingWentWrong
 import com.edwin.sekai.ui.feature.extensions.component.ExtensionItemCard
 import com.edwin.sekai.ui.feature.extensions.component.ExtensionItemCardDefault
+import com.edwin.sekai.ui.feature.extensions.component.InstalledExtensionPopup
 import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
 import com.edwin.sekai.ui.utils.launchRequestPackageInstallsPermission
 import com.edwin.sekai.ui.utils.rememberRequestPackageInstallsPermissionState
@@ -30,22 +33,63 @@ fun ExtensionsRoute(
     contentPaddingValues: PaddingValues,
     isTopBarVisible: Boolean = true,
     updateTopBarVisibility: (Boolean) -> Unit,
+    onClickBrowse: (ExtensionUiModel.Installed) -> Unit,
     viewModel: ExtensionsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val selectedExtension by viewModel.selectedExtension.collectAsStateWithLifecycle()
 
     ExtensionsScreen(
         modifier = modifier,
         uiState = uiState,
+        selectedExtension = selectedExtension,
         contentPaddingValues = contentPaddingValues,
         isTopBarVisible = isTopBarVisible,
         updateTopBarVisibility = updateTopBarVisibility,
-        onExtensionClick = viewModel::onExtensionClick
+        onExtensionClick = viewModel::onExtensionClick,
+        onClickUpdate = viewModel::onClickUpdate,
+        onClickBrowse = onClickBrowse,
+        onClickUninstall = viewModel::onClickUninstall,
+        onExtensionDismissRequest = viewModel::dismissViewExtension
     )
 }
 
 @Composable
 fun ExtensionsScreen(
+    uiState: ExtensionsUiState,
+    selectedExtension: ExtensionUiModel.Installed?,
+    modifier: Modifier = Modifier,
+    contentPaddingValues: PaddingValues,
+    isTopBarVisible: Boolean = true,
+    updateTopBarVisibility: (Boolean) -> Unit,
+    onExtensionClick: (ExtensionUiModel) -> Unit,
+    onClickUpdate: (ExtensionUiModel.Installed) -> Unit,
+    onClickBrowse: (ExtensionUiModel.Installed) -> Unit,
+    onClickUninstall: (ExtensionUiModel.Installed) -> Unit,
+    onExtensionDismissRequest: () -> Unit
+) {
+    Box(modifier = modifier) {
+        ExtensionScreenContent(
+            modifier = Modifier.fillMaxSize(),
+            uiState = uiState,
+            contentPaddingValues = contentPaddingValues,
+            isTopBarVisible = isTopBarVisible,
+            updateTopBarVisibility = updateTopBarVisibility,
+            onExtensionClick = onExtensionClick
+        )
+
+        InstalledExtensionPopup(
+            selectedExtension = selectedExtension,
+            onClickUpdate = onClickUpdate,
+            onClickBrowse = onClickBrowse,
+            onClickUninstall = onClickUninstall,
+            onDismissRequest = onExtensionDismissRequest
+        )
+    }
+}
+
+@Composable
+private fun ExtensionScreenContent(
     uiState: ExtensionsUiState,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues,

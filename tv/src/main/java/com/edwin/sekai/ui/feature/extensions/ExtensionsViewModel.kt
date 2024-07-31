@@ -8,8 +8,10 @@ import com.edwin.extension_manager.ExtensionInstallManager
 import com.edwin.sekai.ui.feature.extensions.mapper.asUiModel
 import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -50,6 +52,9 @@ class ExtensionsViewModel @Inject constructor(
             initialValue = ExtensionsUiState.Loading,
         )
 
+    private val _selectedExtension = MutableStateFlow<ExtensionUiModel.Installed?>(null)
+    val selectedExtension: StateFlow<ExtensionUiModel.Installed?> = _selectedExtension.asStateFlow()
+
     fun onExtensionClick(extensionUiModel: ExtensionUiModel) {
         when (extensionUiModel) {
             is ExtensionUiModel.Available -> installExtension(extensionUiModel)
@@ -58,7 +63,11 @@ class ExtensionsViewModel @Inject constructor(
     }
 
     private fun viewExtension(extensionUiModel: ExtensionUiModel.Installed) {
+        _selectedExtension.value = extensionUiModel
+    }
 
+    fun dismissViewExtension() {
+        _selectedExtension.value = null
     }
 
     private fun installExtension(extensionUiModel: ExtensionUiModel.Available) {
@@ -66,6 +75,21 @@ class ExtensionsViewModel @Inject constructor(
             apkUrl = extensionUiModel.apkUrl,
             name = extensionUiModel.title
         )
+    }
+
+    fun onClickUpdate(extensionUiModel: ExtensionUiModel.Installed) {
+        extensionUiModel.apkUrl?.let {
+            extensionInstallManager.updateExtension(
+                apkUrl = it,
+                name = extensionUiModel.title,
+                pkgName = extensionUiModel.pkgName
+            )
+        }
+    }
+
+    fun onClickUninstall(extensionUiModel: ExtensionUiModel.Installed) {
+        extensionInstallManager.uninstallExtension(pkgName = extensionUiModel.pkgName)
+        dismissViewExtension()
     }
 }
 

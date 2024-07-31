@@ -11,6 +11,7 @@ sealed interface Extension {
     val libVersion: Double
     val lang: String?
     val isNsfw: Boolean
+    val apkUrl: String?
 
     data class Available(
         override val name: String,
@@ -20,11 +21,11 @@ sealed interface Extension {
         override val libVersion: Double,
         override val lang: String,
         override val isNsfw: Boolean,
+        override val apkUrl: String,
         val sources: List<AnimeSource>,
         val apkName: String,
         val iconUrl: String,
         val repoUrl: String,
-        val apkUrl: String,
     ) : Extension {
 
         data class AnimeSource(
@@ -43,6 +44,7 @@ sealed interface Extension {
         override val libVersion: Double,
         override val lang: String,
         override val isNsfw: Boolean,
+        override val apkUrl: String?,
         val pkgFactory: String?,
         val icon: Drawable?,
         val hasUpdate: Boolean,

@@ -22,6 +22,7 @@ fun SekaiApp(onBackPressed: () -> Unit) {
     NavHost(navController = navController, startDestination = HOME_ROUTE) {
         homeRoute(
             onMediaClick = navController::navigateToDetails,
+            onBrowseExtension = {}, // TODO ::
             onBackPressed = onBackPressed,
             palettes = palettes
         )

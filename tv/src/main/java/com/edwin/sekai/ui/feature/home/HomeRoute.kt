@@ -37,6 +37,7 @@ import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.browse.navigation.BROWSE_ROUTE
 import com.edwin.sekai.ui.feature.browse.navigation.browseRoute
 import com.edwin.sekai.ui.feature.categories.navigation.categoriesRoute
+import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
 import com.edwin.sekai.ui.feature.extensions.navigation.extensionsRoute
 import com.edwin.sekai.ui.feature.home.model.TabNavOption
 import com.edwin.sekai.ui.feature.search.navigation.searchRoute
@@ -45,6 +46,7 @@ import com.edwin.sekai.ui.feature.settings.navigation.settingsRoute
 @Composable
 fun HomeRoute(
     onMediaClick: (Int) -> Unit,
+    onBrowseExtension: (ExtensionUiModel.Installed) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
@@ -53,6 +55,7 @@ fun HomeRoute(
     HomeScreen(
         palettes = palettes,
         onMediaClick = onMediaClick,
+        onBrowseExtension = onBrowseExtension,
         onBackPressed = onBackPressed,
         modifier = modifier
     )
@@ -62,6 +65,7 @@ fun HomeRoute(
 fun HomeScreen(
     palettes: Map<String, Material3Palette>,
     onMediaClick: (Int) -> Unit,
+    onBrowseExtension: (ExtensionUiModel.Installed) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -163,6 +167,7 @@ fun HomeScreen(
             contentPaddingValues = contentPadding,
             palettes = palettes,
             onMediaClick = onMediaClick,
+            onClickBrowseExtension = onBrowseExtension,
             updateTopBarVisibility = { isTopBarVisible = it },
             isTopBarVisible = isTopBarVisible,
             navController = navController,
@@ -198,7 +203,8 @@ private fun Body(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     isTopBarVisible: Boolean = true,
-    updateTopBarVisibility: (Boolean) -> Unit
+    updateTopBarVisibility: (Boolean) -> Unit,
+    onClickBrowseExtension: (ExtensionUiModel.Installed) -> Unit
 ) {
     NavHost(
         modifier = modifier,
@@ -226,7 +232,8 @@ private fun Body(
         extensionsRoute(
             contentPaddingValues = contentPaddingValues,
             isTopBarVisible = isTopBarVisible,
-            updateTopBarVisibility = updateTopBarVisibility
+            updateTopBarVisibility = updateTopBarVisibility,
+            onClickBrowse = onClickBrowseExtension
         )
 
         settingsRoute(
@@ -247,6 +254,7 @@ fun HomeScreenPreview() {
         HomeScreen(
             palettes = palettes,
             onMediaClick = {},
+            onBrowseExtension = {},
             onBackPressed = {},
             modifier = Modifier
         )

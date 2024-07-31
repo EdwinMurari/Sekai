@@ -9,6 +9,7 @@ sealed interface ExtensionUiModel {
     val version: String
     val isNsfw: Boolean
     val pkgName: String
+    val apkUrl: String?
 
     data class Available(
         override val iconUrl: String,
@@ -17,7 +18,7 @@ sealed interface ExtensionUiModel {
         override val version: String,
         override val isNsfw: Boolean,
         override val pkgName: String,
-        val apkUrl: String,
+        override val apkUrl: String,
     ) : ExtensionUiModel
 
     data class Installed(
@@ -27,6 +28,7 @@ sealed interface ExtensionUiModel {
         override val version: String,
         override val isNsfw: Boolean,
         override val pkgName: String,
+        override val apkUrl: String?,
         val icon: Drawable?,
         val hasUpdate: Boolean,
         val isObsolete: Boolean,

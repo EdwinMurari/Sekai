@@ -23,6 +23,7 @@ fun Extension.asUiModel() = when (this) {
         icon = icon,
         iconUrl = iconUrl,
         pkgName = pkgName,
+        apkUrl = apkUrl,
         hasUpdate = hasUpdate,
         isObsolete = isObsolete
     )
