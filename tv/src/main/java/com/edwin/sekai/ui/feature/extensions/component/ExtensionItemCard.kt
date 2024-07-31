@@ -1,6 +1,7 @@
 package com.edwin.sekai.ui.feature.extensions.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,7 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Border
 import androidx.tv.material3.Card
@@ -21,6 +24,7 @@ import androidx.tv.material3.Text
 import com.edwin.sekai.R
 import com.edwin.sekai.ui.designsystem.component.DotSeparatedRow
 import com.edwin.sekai.ui.designsystem.component.PreviewAbleSubComposeImage
+import com.edwin.sekai.ui.designsystem.previewprovider.ExtensionPreviewParameterProvider
 import com.edwin.sekai.ui.designsystem.theme.SekaiTheme
 import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
 
@@ -66,15 +70,35 @@ fun ExtensionItemCard(
         title = {
             Text(
                 text = extension.title,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(top = 8.dp)
             )
         },
         subtitle = {
             val contentList = mutableListOf<@Composable () -> Unit>().apply {
-                add { Text(extension.language) }
-                add { Text(extension.version) }
-                if (extension.isNsfw) {
-                    add { Text("18+") }
+                when (extension) {
+                    is ExtensionUiModel.Available -> {
+                        add { Text(extension.language) }
+                        if (extension.isNsfw) {
+                            add { Text("18+") }
+                        } else {
+                            add { Text(extension.version) }
+                        }
+                    }
+
+                    is ExtensionUiModel.Installed -> {
+                        if (extension.hasUpdate) {
+                            add { Text("Update") }
+                        } else if (extension.isObsolete) {
+                            add { Text("Obsolete") }
+                        } else {
+                            add { Text("Installed") }
+                        }
+                        if (extension.isNsfw) {
+                            add { Text("18+") }
+                        }
+                    }
                 }
             }
 
@@ -90,19 +114,13 @@ fun ExtensionItemCard(
 
 @Preview(showBackground = true)
 @Composable
-fun ExtensionItemPreview() {
+fun ExtensionItemPreview(
+    @PreviewParameter(ExtensionPreviewParameterProvider::class) extension: ExtensionUiModel
+) {
     SekaiTheme {
         ExtensionItemCard(
             modifier = Modifier,
-            extension = ExtensionUiModel.Available(
-                iconUrl = "www.something.com/test.png",
-                title = "Some title",
-                language = "English",
-                version = "14.10",
-                isNsfw = false,
-                apkUrl = "",
-                pkgName = ""
-            ),
+            extension = extension,
             onClickExtension = {}
         )
     }

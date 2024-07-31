@@ -1,5 +1,7 @@
 package com.edwin.data.model
 
+import android.graphics.drawable.Drawable
+
 sealed interface Extension {
 
     val name: String
@@ -32,4 +34,21 @@ sealed interface Extension {
             val baseUrl: String,
         )
     }
+
+    data class Installed(
+        override val name: String,
+        override val pkgName: String,
+        override val versionName: String,
+        override val versionCode: Long,
+        override val libVersion: Double,
+        override val lang: String,
+        override val isNsfw: Boolean,
+        val pkgFactory: String?,
+        val icon: Drawable?,
+        val hasUpdate: Boolean,
+        val isObsolete: Boolean = false,
+        val isShared: Boolean,
+        val iconUrl: String,
+        val repoUrl: String,
+    ) : Extension
 }

@@ -1,33 +1,41 @@
 package com.edwin.data.repository
 
-import com.edwin.data.mapper.asExternalModel
-import com.edwin.data.mapper.extractLibVersion
+import android.content.Context
+import com.edwin.data.mapper.mapExtensionExtensionAsExternalModel
 import com.edwin.data.model.Extension
 import com.edwin.network.extensions.ExtensionsDataSource
+import com.edwin.network.extensions.InstalledExtensionsDataSource
 import com.edwin.network.userpref.UserPreferences
 import com.edwin.network.userpref.UserPreferencesDataSource
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import okhttp3.ResponseBody
 import javax.inject.Inject
 
 internal class OneOffExtensionsRepository @Inject constructor(
-    private val extensionsDataSource: ExtensionsDataSource,
+    @ApplicationContext private val context: Context,
+    private val availableExtensionsDataSource: ExtensionsDataSource,
+    private val installedExtensionsDataSource: InstalledExtensionsDataSource,
     private val userPreferencesDataSource: UserPreferencesDataSource
 ) : ExtensionsRepository {
 
-    override fun getAvailableExtensions(): Flow<List<Extension.Available>> {
+    override fun getExtensions(): Flow<List<Extension>> {
         return userPreferencesDataSource.userPreferences.map { userPreferences: UserPreferences ->
             userPreferences.extensionRepositoryUrlsList.flatMap { repositoryUrl ->
                 when {
                     repositoryUrl.matches(REPO_REGEX.toRegex()) -> {
-                        extensionsDataSource.getGithubExtensions(repositoryUrl)
-                            .filter {
-                                it.extractLibVersion() in LIB_VERSION_MIN..LIB_VERSION_MAX
-                            }
-                            .map {
-                                it.asExternalModel(repositoryUrl)
-                            }
+                        val installedExtensions =
+                            installedExtensionsDataSource.getInstalledExtensions()
+                        val availableExtensions =
+                            availableExtensionsDataSource.getGithubExtensions(repositoryUrl)
+
+                        mapExtensionExtensionAsExternalModel(
+                            context = context,
+                            installedExtensions = installedExtensions,
+                            availableExtensions = availableExtensions,
+                            repositoryUrl = repositoryUrl
+                        )
                     }
 
                     else -> emptyList()
@@ -37,7 +45,7 @@ internal class OneOffExtensionsRepository @Inject constructor(
     }
 
     override suspend fun downloadExtensionApk(apkUrl: String): ResponseBody {
-        return extensionsDataSource.downloadExtensionApk(apkUrl)
+        return availableExtensionsDataSource.downloadExtensionApk(apkUrl)
     }
 
     companion object {

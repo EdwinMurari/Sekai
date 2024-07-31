@@ -6,7 +6,7 @@ import okhttp3.ResponseBody
 
 interface ExtensionsRepository {
 
-    fun getAvailableExtensions(): Flow<List<Extension.Available>>
+    fun getExtensions(): Flow<List<Extension>>
 
     suspend fun downloadExtensionApk(apkUrl: String): ResponseBody
 }

@@ -1,12 +1,11 @@
 package com.edwin.sekai.ui.feature.extensions
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.edwin.data.model.Extension
 import com.edwin.data.repository.ExtensionsRepository
 import com.edwin.extension_manager.ExtensionInstallManager
-import com.edwin.sekai.ui.feature.extensions.mapper.toUiModel
+import com.edwin.sekai.ui.feature.extensions.mapper.asUiModel
 import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,14 +21,27 @@ class ExtensionsViewModel @Inject constructor(
     private val extensionInstallManager: ExtensionInstallManager,
 ) : ViewModel() {
 
-    val uiState: StateFlow<ExtensionsUiState> = repository.getAvailableExtensions()
-        .map<List<Extension.Available>, ExtensionsUiState> { availableExtensionList ->
+    val uiState: StateFlow<ExtensionsUiState> = repository.getExtensions()
+        .map<List<Extension>, ExtensionsUiState> { availableExtensionList ->
             ExtensionsUiState.Success(
-                extensions = availableExtensionList.map(Extension.Available::toUiModel)
+                extensions = availableExtensionList
+                    .map(Extension::asUiModel)
+                    .sortedWith(
+                        compareByDescending<ExtensionUiModel> {
+                            it is ExtensionUiModel.Installed
+                        }.thenByDescending {
+                            if (it is ExtensionUiModel.Installed) it.hasUpdate else false
+                        }.thenBy {
+                            it.language.lowercase() != "all"
+                        }.thenBy {
+                            it.language.lowercase() != "english"
+                        }.thenByDescending {
+                            it.language
+                        }
+                    )
             )
         }
         .catch {
-            Log.e("TEST", it.stackTraceToString())
             emit(ExtensionsUiState.Error)
         }
         .stateIn(
@@ -41,7 +53,12 @@ class ExtensionsViewModel @Inject constructor(
     fun onExtensionClick(extensionUiModel: ExtensionUiModel) {
         when (extensionUiModel) {
             is ExtensionUiModel.Available -> installExtension(extensionUiModel)
+            is ExtensionUiModel.Installed -> viewExtension(extensionUiModel)
         }
+    }
+
+    private fun viewExtension(extensionUiModel: ExtensionUiModel.Installed) {
+
     }
 
     private fun installExtension(extensionUiModel: ExtensionUiModel.Available) {
