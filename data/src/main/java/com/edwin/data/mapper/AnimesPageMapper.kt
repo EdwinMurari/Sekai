@@ -1,7 +1,7 @@
 package com.edwin.data.mapper
 
 import com.edwin.data.model.Media
-import com.edwin.network.extensions.aniyomi.model.AnimesPage
+import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import kotlin.random.Random
 
 fun AnimesPage.asExternalModel(): List<Media> {

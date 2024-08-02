@@ -1,5 +1,6 @@
 package com.edwin.sekai.ui.feature.extension
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,9 +32,14 @@ class ExtensionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.getPopularAnime()?.let {
-                _uiState.value = ExtensionUiState.Success(it)
-            } ?: run {
+            try {
+                repository.getPopularAnime()?.let {
+                    _uiState.value = ExtensionUiState.Success(it)
+                } ?: run {
+                    _uiState.value = ExtensionUiState.Error
+                }
+            } catch (e: Exception) {
+                Log.e("TEST", e.stackTraceToString())
                 _uiState.value = ExtensionUiState.Error
             }
         }

@@ -3,11 +3,11 @@ package com.edwin.data.repository.impl
 import com.edwin.data.mapper.asExternalModel
 import com.edwin.data.model.Media
 import com.edwin.network.extensions.ExtensionDataSourceFactory
-import com.edwin.network.extensions.aniyomi.AnimeCatalogueSource
 import com.edwin.network.extensions.impl.ExtensionSourcesFactory
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 
 class ExtensionRepository @AssistedInject constructor(
     private val extensionSourcesFactory: ExtensionSourcesFactory,
@@ -24,7 +24,7 @@ class ExtensionRepository @AssistedInject constructor(
         }
     }
 
-    private suspend fun getAnimeSource(): AnimeCatalogueSource? {
+    private fun getAnimeSource(): AnimeCatalogueSource? {
         return extensionSourcesFactory.create(pkgName)
             .firstOrNull { it is AnimeCatalogueSource } as? AnimeCatalogueSource
     }

@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":network:kitsu"))
     implementation(project(":network:extensions"))
     implementation(project(":network:userpref"))
+    api(project(":network:extensions:aniyomi"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
