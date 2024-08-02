@@ -6,7 +6,7 @@ import com.edwin.data.mapper.asNetworkModel
 import com.edwin.data.model.MediaDetails
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
-import com.edwin.data.repository.OneOffMediaRepository
+import com.edwin.data.repository.impl.OneOffMediaRepository
 import com.edwin.network.anilist.AnilistNetworkDataSource
 import com.edwin.network.anilist.GetMediaDetailsByIdQuery
 import com.edwin.network.anilist.GetTrendingAndPopularQuery

@@ -1,4 +1,4 @@
-package com.edwin.data.repository
+package com.edwin.data.repository.impl
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -11,6 +11,7 @@ import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
 import com.edwin.data.model.SearchParams
 import com.edwin.data.pagingsource.SearchMediaPagingSource
+import com.edwin.data.repository.MediaRepository
 import com.edwin.network.anilist.AnilistNetworkDataSource
 import com.edwin.network.jikan.JikanNetworkDataSource
 import com.edwin.network.kitsu.KitsuNetworkDataSource

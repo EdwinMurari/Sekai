@@ -3,7 +3,7 @@ package com.edwin.sekai.ui.feature.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.edwin.data.model.UserPreference
-import com.edwin.data.repository.UserPreferencesRepository
+import com.edwin.data.repository.impl.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

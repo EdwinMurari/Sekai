@@ -1,8 +1,9 @@
-package com.edwin.data.repository
+package com.edwin.data.repository.impl
 
 import android.content.Context
 import com.edwin.data.mapper.mapExtensionExtensionAsExternalModel
 import com.edwin.data.model.Extension
+import com.edwin.data.repository.ExtensionsRepository
 import com.edwin.network.extensions.ExtensionsDataSource
 import com.edwin.network.extensions.InstalledExtensionsDataSource
 import com.edwin.network.userpref.UserPreferences
