@@ -16,6 +16,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://jitpack.io")
     }
 }
 
@@ -31,4 +32,3 @@ include(":network:common")
 include(":network:extensions")
 include(":network:userpref")
 include(":extension-manager")
-include(":network:extensions:aniyomi")

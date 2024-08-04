@@ -41,7 +41,6 @@ dependencies {
     implementation(project(":network:kitsu"))
     implementation(project(":network:extensions"))
     implementation(project(":network:userpref"))
-    api(project(":network:extensions:aniyomi"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -57,6 +56,7 @@ dependencies {
 
     api(libs.apollo.runtime)
     api(libs.protobuf.kotlin.lite)
+    api(libs.aniyomi.extensions.lib)
 
     // Mockk framework
     testImplementation(libs.mockk)

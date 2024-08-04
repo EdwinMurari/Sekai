@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.edwin.data.model.Media
 import com.edwin.data.repository.impl.ExtensionRepository
-import com.edwin.data.repository.impl.ExtensionRepositoryFactory
 import com.edwin.sekai.ui.feature.extension.navigation.ExtensionArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,14 +17,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ExtensionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    repositoryFactory: ExtensionRepositoryFactory
+    repository: ExtensionRepository
 ) : ViewModel() {
 
     private val extensionArgs = ExtensionArgs(savedStateHandle)
 
     private val pkgName = extensionArgs.pkgName
-
-    private var repository: ExtensionRepository = repositoryFactory.create(pkgName)
 
     private val _uiState = MutableStateFlow<ExtensionUiState>(ExtensionUiState.Loading)
     val uiState: StateFlow<ExtensionUiState> = _uiState.asStateFlow()
@@ -33,7 +30,7 @@ class ExtensionViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             try {
-                repository.getPopularAnime()?.let {
+                repository.getPopularAnime(pkgName)?.let {
                     _uiState.value = ExtensionUiState.Success(it)
                 } ?: run {
                     _uiState.value = ExtensionUiState.Error
