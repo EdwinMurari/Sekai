@@ -2,7 +2,7 @@ package com.edwin.data.repository.impl
 
 import com.edwin.data.mapper.asExternalModel
 import com.edwin.data.model.Media
-import com.edwin.network.extensions.impl.ExtensionDataSource
+import com.edwin.network.extensions.ExtensionDataSource
 import javax.inject.Inject
 
 class ExtensionRepository @Inject constructor(
