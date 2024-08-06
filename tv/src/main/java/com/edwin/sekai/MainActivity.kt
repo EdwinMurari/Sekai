@@ -16,7 +16,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SekaiTheme {
+            // TV is hardcoded to dark mode to match TV ui
+            SekaiTheme(isInDarkTheme = true) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     shape = RectangleShape
