@@ -56,7 +56,6 @@ dependencies {
 
     api(libs.apollo.runtime)
     api(libs.protobuf.kotlin.lite)
-    api(libs.aniyomi.extensions.lib)
 
     // Mockk framework
     testImplementation(libs.mockk)

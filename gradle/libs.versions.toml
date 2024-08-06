@@ -2,7 +2,6 @@
 agp = "8.5.1"
 apolloRuntime = "3.8.4"
 coilCompose = "2.6.0"
-aniyomiExtensionsLib = "14"
 hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0"
 jsoup = "1.18.1"
@@ -48,7 +47,6 @@ androidx-paging-compose = { module = "androidx.paging:paging-compose", version.r
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingCompose" }
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apolloRuntime" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
-aniyomi-extensions-lib = { module = "com.github.aniyomiorg:extensions-lib", version.ref = "aniyomiExtensionsLib" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
