@@ -1,4 +1,4 @@
-package com.edwin.sekai.ui.feature.search
+package com.edwin.sekai.ui.feature.extension
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,8 @@ import com.edwin.data.model.SourceSelectionStatus
 import com.edwin.data.pagingsource.GenericMediaPagingSource
 import com.edwin.data.repository.PagedMediaRepository
 import com.edwin.data.repository.impl.SourceRepository
-import com.edwin.sekai.ui.feature.extension.navigation.ExtensionArgs
+import com.edwin.sekai.ui.feature.extension.navigation.ExtensionBrowseArgs
+import com.edwin.sekai.ui.feature.search.BaseSearchViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -23,15 +24,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ExtensionSearchViewModel @Inject constructor(
+class ExtensionBrowseViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     sourceRepo: SourceRepository,
     @ExtensionPagedMediaRepo private val pagedMediaRepository: PagedMediaRepository
 ) : BaseSearchViewModel(savedStateHandle) {
 
-
-    private val extensionArgs = ExtensionArgs(savedStateHandle)
-    private val pkgName = extensionArgs.pkgName
+    private val extensionBrowseArgs = ExtensionBrowseArgs(savedStateHandle)
+    private val pkgName = extensionBrowseArgs.pkgName
 
     private val _sourceStatus =
         MutableStateFlow<SourceSelectionStatus>(SourceSelectionStatus.Loading)

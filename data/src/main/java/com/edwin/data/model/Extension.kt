@@ -3,7 +3,6 @@ package com.edwin.data.model
 import android.graphics.drawable.Drawable
 
 sealed interface Extension {
-
     val name: String
     val pkgName: String
     val versionName: String

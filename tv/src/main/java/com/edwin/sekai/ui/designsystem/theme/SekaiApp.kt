@@ -7,8 +7,8 @@ import androidx.navigation.compose.rememberNavController
 import com.edwin.sekai.ui.designsystem.component.loadMaterial3Palettes
 import com.edwin.sekai.ui.feature.details.navigation.detailsRoute
 import com.edwin.sekai.ui.feature.details.navigation.navigateToDetails
-import com.edwin.sekai.ui.feature.extension.navigation.extensionRoute
-import com.edwin.sekai.ui.feature.extension.navigation.navigateToExtension
+import com.edwin.sekai.ui.feature.extension.navigation.extensionBrowseRoute
+import com.edwin.sekai.ui.feature.extension.navigation.navigateToExtensionBrowse
 import com.edwin.sekai.ui.feature.home.navigation.HOME_ROUTE
 import com.edwin.sekai.ui.feature.home.navigation.homeRoute
 import com.edwin.sekai.ui.feature.stream.navigation.navigateToStream
@@ -24,7 +24,7 @@ fun SekaiApp(onBackPressed: () -> Unit) {
     NavHost(navController = navController, startDestination = HOME_ROUTE) {
         homeRoute(
             onMediaClick = navController::navigateToDetails,
-            onBrowseExtension = navController::navigateToExtension,
+            onBrowseExtension = navController::navigateToExtensionBrowse,
             onBackPressed = onBackPressed,
             palettes = palettes
         )
@@ -37,6 +37,6 @@ fun SekaiApp(onBackPressed: () -> Unit) {
 
         streamRoute()
 
-        extensionRoute(palettes = palettes)
+        extensionBrowseRoute(palettes = palettes)
     }
 }
