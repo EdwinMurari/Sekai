@@ -2,44 +2,34 @@ package com.edwin.data.pagingsource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.edwin.data.mapper.asExternalModel
-import com.edwin.data.mapper.asNetworkModel
 import com.edwin.data.model.Media
 import com.edwin.data.model.SearchParams
-import com.edwin.network.anilist.AnilistNetworkDataSource
+import com.edwin.data.repository.PagedMediaRepository
 import javax.inject.Inject
 
-class SearchMediaPagingSource @Inject constructor(
-    private val anilistDataSource: AnilistNetworkDataSource,
+class GenericMediaPagingSource @Inject constructor(
+    private val pagedMediaRepository: PagedMediaRepository,
     private val searchParams: SearchParams
 ) : PagingSource<Int, Media>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Media> {
-        // Start refresh at page 1 if undefined.
         val page = params.key ?: 1
 
         return try {
-            val response = anilistDataSource.search(
+            val result = pagedMediaRepository.getPagedMediaResults(
                 page = page,
                 pageSize = params.loadSize,
-                query = searchParams.query,
-                formats = searchParams.format?.asNetworkModel(),
-                status = searchParams.status?.asNetworkModel(),
-                seasonYear = searchParams.seasonYear,
-                season = searchParams.season?.asNetworkModel(),
-                genres = searchParams.genres?.map { it.name },
-                minScore = searchParams.minScore?.times(10),
-                sort = searchParams.getNetworkMediaSort()?.let { listOf(it) }
+                searchParams = searchParams
+            )
+            val successResult = result.getOrNull() ?: return LoadResult.Error(
+                throwable = result.exceptionOrNull() ?: Exception("Unknown error")
             )
 
-            val mediaList =
-                response.data?.Page?.media?.mapNotNull { it?.mediaFragment?.asExternalModel() }
-                    ?: emptyList()
             val prevKey = if (page == 1) null else page - 1
-            val nextKey = if (response.data?.Page?.pageInfo?.hasNextPage == true) page + 1 else null
+            val nextKey = if (successResult.pageInfo.hasNextPage) page + 1 else null
 
             LoadResult.Page(
-                data = mediaList,
+                data = successResult.media,
                 prevKey = prevKey,
                 nextKey = nextKey
             )

@@ -91,7 +91,7 @@ fun SearchRoute(
 fun SearchScreen(
     pagingItems: LazyPagingItems<Media>,
     searchQuery: String,
-    filterState: SearchViewModel.FilterState,
+    filterState: BaseSearchViewModel.FilterState,
     palettes: Map<String, Material3Palette>,
     contentPaddingValues: PaddingValues,
     modifier: Modifier = Modifier,
@@ -311,7 +311,7 @@ fun SearchScreenPreview(
             contentPaddingValues = PaddingValues(56.dp),
             pagingItems = lazyPagingItems,
             searchQuery = "",
-            filterState = SearchViewModel.FilterState(),
+            filterState = BaseSearchViewModel.FilterState(),
             palettes = palettes,
             onMediaClick = { },
             onSearchQueryChange = {},

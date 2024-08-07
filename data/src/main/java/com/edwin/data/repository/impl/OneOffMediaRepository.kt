@@ -1,16 +1,10 @@
 package com.edwin.data.repository.impl
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import com.edwin.data.mapper.asExternalModel
-import com.edwin.data.mapper.asNetworkModel
-import com.edwin.data.model.Media
+import com.edwin.data.mapper.asAnilistModel
 import com.edwin.data.model.MediaCollections
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
-import com.edwin.data.model.SearchParams
-import com.edwin.data.pagingsource.SearchMediaPagingSource
 import com.edwin.data.repository.MediaRepository
 import com.edwin.network.anilist.AnilistNetworkDataSource
 import com.edwin.network.jikan.JikanNetworkDataSource
@@ -32,7 +26,7 @@ internal class OneOffMediaRepository @Inject constructor(
         seasonYear: Int
     ): Flow<NetworkResponse<MediaCollections>> = flow {
         val response = anilistDataSource.getTrendingAndPopularMedia(
-            season = season.asNetworkModel(),
+            season = season.asAnilistModel(),
             seasonYear = seasonYear
         )
 
@@ -71,18 +65,4 @@ internal class OneOffMediaRepository @Inject constructor(
                 } ?: NetworkResponse.Error(listOf(Error("Media details not found")))
             }
         }
-
-    override fun getPagedSearchResults(
-        searchParams: SearchParams
-    ): Flow<PagingData<Media>> {
-        return Pager(
-            config = PagingConfig(pageSize = searchParams.perPage),
-            pagingSourceFactory = {
-                SearchMediaPagingSource(
-                    anilistDataSource,
-                    searchParams
-                )
-            }
-        ).flow
-    }
 }

@@ -2,7 +2,7 @@ package com.edwin.data
 
 import com.apollographql.apollo3.api.ApolloResponse
 import com.benasher44.uuid.Uuid
-import com.edwin.data.mapper.asNetworkModel
+import com.edwin.data.mapper.asAnilistModel
 import com.edwin.data.model.MediaDetails
 import com.edwin.data.model.MediaSeason
 import com.edwin.data.model.NetworkResponse
@@ -44,7 +44,7 @@ class OneOffMediaRepositoryTest {
 
     private val mediaSeason = MediaSeason.FALL
     private val seasonYear = 2024
-    private val networkMediaSeason = mediaSeason.asNetworkModel()
+    private val networkMediaSeason = mediaSeason.asAnilistModel()
 
     @Test
     fun `getTrendingAndPopularMedia - Success`() = runTest {

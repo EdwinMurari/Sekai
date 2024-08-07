@@ -1,22 +1,10 @@
 package com.edwin.data.mapper
 
 import com.edwin.data.model.Media
-import com.edwin.data.model.MediaFormat
-import com.edwin.data.model.MediaSeason
-import com.edwin.data.model.MediaStatus
+import com.edwin.data.model.MediaPageResponse
+import com.edwin.data.model.PageInfo
+import com.edwin.network.anilist.SearchMediaQuery
 import com.edwin.network.anilist.fragment.MediaFragment
-import com.edwin.network.anilist.type.MediaFormat as NetworkMediaFormat
-import com.edwin.network.anilist.type.MediaSeason as NetworkMediaSeason
-import com.edwin.network.anilist.type.MediaStatus as NetworkMediaStatus
-
-val tvNetworkFormats = listOf(
-    NetworkMediaFormat.TV,
-    NetworkMediaFormat.TV_SHORT,
-    NetworkMediaFormat.OVA,
-    NetworkMediaFormat.ONA,
-    NetworkMediaFormat.SPECIAL
-)
-val movieNetworkFormats = listOf(NetworkMediaFormat.MOVIE)
 
 fun MediaFragment.asExternalTvSeriesModel() = Media.TvSeries(
     id = id,
@@ -53,9 +41,6 @@ fun MediaFragment.asExternalModel() = when {
     else -> null
 }
 
-fun NetworkMediaFormat?.isTvSeries() = this in tvNetworkFormats
-fun NetworkMediaFormat?.isMovie() = this in movieNetworkFormats
-
 private fun MediaFragment.NextAiringEpisode?.asExternalModel() = this?.let {
     Media.TvSeries.NextAiringEpisode(
         episode = it.episode,
@@ -71,24 +56,13 @@ private fun MediaFragment.getCoverAverageHex(): String? {
     return coverImage?.color?.takeIf { it.isNotBlank() && it.firstOrNull() == '#' }
 }
 
-fun MediaSeason.asNetworkModel(): NetworkMediaSeason {
-    return when (this) {
-        MediaSeason.WINTER -> NetworkMediaSeason.WINTER
-        MediaSeason.SPRING -> NetworkMediaSeason.SPRING
-        MediaSeason.SUMMER -> NetworkMediaSeason.SUMMER
-        MediaSeason.FALL -> NetworkMediaSeason.FALL
-    }
+fun SearchMediaQuery.Page.asExternalModel(): MediaPageResponse {
+    return MediaPageResponse(
+        pageInfo = pageInfo?.asExternalModel() ?: PageInfo(hasNextPage = false),
+        media = media?.mapNotNull { it?.mediaFragment?.asExternalModel() } ?: emptyList()
+    )
 }
 
-fun MediaFormat.asNetworkModel() = when (this) {
-    MediaFormat.TV -> tvNetworkFormats
-    MediaFormat.MOVIE -> movieNetworkFormats
-}
-
-fun MediaStatus.asNetworkModel() = when (this) {
-    MediaStatus.FINISHED -> NetworkMediaStatus.FINISHED
-    MediaStatus.RELEASING -> NetworkMediaStatus.RELEASING
-    MediaStatus.NOT_YET_RELEASED -> NetworkMediaStatus.NOT_YET_RELEASED
-    MediaStatus.CANCELLED -> NetworkMediaStatus.CANCELLED
-    MediaStatus.HIATUS -> NetworkMediaStatus.HIATUS
+private fun SearchMediaQuery.PageInfo.asExternalModel(): PageInfo {
+    return PageInfo(hasNextPage = hasNextPage ?: false)
 }

@@ -8,8 +8,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
-import com.edwin.sekai.ui.feature.extension.ExtensionRoute
 import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
+import com.edwin.sekai.ui.feature.search.ExtensionBrowseRoute
 import java.net.URLDecoder
 import kotlin.text.Charsets.UTF_8
 
@@ -39,7 +39,7 @@ fun NavHostController.navigateToExtension(
 }
 
 fun NavGraphBuilder.extensionRoute(
-    palettes: Map<String, Material3Palette>
+    palettes: Map<String, Material3Palette>,
 ) {
     composable(
         route = EXTENSION_ROUTE,
@@ -51,6 +51,9 @@ fun NavGraphBuilder.extensionRoute(
             },
         ),
     ) {
-        ExtensionRoute(palettes = palettes)
+        ExtensionBrowseRoute(
+            onMediaClick = {},
+            palettes = palettes,
+        )
     }
 }
