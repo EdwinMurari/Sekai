@@ -8,19 +8,19 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.edwin.sekai.ui.designsystem.component.Material3Palette
+import com.edwin.sekai.ui.feature.extension.ExtensionBrowseRoute
 import com.edwin.sekai.ui.feature.extensions.model.ExtensionUiModel
-import com.edwin.sekai.ui.feature.search.ExtensionBrowseRoute
 import java.net.URLDecoder
 import kotlin.text.Charsets.UTF_8
 
 private val URL_CHARACTER_ENCODING = UTF_8.name()
 
 const val EXTENSION_PKG_NAME_ARG = "extension_pkg_name"
-const val EXTENSION_ROUTE_BASE = "extension_route"
-const val EXTENSION_ROUTE =
-    "$EXTENSION_ROUTE_BASE?$EXTENSION_PKG_NAME_ARG={$EXTENSION_PKG_NAME_ARG}"
+const val EXTENSION_BROWSE_ROUTE_BASE = "extension_browse_route"
+const val EXTENSION_BROWSE_ROUTE =
+    "$EXTENSION_BROWSE_ROUTE_BASE?$EXTENSION_PKG_NAME_ARG={$EXTENSION_PKG_NAME_ARG}"
 
-class ExtensionArgs(val pkgName: String) {
+class ExtensionBrowseArgs(val pkgName: String) {
     constructor(savedStateHandle: SavedStateHandle) : this(
         URLDecoder.decode(
             checkNotNull(
@@ -30,19 +30,19 @@ class ExtensionArgs(val pkgName: String) {
     )
 }
 
-fun NavHostController.navigateToExtension(
+fun NavHostController.navigateToExtensionBrowse(
     extensionUiModel: ExtensionUiModel,
     navOptions: NavOptions? = null
 ) {
-    val route = "$EXTENSION_ROUTE_BASE?$EXTENSION_PKG_NAME_ARG=${extensionUiModel.pkgName}"
+    val route = "$EXTENSION_BROWSE_ROUTE_BASE?$EXTENSION_PKG_NAME_ARG=${extensionUiModel.pkgName}"
     navigate(route, navOptions)
 }
 
-fun NavGraphBuilder.extensionRoute(
+fun NavGraphBuilder.extensionBrowseRoute(
     palettes: Map<String, Material3Palette>,
 ) {
     composable(
-        route = EXTENSION_ROUTE,
+        route = EXTENSION_BROWSE_ROUTE,
         arguments = listOf(
             navArgument(EXTENSION_PKG_NAME_ARG) {
                 defaultValue = null
