@@ -12,7 +12,17 @@ sealed class MediaDetails {
         override val relations: List<MediaRelation>?,
         override val recommendations: List<Media>?,
         val episodes: List<Episode>?
-    ) : MediaDetails()
+    ) : MediaDetails() {
+
+        data class Episode(
+            val number: Int,
+            val title: String?,
+            val thumbnail: String?,
+            val filler: Boolean,
+            val recap: Boolean,
+            val duration: Int?,
+        )
+    }
 
     data class Movie(
         override val media: Media.Movie,
@@ -25,15 +35,6 @@ sealed class MediaDetails {
         val english: String?,
         val romaji: String?,
         val native: String?
-    )
-
-    data class Episode(
-        val number: Int,
-        val title: String?,
-        val thumbnail: String?,
-        val filler: Boolean,
-        val recap: Boolean,
-        val duration: Int?,
     )
 
     data class MediaRelation(

@@ -64,7 +64,7 @@ fun TvLazyListScope.episodesSection(
 @Composable
 fun EpisodesSection(
     contentPaddingValues: PaddingValues,
-    episodesList: List<MediaDetails.Episode>,
+    episodesList: List<MediaDetails.TvSeries.Episode>,
     fallbackBanner: String?,
     onEpisodeSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -113,7 +113,7 @@ fun EpisodesSection(
 @Composable
 private fun EpisodeListGrid(
     contentPaddingValues: PaddingValues,
-    episodesList: List<MediaDetails.Episode>,
+    episodesList: List<MediaDetails.TvSeries.Episode>,
     fallbackBanner: String?,
     onEpisodeSelected: (Int) -> Unit
 ) {
@@ -136,7 +136,7 @@ private fun EpisodeListGrid(
 
 @Composable
 private fun EpisodeCard(
-    episode: MediaDetails.Episode,
+    episode: MediaDetails.TvSeries.Episode,
     fallbackBanner: String?,
     onEpisodeSelected: (Int) -> Unit
 ) {
@@ -210,7 +210,7 @@ private fun EpisodeCard(
 @TvPreview
 @Composable
 fun EpisodePreview(
-    @PreviewParameter(EpisodePreviewParameterProvider::class) episode: MediaDetails.Episode
+    @PreviewParameter(EpisodePreviewParameterProvider::class) episode: MediaDetails.TvSeries.Episode
 ) {
     SekaiTheme {
         EpisodeCard(

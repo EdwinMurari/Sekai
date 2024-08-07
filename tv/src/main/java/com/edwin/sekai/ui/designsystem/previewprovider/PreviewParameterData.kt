@@ -126,7 +126,7 @@ object PreviewParameterData {
     )
 
     val episodes = listOf(
-        MediaDetails.Episode(
+        MediaDetails.TvSeries.Episode(
             number = 1,
             title = "The Town Where Everything Began",
             thumbnail = "https://media.kitsu.io/episodes/thumbnails/256494/original.jpg",
@@ -134,7 +134,7 @@ object PreviewParameterData {
             recap = false,
             duration = 1435
         ),
-        MediaDetails.Episode(
+        MediaDetails.TvSeries.Episode(
             number = 2,
             title = "Thunder Spears",
             thumbnail = "https://media.kitsu.io/episodes/thumbnails/256495/original.jpg",
@@ -142,7 +142,7 @@ object PreviewParameterData {
             recap = false,
             duration = 1435
         ),
-        MediaDetails.Episode(
+        MediaDetails.TvSeries.Episode(
             number = 3,
             title = "Descent",
             thumbnail = "https://media.kitsu.io/episodes/thumbnails/256496/original.jpg",
@@ -150,7 +150,7 @@ object PreviewParameterData {
             recap = true,
             duration = 1435
         ),
-        MediaDetails.Episode(
+        MediaDetails.TvSeries.Episode(
             number = 4,
             title = "Perfect Game",
             thumbnail = "https://media.kitsu.io/episodes/thumbnails/256497/original.jpg",

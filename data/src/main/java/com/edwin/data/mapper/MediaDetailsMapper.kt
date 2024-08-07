@@ -36,7 +36,7 @@ fun MediaDetailsFragment.asExternalTvSeriesModel(
 private fun mapEpisodes(
     jikanEpisodesResponse: JikanEpisodesResponse?,
     kitsuEpisodesResponse: ApolloResponse<GetEpisodeForAnilistMediaIdQuery.Data>
-): List<MediaDetails.Episode>? {
+): List<MediaDetails.TvSeries.Episode>? {
     val jikanEpisodes = jikanEpisodesResponse?.data
         ?.takeUnless { it.isEmpty() }
         ?.map { it.asExternalModel() }
@@ -57,9 +57,9 @@ private fun mapEpisodes(
 }
 
 private fun mergeEpisodes(
-    kitsuEpisodes: List<MediaDetails.Episode>,
-    jikanEpisodes: List<MediaDetails.Episode>
-): List<MediaDetails.Episode> {
+    kitsuEpisodes: List<MediaDetails.TvSeries.Episode>,
+    jikanEpisodes: List<MediaDetails.TvSeries.Episode>
+): List<MediaDetails.TvSeries.Episode> {
     val jikanEpisodeMap = jikanEpisodes.associateBy { it.number }
 
     return (kitsuEpisodes.map { kitsuEpisode ->
@@ -75,7 +75,7 @@ private fun mergeEpisodes(
     }).sortedBy { it.number }
 }
 
-private fun JikanEpisodeData.asExternalModel() = MediaDetails.Episode(
+private fun JikanEpisodeData.asExternalModel() = MediaDetails.TvSeries.Episode(
     number = malId,
     title = title ?: titleRomanji ?: titleJapanese,
     thumbnail = null,
@@ -84,7 +84,7 @@ private fun JikanEpisodeData.asExternalModel() = MediaDetails.Episode(
     duration = null
 )
 
-private fun GetEpisodeForAnilistMediaIdQuery.Node.asExternalModel() = MediaDetails.Episode(
+private fun GetEpisodeForAnilistMediaIdQuery.Node.asExternalModel() = MediaDetails.TvSeries.Episode(
     number = number,
     title = titles.canonical,
     thumbnail = thumbnail?.original?.url,
