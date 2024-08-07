@@ -11,7 +11,7 @@ import com.edwin.data.model.SearchParams
 import com.edwin.data.model.SourceSelectionStatus
 import com.edwin.data.pagingsource.GenericMediaPagingSource
 import com.edwin.data.repository.PagedMediaRepository
-import com.edwin.data.repository.impl.ExtensionRepository
+import com.edwin.data.repository.impl.SourceRepository
 import com.edwin.sekai.ui.feature.extension.navigation.ExtensionArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ExtensionSearchViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    repository: ExtensionRepository,
+    sourceRepo: SourceRepository,
     @ExtensionPagedMediaRepo private val pagedMediaRepository: PagedMediaRepository
 ) : BaseSearchViewModel(savedStateHandle) {
 
@@ -39,7 +39,7 @@ class ExtensionSearchViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _sourceStatus.value = try {
-                repository.selectSource(pkgName)
+                sourceRepo.selectSource(pkgName)
             } catch (e: Exception) {
                 SourceSelectionStatus.SourceUnavailable
             }
