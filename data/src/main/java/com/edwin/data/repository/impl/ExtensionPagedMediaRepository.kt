@@ -18,24 +18,25 @@ class ExtensionPagedMediaRepository @Inject constructor(
         pageSize: Int,
         searchParams: SearchParams
     ): Result<MediaPageResponse> {
-        /*val mediaPage = extensionDataSource.fetchPopularAnime(page)*/
-        val mediaPage = extensionDataSource.searchAnime(
-            page = page,
-            pageSize = pageSize,
-            query = searchParams.query,
-            formats = searchParams.format?.asExtensionModel(),
-            status = searchParams.status?.asExtensionModel(),
-            seasonYear = searchParams.seasonYear,
-            season = searchParams.season?.asExtensionModel(),
-            genres = searchParams.genres?.map { it.name },
-            minScore = searchParams.minScore?.times(10),
-            sort = searchParams.getExtensionMediaSort()?.let { listOf(it) }
-        )
-
-        return mediaPage?.asExternalModel()?.let { Result.success(it) } ?: Result.failure(
-            Exception(
-                "No data"
+        // TODO :: Temp solution
+        val mediaPage = if (searchParams.query.isNullOrEmpty()) {
+            extensionDataSource.fetchPopularAnime(page)
+        } else {
+            extensionDataSource.searchAnime(
+                page = page,
+                pageSize = pageSize,
+                query = searchParams.query,
+                formats = searchParams.format?.asExtensionModel(),
+                status = searchParams.status?.asExtensionModel(),
+                seasonYear = searchParams.seasonYear,
+                season = searchParams.season?.asExtensionModel(),
+                genres = searchParams.genres?.map { it.name },
+                minScore = searchParams.minScore?.times(10),
+                sort = searchParams.getExtensionMediaSort()?.let { listOf(it) }
             )
-        )
+        }
+
+        return mediaPage?.asExternalModel()?.let { Result.success(it) }
+            ?: Result.failure(Exception("No data"))
     }
 }
